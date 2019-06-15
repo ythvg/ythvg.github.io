@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>Array | Star Trek</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="1、数组的定义 一个存储元素的线性集合（collection），元素可以通过索引来任意存取，索引通常是数字，用来计算元素之间存储位置的偏移量。  JavaScript 中的数组是一种特殊的对象，用来表示偏移量的索引是该对象的属性，索引可 能是整数。然而，这些数字索引在内部被转换为字符串类型，这是因为 JavaScript 对象中的属性名必须是字符串。数组在 JavaScript 中只是一种特殊的对">
+<meta name="keywords" content="data structure &amp; algorithm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Array">
+<meta property="og:url" content="http:ythvg.github.com/2019/06/15/Array/index.html">
+<meta property="og:site_name" content="Star Trek">
+<meta property="og:description" content="1、数组的定义 一个存储元素的线性集合（collection），元素可以通过索引来任意存取，索引通常是数字，用来计算元素之间存储位置的偏移量。  JavaScript 中的数组是一种特殊的对象，用来表示偏移量的索引是该对象的属性，索引可 能是整数。然而，这些数字索引在内部被转换为字符串类型，这是因为 JavaScript 对象中的属性名必须是字符串。数组在 JavaScript 中只是一种特殊的对">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-15T07:31:19.703Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Array">
+<meta name="twitter:description" content="1、数组的定义 一个存储元素的线性集合（collection），元素可以通过索引来任意存取，索引通常是数字，用来计算元素之间存储位置的偏移量。  JavaScript 中的数组是一种特殊的对象，用来表示偏移量的索引是该对象的属性，索引可 能是整数。然而，这些数字索引在内部被转换为字符串类型，这是因为 JavaScript 对象中的属性名必须是字符串。数组在 JavaScript 中只是一种特殊的对">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Star Trek</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http:ythvg.github.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-Array" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/15/Array/" class="article-date">
+  <time datetime="2019-06-15T07:30:30.000Z" itemprop="datePublished">2019-06-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Array
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="1、数组的定义"><a href="#1、数组的定义" class="headerlink" title="1、数组的定义"></a>1、数组的定义</h1><ul>
+<li>一个存储元素的线性集合（collection），元素可以通过索引来任意存取，索引通常是数字，用来计算元素之间存储位置的偏移量。</li>
+</ul>
+<p>JavaScript 中的数组是一种特殊的对象，用来表示偏移量的索引是该对象的属性，索引可 能是整数。然而，这些数字索引在内部被转换为字符串类型，这是因为 JavaScript 对象中的属性名必须是字符串。数组在 JavaScript 中只是一种特殊的对象，所以效率上不如其他 语言中的数组高。</p>
+<h1 id="2、使用数组"><a href="#2、使用数组" class="headerlink" title="2、使用数组"></a>2、使用数组</h1><h3 id="创建数组"><a href="#创建数组" class="headerlink" title="创建数组"></a>创建数组</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// 通过 [] 操作符声明一个数组变量</span><br><span class="line">var numbers = [];</span><br><span class="line">var numbers = [1,2,3,4,5];</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 调用 Array 的构造函数创建数组</span><br><span class="line">var numbers = new Array(); </span><br><span class="line">var numbers = new Array(1,2,3,4,5);  //可以为构造函数传入一组元素作为数组的初始值</span><br><span class="line">var numbers = new Array(10);  //可以只传入一个参数，用来指定数组的长度</span><br></pre></td></tr></table></figure>
+<h3 id="由字符串生成数组"><a href="#由字符串生成数组" class="headerlink" title="由字符串生成数组"></a>由字符串生成数组</h3><p>调用字符串对象的 split() 方法也可以生成数组。该方法通过一些常见的分隔符，比如分 隔单词的空格，将一个字符串分成几部分，并将每部分作为一个元素保存于一个新建的数 组中<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var sentence = &quot;the quick brown fox jumped over the lazy dog&quot;; </span><br><span class="line">var words = sentence.split(&quot; &quot;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="Array-from"><a href="#Array-from" class="headerlink" title="Array.from()"></a>Array.from()</h3><p>从类数组对象或者可迭代对象中创建一个新的数组实例<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Array.from(&apos;foo&apos;);  // Array [&quot;f&quot;, &quot;o&quot;, &quot;o&quot;]</span><br></pre></td></tr></table></figure></p>
+<h3 id="判断是否数组类型"><a href="#判断是否数组类型" class="headerlink" title="判断是否数组类型"></a>判断是否数组类型</h3><p>可以调用 Array.isArray() 来判断一个对象是否是数组</p>
+<h1 id="3、数组访问函数"><a href="#3、数组访问函数" class="headerlink" title="3、数组访问函数"></a>3、数组访问函数</h1><p>JavaScript 提供了一组用来访问数组元素的函数，这些函数返回目标数组的某种表现</p>
+<h3 id="查找元素"><a href="#查找元素" class="headerlink" title="查找元素"></a>查找元素</h3><p>indexOf() 和 lastIndexOf()函数是最常用的存取函数之一，用来查找传进来的参数在目标数组中是否存在。 如果目标数组包含该参数，就返回该元素在数组中的索引；如果不包含，就返回 -1。如果数组中包含多个相同的元素，indexOf() 函数总是返回第一个与参数相同的元素的索 引<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var names = [&quot;David&quot;, &quot;Cynthia&quot;, &quot;Raymond&quot;, &quot;Clayton&quot;, &quot;Jennifer&quot;]; </span><br><span class="line">names.indexOf(&quot;Cynthia&quot;)  // 1</span><br></pre></td></tr></table></figure></p>
+<p>find() 方法返回数组中满足提供的测试函数的第一个元素的值。否则返回undefined<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arr.find(callback[, thisArg])</span><br></pre></td></tr></table></figure></p>
+<h3 id="数组的字符串表示"><a href="#数组的字符串表示" class="headerlink" title="数组的字符串表示"></a>数组的字符串表示</h3><p>有两个方法可以将数组转化为字符串：join() 和 toString()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arr.join([separator])</span><br></pre></td></tr></table></figure></p>
+<h3 id="由已有数组创建新数组"><a href="#由已有数组创建新数组" class="headerlink" title="由已有数组创建新数组"></a>由已有数组创建新数组</h3><p>concat 方法可以合并多个数组创建一个新数组，slice() 方法截取一个数组的子集创建一个新数组<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">array.concat(value1[, value2[, ...[, valueN]]])</span><br><span class="line">array.slice(begin, end);</span><br></pre></td></tr></table></figure></p>
+<h1 id="4、可变函数"><a href="#4、可变函数" class="headerlink" title="4、可变函数"></a>4、可变函数</h1><p>JavaScript 拥有一组可变函数，使用它们，可以不必引用数组中的某个元素，就能改变数组内容</p>
+<h3 id="为数组添加元素"><a href="#为数组添加元素" class="headerlink" title="为数组添加元素"></a>为数组添加元素</h3><p>有两个方法可以为数组添加元素：push() 和 unshift()。</p>
+<h3 id="从数组中删除元素"><a href="#从数组中删除元素" class="headerlink" title="从数组中删除元素"></a>从数组中删除元素</h3><p>使用 pop() 方法可以删除数组末尾的元素，shift() 方法可以删除数组的第一个元素</p>
+<h3 id="从数组中间位置添加和删除元素"><a href="#从数组中间位置添加和删除元素" class="headerlink" title="从数组中间位置添加和删除元素"></a>从数组中间位置添加和删除元素</h3><p>使用 splice() 方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array.splice(start[, deleteCount[, item1[, item2[, ...]]]])</span><br></pre></td></tr></table></figure></p>
+<h3 id="为数组排序"><a href="#为数组排序" class="headerlink" title="为数组排序"></a>为数组排序</h3><p>reverse() 方法将数组中元素的位置颠倒,并返回该数组。该方法会改变原数组<br>sort()方法用原地算法对数组的元素进行排序，并返回数组<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arr.sort([compareFunction])</span><br></pre></td></tr></table></figure></p>
+<h1 id="5、迭代器方法"><a href="#5、迭代器方法" class="headerlink" title="5、迭代器方法"></a>5、迭代器方法</h1><p>迭代器方法方法对数组中的每个元素应用一个函数，可以返回一个 值、一组值或者一个新数组</p>
+<h3 id="不生成新数组的迭代器方法"><a href="#不生成新数组的迭代器方法" class="headerlink" title="不生成新数组的迭代器方法"></a>不生成新数组的迭代器方法</h3><p>forEach()方法接受一个函数作为参数，对数组中的每个元素使用该函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arr.forEach(callback[, thisArg]);</span><br></pre></td></tr></table></figure></p>
+<p>every() 方法测试数组的所有元素是否都通过了指定函数的测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arr.every(callback[, thisArg])</span><br></pre></td></tr></table></figure></p>
+<p>some() 方法测试是否至少有一个元素通过由提供的函数实现的测试<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arr.some(callback(element[, index[, array]])[, thisArg])</span><br></pre></td></tr></table></figure></p>
+<p>reduce() 方法对数组中的每个元素执行一个由您提供的reducer函数(升序执行)，将其结果汇总为单个返回值。reduceRight则反方向执行<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arr.reduce(callback[, initialValue])</span><br></pre></td></tr></table></figure></p>
+<h3 id="生成新数组的迭代器方法"><a href="#生成新数组的迭代器方法" class="headerlink" title="生成新数组的迭代器方法"></a>生成新数组的迭代器方法</h3><p>map() 方法创建一个新数组，其结果是该数组中的每个元素都调用一个提供的函数后返回的结果<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var new_array = arr.map(function callback(currentValue[, index[, array]]) &#123;</span><br><span class="line"> // Return element for new_array &#125;[, </span><br><span class="line">thisArg])</span><br></pre></td></tr></table></figure></p>
+<p>filter() 方法创建一个新数组, 其包含通过所提供函数实现的测试的所有元素<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var newArray = arr.filter(callback(element[, index[, array]])[, thisArg])</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http:ythvg.github.com/2019/06/15/Array/" data-id="cjwx7decc00017gq8e0vc6i72" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2018/06/25/docker-notes/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Docker学习笔记</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/data-structure-algorithm/" style="font-size: 10px;">data structure & algorithm</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/15/Array/">Array</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/25/docker-notes/">Docker学习笔记</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/19/javascript-stack/">Javascript Full Stack - concentrate</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/09/awesome-projects/">有趣的开源项目</a>
+          </li>
+        
+          <li>
+            <a href="/2018/06/06/team-work/">团队协作流程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jim.Fun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
