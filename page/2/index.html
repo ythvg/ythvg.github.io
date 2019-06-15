@@ -5,19 +5,15 @@
   
 
   
-  <title>有趣的开源项目 | Star Trek</title>
+  <title>Star Trek</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Command Line Tools httpie - Modern command line HTTP clients  mycli - A Terminal Client for MySQL with AutoCompletion and Syntax Highlighting   Http httpbin.org - HTTP Request &amp;amp; Response Service,">
-<meta property="og:type" content="article">
-<meta property="og:title" content="有趣的开源项目">
-<meta property="og:url" content="http:ythvg.github.com/2018/06/09/awesome-projects/index.html">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Star Trek">
+<meta property="og:url" content="http:ythvg.github.com/page/2/index.html">
 <meta property="og:site_name" content="Star Trek">
-<meta property="og:description" content="Command Line Tools httpie - Modern command line HTTP clients  mycli - A Terminal Client for MySQL with AutoCompletion and Syntax Highlighting   Http httpbin.org - HTTP Request &amp;amp; Response Service,">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-06-15T07:28:57.967Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="有趣的开源项目">
-<meta name="twitter:description" content="Command Line Tools httpie - Modern command line HTTP clients  mycli - A Terminal Client for MySQL with AutoCompletion and Syntax Highlighting   Http httpbin.org - HTTP Request &amp;amp; Response Service,">
+<meta name="twitter:title" content="Star Trek">
   
   
     <link rel="icon" href="/favicon.png">
@@ -60,7 +56,9 @@
   </div>
 </header>
       <div class="outer">
-        <section id="main"><article id="post-awesome-projects" class="article article-type-post" itemscope itemprop="blogPost">
+        <section id="main">
+  
+    <article id="post-awesome-projects" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
     <a href="/2018/06/09/awesome-projects/" class="article-date">
   <time datetime="2018-06-09T12:52:47.000Z" itemprop="datePublished">2018-06-09</time>
@@ -73,8 +71,8 @@
       <header class="article-header">
         
   
-    <h1 class="article-title" itemprop="name">
-      有趣的开源项目
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/09/awesome-projects/">有趣的开源项目</a>
     </h1>
   
 
@@ -140,28 +138,127 @@
     </footer>
   </div>
   
-    
-<nav id="article-nav">
-  
-    <a href="/2018/06/19/javascript-stack/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
-      <div class="article-nav-title">
-        
-          Javascript Full Stack - concentrate
-        
-      </div>
-    </a>
-  
-  
-    <a href="/2018/06/06/team-work/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
-      <div class="article-nav-title">团队协作流程</div>
-    </a>
-  
-</nav>
+</article>
+
 
   
+    <article id="post-team-work" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/06/team-work/" class="article-date">
+  <time datetime="2018-06-06T02:30:16.000Z" itemprop="datePublished">2018-06-06</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/06/team-work/">团队协作流程</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在团队开发中，如果没有一个有效的工作流程和代码规范，那么在进行团队协作的时候就不可避免的导致各种混乱，从而导致维护成本和迭代成本的大幅度增加。</p>
+<h2 id="项目命名"><a href="#项目命名" class="headerlink" title="项目命名"></a>项目命名</h2><p>对于前后端分离项目，在项目命名上建议遵循</p>
+<blockquote>
+<p>前端： xxx-frontend， 后端：xxx-backend</p>
+</blockquote>
+<p>的命名方式，且所有项目和分支的命名采用 <strong>小写字母</strong> 加 <strong>-</strong> 的方式</p>
+<h2 id="软件版本控制"><a href="#软件版本控制" class="headerlink" title="软件版本控制"></a>软件版本控制</h2><ul>
+<li><p>推荐使用git flow流程进行开发</p>
+<ul>
+<li><p>什么是 <a href="https://www.git-tower.com/learn/git/ebook/cn/command-line/advanced-topics/git-flow" target="_blank" rel="noopener">git flow</a> ? </p>
+</li>
+<li><p>git flow <a href="https://danielkummer.github.io/git-flow-cheatsheet/index.html" target="_blank" rel="noopener">备忘清单 </a></p>
+</li>
+</ul>
+</li>
+<li><p>git flow 主要分支</p>
+<ul>
+<li><p>master 不能直接工作在这个 master 分支上，而是在其他指定的，独立的特性分支中，不直接提交改动到 master 分支上也是很多工作流程的一个共同的规则</p>
+</li>
+<li><p>develop 是进行任何新的开发的基础分支。当开始一个新的功能分支时，它将是开发的基础。另外，该分支也汇集所有已经完成的功能，并等待被整合到 master 分支中</p>
+</li>
+<li><p>feature 开发新功能应该新建一个独立的feature分支，如 feature/xxx</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="软件架构"><a href="#软件架构" class="headerlink" title="软件架构"></a>软件架构</h2><ul>
+<li>软件在架构设计时建议采用自顶向下的设计思想，尽量的做到模块化和抽象化</li>
+</ul>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http:ythvg.github.com/2018/06/06/team-work/" data-id="cjwx7decl00057gq87qnlkyyl" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
 </article>
+
+
+  
+    <article id="post-hexo-start" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2018/06/01/hexo-start/" class="article-date">
+  <time datetime="2018-06-01T14:05:20.000Z" itemprop="datePublished">2018-06-01</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/01/hexo-start/">hexo start</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
+<h2 id="Quick-Start1"><a href="#Quick-Start1" class="headerlink" title="Quick Start1"></a>Quick Start1</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+<h3 id="Hexo-Github-pages-toturial"><a href="#Hexo-Github-pages-toturial" class="headerlink" title="Hexo + Github pages toturial"></a>Hexo + Github pages toturial</h3><p><a href="https://gist.github.com/btfak/18938572f5df000ebe06fbd1872e4e39" target="_blank" rel="noopener">Links</a></p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http:ythvg.github.com/2018/06/01/hexo-start/" data-id="cjwx7decf00027gq89x9ymwdx" class="article-share-link">Share</a>
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/">&laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
 
 </section>
         

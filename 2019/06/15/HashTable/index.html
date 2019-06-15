@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="utf-8">
+  
+
+  
+  <title>散列表 | Star Trek</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="散列算法的作用是尽可能快地在数据结构中找到一个值。散列函数的作用是给定一个键值，然后返回值在表中的地址 基本实现1234567891011121314151617181920212223class HashTable &amp;#123;    constructor() &amp;#123;        this.table = [];    &amp;#125;    put(key, value) &amp;#123;">
+<meta name="keywords" content="data structure &amp; algorithm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="散列表">
+<meta property="og:url" content="http:ythvg.github.com/2019/06/15/HashTable/index.html">
+<meta property="og:site_name" content="Star Trek">
+<meta property="og:description" content="散列算法的作用是尽可能快地在数据结构中找到一个值。散列函数的作用是给定一个键值，然后返回值在表中的地址 基本实现1234567891011121314151617181920212223class HashTable &amp;#123;    constructor() &amp;#123;        this.table = [];    &amp;#125;    put(key, value) &amp;#123;">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2019-06-15T07:42:48.521Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="散列表">
+<meta name="twitter:description" content="散列算法的作用是尽可能快地在数据结构中找到一个值。散列函数的作用是给定一个键值，然后返回值在表中的地址 基本实现1234567891011121314151617181920212223class HashTable &amp;#123;    constructor() &amp;#123;        this.table = [];    &amp;#125;    put(key, value) &amp;#123;">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+</html>
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Star Trek</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http:ythvg.github.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-HashTable" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2019/06/15/HashTable/" class="article-date">
+  <time datetime="2019-06-15T07:38:08.000Z" itemprop="datePublished">2019-06-15</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      散列表
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>散列算法的作用是尽可能快地在数据结构中找到一个值。散列函数的作用是给定一个键值，然后返回值在表中的地址</p>
+<h1 id="基本实现"><a href="#基本实现" class="headerlink" title="基本实现"></a>基本实现</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class HashTable &#123;</span><br><span class="line">    constructor() &#123;</span><br><span class="line">        this.table = [];</span><br><span class="line">    &#125;</span><br><span class="line">    put(key, value) &#123;</span><br><span class="line">        const position = this.loseloseHashCode(key);</span><br><span class="line">        this.table[position] = value;</span><br><span class="line">    &#125;</span><br><span class="line">    get(key) &#123;</span><br><span class="line">        return this.table[loseloseHashCode(key)];</span><br><span class="line">    &#125;</span><br><span class="line">    remove(key) &#123;</span><br><span class="line">        this.table[loseloseHashCode(key)] = undefined;</span><br><span class="line">    &#125;</span><br><span class="line">    loseloseHashCode(key) &#123;</span><br><span class="line">        let hash = 0;</span><br><span class="line">        for (let i = 0; i &lt; key.length; i++) &#123;</span><br><span class="line">            hash += key.charCodeAt(i);</span><br><span class="line">        &#125;</span><br><span class="line">        // 为了得到比较小的数值，我们会使用hash值和一个任意数做除法的余数</span><br><span class="line">        return hash % 37;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="碰撞处理"><a href="#碰撞处理" class="headerlink" title="碰撞处理"></a>碰撞处理</h1><h3 id="分离链接法"><a href="#分离链接法" class="headerlink" title="分离链接法"></a>分离链接法</h3><p>分离链接法包括为散列表的每一个位置创建一个链表并将元素存储在里面。它是解决冲突的最简单的方法，但是它在HashTable实例之外还需要额外的存储空间<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">class HashTable &#123;</span><br><span class="line">    constructor() &#123;</span><br><span class="line">        this.table = [];</span><br><span class="line">    &#125;</span><br><span class="line">    put(key, value) &#123;</span><br><span class="line">        const LList = this.table[this.loseloseHashCode(key)];</span><br><span class="line">        const valuePair = &#123; key, value &#125;;</span><br><span class="line">        if (LList === undefined) &#123;</span><br><span class="line">            LList = new LinkedList();</span><br><span class="line">        &#125;</span><br><span class="line">        table[position].append(valuePair);</span><br><span class="line">    &#125;</span><br><span class="line">    get(key) &#123;</span><br><span class="line">        const LList = this.table[this.loseloseHashCode(key)];</span><br><span class="line">        if (LList !== undefined) &#123;</span><br><span class="line">            let curNode = LList.head;</span><br><span class="line">            while(curNode.next) &#123;</span><br><span class="line">                if (curNode.next.key === key) &#123;</span><br><span class="line">                    return curNode.next.item.value;</span><br><span class="line">                &#125;</span><br><span class="line">                curNode = curNode.next;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return undefined;</span><br><span class="line">    &#125;</span><br><span class="line">    remove(key) &#123;</span><br><span class="line">        const LList = this.table[this.loseloseHashCode(key)];</span><br><span class="line">        if (LList !== undefined) &#123;</span><br><span class="line">            let curNode = LList.head;</span><br><span class="line">            while(curNode.next) &#123;</span><br><span class="line">                if (curNode.next.key === key) &#123;</span><br><span class="line">                    LList.remove(key);</span><br><span class="line">                    return true;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">    loseloseHashCode(key) &#123;</span><br><span class="line">        let hash = 0;</span><br><span class="line">        for (let i = 0; i &lt; key.length; i++) &#123;</span><br><span class="line">            hash += key.charCodeAt(i);</span><br><span class="line">        &#125;</span><br><span class="line">        // 为了得到比较小的数值，我们会使用hash值和一个任意数做除法的余数</span><br><span class="line">        return hash % 37;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="线性探测法"><a href="#线性探测法" class="headerlink" title="线性探测法"></a>线性探测法</h3><p>另一种解决冲突的方法是线性探查。当想向表中某个位置加入一个新元素的时候，如果索引为index的位置已经被占据了，就尝试index+1的位置。如果index+1的位置也被占据了，就尝试index+2的位置，以此类推</p>
+<h1 id="创建更好的散列函数"><a href="#创建更好的散列函数" class="headerlink" title="创建更好的散列函数"></a>创建更好的散列函数</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function djb2HashCode (key) &#123;</span><br><span class="line">    var hash = 5381; // 初始化一个hash变量并赋值为一个质数（大多数实现都使用5381）</span><br><span class="line">    for (var i = 0; i &lt; key.length; i++) &#123; </span><br><span class="line">    // 将hash与33相乘（用来当作一个魔力数），并和当前迭代到的字符的ASCII码值相加</span><br><span class="line">        hash = hash * 33 + key.charCodeAt(i); //&#123;3&#125;</span><br><span class="line">    &#125;</span><br><span class="line">   // 最后将使用相加的和与另一个随机质数（比我们认为的散列表的大小要大， 比如1000）相除的余数</span><br><span class="line">    return hash % 1013; </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http:ythvg.github.com/2019/06/15/HashTable/" data-id="cjwx7lc5o000e7gq8kt0844hc" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/06/15/SortAlgorithm/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          排序算法
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/06/15/Map/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">字典</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/data-structure-algorithm/" style="font-size: 10px;">data structure & algorithm</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2019/06/15/SortAlgorithm/">排序算法</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/15/HashTable/">散列表</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/15/Map/">字典</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/15/Set/">集合</a>
+          </li>
+        
+          <li>
+            <a href="/2019/06/15/LinkedList/">链表</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2019 Jim.Fun<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
