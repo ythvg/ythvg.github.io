@@ -85,39 +85,39 @@
         <hr>
 <h3 id="Docker镜像"><a href="#Docker镜像" class="headerlink" title="Docker镜像"></a>Docker镜像</h3><ul>
 <li><p>获取镜像</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker pull NAME[:TAG]</span><br><span class="line">e.g. docker pull ubuntu:latest</span><br></pre></td></tr></table></figure>
+  <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">docker</span> <span class="selector-tag">pull</span> <span class="selector-tag">NAME</span><span class="selector-attr">[:TAG]</span></span><br><span class="line"><span class="selector-tag">e</span><span class="selector-class">.g</span>. <span class="selector-tag">docker</span> <span class="selector-tag">pull</span> <span class="selector-tag">ubuntu</span><span class="selector-pseudo">:latest</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>查看镜像信息</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br><span class="line"></span><br><span class="line"># 详细</span><br><span class="line">docker inspect ID</span><br></pre></td></tr></table></figure>
+  <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br><span class="line"></span><br><span class="line"><span class="comment"># 详细</span></span><br><span class="line">docker <span class="keyword">inspect </span>ID</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>添加镜像标签</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker tag TGNAME NAME</span><br></pre></td></tr></table></figure>
+  <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">tag</span> <span class="title">TGNAME</span> NAME</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>搜寻镜像</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search NAME</span><br></pre></td></tr></table></figure>
+  <figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search <span class="keyword">NAME</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>删除镜像</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi NAME|ID</span><br></pre></td></tr></table></figure>
+  <figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi NAME<span class="string">|ID</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>创建镜像</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 基于已有的容器创建 -m --author, -a --author, </span><br><span class="line">docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]</span><br><span class="line">e.g. docker commit -m &quot;Added a new file&quot; -a &quot;jim.fun&quot; 0f99624 test</span><br></pre></td></tr></table></figure>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 基于已有的容器创建 -m --author, -a --author, </span></span><br><span class="line">docker <span class="keyword">commit</span> [OPTIONS] <span class="keyword">CONTAINER</span> [REPOSITORY[:TAG]]</span><br><span class="line">e.g. docker <span class="keyword">commit</span> -m <span class="string">"Added a new file"</span> -a <span class="string">"jim.fun"</span> <span class="number">0</span>f99624 <span class="keyword">test</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>上传镜像</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push NAME:[TAG]</span><br></pre></td></tr></table></figure>
+  <figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push NAME:<span class="string">[TAG]</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 <h3 id="Docker容器"><a href="#Docker容器" class="headerlink" title="Docker容器"></a>Docker容器</h3><ul>
 <li><p>启动容器</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run NAME</span><br><span class="line">e.g. docker run -t -i ubuntu /bin/bash</span><br><span class="line">-t 分配一个伪终端并绑定到标准输入，-i 让容器的标准输入保持打开, -d Daemonized 守护态运行</span><br></pre></td></tr></table></figure>
+  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run NAME</span><br><span class="line">e<span class="selector-class">.g</span>. docker run -t -<span class="selector-tag">i</span> ubuntu /bin/bash</span><br><span class="line">-t 分配一个伪终端并绑定到标准输入，-<span class="selector-tag">i</span> 让容器的标准输入保持打开, -d Daemonized 守护态运行</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>终止容器</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop ID</span><br></pre></td></tr></table></figure>
+  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">stop</span> <span class="keyword">ID</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>重启容器</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker restart ID</span><br></pre></td></tr></table></figure>
+  <figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">docker restart ID</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>进入容器</p>
-  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    docker exec [OPTIONS] ID</span><br><span class="line"></span><br><span class="line">* 删除容器</span><br></pre></td></tr></table></figure>
+  <figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    docker exec [<span class="keyword">OPTIONS</span>] ID</span><br><span class="line"></span><br><span class="line"><span class="comment">* 删除容器</span></span><br></pre></td></tr></table></figure>
 <p>  docker rm [OPTIONS] CONTAINER</p>
 </li>
 <li><p>导出和导入容器</p>
@@ -131,7 +131,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2018/06/25/docker-notes/" data-id="cjwx7dec500007gq8a1lrh67q" class="article-share-link">Share</a>
+      <a data-url="http:ythvg.github.com/2018/06/25/docker-notes/" data-id="cjx0ex09a000hx9q8ll9804hk" class="article-share-link">Share</a>
       
       
     </footer>
