@@ -1,779 +1,2360 @@
 <!DOCTYPE html>
-<html>
-<head><meta name="generator" content="Hexo 3.8.0">
-  <meta charset="utf-8">
-  
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claude Code 完全指南</title>
+  <style>
+    :root {
+      --brand: #d97706;
+      --brand-dark: #b45309;
+      --brand-light: #fef3c7;
+      --bg: #0f0f13;
+      --bg2: #18181f;
+      --bg3: #22222c;
+      --border: rgba(255,255,255,0.08);
+      --text: #e8e8f0;
+      --text2: #9999b0;
+      --code-bg: #1e1e2a;
+      --radius: 12px;
+      --nav-h: 60px;
+    }
 
-  
-  <title>Star Trek</title>
-  <meta name="google-site-verification" content="YMl07smGhbzFI89NPgdkLdQr2vX2Kg0eI8zv8r4Ck_U" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Star Trek">
-<meta property="og:url" content="http:ythvg.github.com/index.html">
-<meta property="og:site_name" content="Star Trek">
-<meta property="og:locale" content="default">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Star Trek">
-  
-  
-    <link rel="icon" href="/favicon.png">
-  
-  
-    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
-  
-  <link rel="stylesheet" href="/css/style.css">
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Nav ─────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      background: rgba(15,15,19,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .nav-logo .logo-icon {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--brand), #f59e0b);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text2);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: var(--bg3);
+    }
+
+    .nav-cta {
+      background: var(--brand) !important;
+      color: #000 !important;
+      font-weight: 600 !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--brand-dark) !important;
+    }
+
+    @media (max-width: 680px) {
+      .nav-links { display: none; }
+    }
+
+    /* ── Main layout ──────────────────────────────────────────────────────── */
+    main {
+      padding-top: var(--nav-h);
+    }
+
+    section {
+      padding: 80px 24px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    .container-wide {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── Hero ─────────────────────────────────────────────────────────────── */
+    .hero {
+      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(217,119,6,0.18) 0%, transparent 70%),
+                  var(--bg);
+      text-align: center;
+      padding: 120px 24px 80px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(217,119,6,0.15);
+      border: 1px solid rgba(217,119,6,0.35);
+      color: var(--brand);
+      padding: 5px 14px;
+      border-radius: 99px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 28px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -1px;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(90deg, var(--brand), #f59e0b, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text2);
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: #000;
+    }
+
+    .btn-primary:hover {
+      background: var(--brand-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--bg3);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #2e2e3a;
+      transform: translateY(-1px);
+    }
+
+    .hero-terminal {
+      margin-top: 56px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      text-align: left;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+    }
+
+    .terminal-bar {
+      background: #2a2a35;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+
+    .terminal-title {
+      font-size: 0.8rem;
+      color: var(--text2);
+      margin-left: 8px;
+    }
+
+    .terminal-body {
+      padding: 20px 24px;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.9rem;
+      line-height: 1.9;
+    }
+
+    .t-prompt { color: #6ee7b7; }
+    .t-cmd { color: #e8e8f0; }
+    .t-comment { color: #6b7280; }
+    .t-output { color: #a78bfa; }
+    .t-claude { color: var(--brand); }
+
+    /* ── Section titles ───────────────────────────────────────────────────── */
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .section-desc {
+      color: var(--text2);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin-bottom: 48px;
+    }
+
+    /* ── Feature cards ────────────────────────────────────────────────────── */
+    .features-bg {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .feat-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .feat-card:hover {
+      border-color: rgba(217,119,6,0.4);
+      transform: translateY(-2px);
+    }
+
+    .feat-icon {
+      font-size: 1.8rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    .feat-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feat-desc {
+      color: var(--text2);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    /* ── Install section ──────────────────────────────────────────────────── */
+    .install-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 700px) {
+      .install-grid { grid-template-columns: 1fr; }
+    }
+
+    .install-steps {
+      counter-reset: step;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .install-step {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .step-num {
+      counter-increment: step;
+      min-width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(217,119,6,0.15);
+      border: 1px solid rgba(217,119,6,0.4);
+      color: var(--brand);
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-content h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .step-content p {
+      color: var(--text2);
+      font-size: 0.87rem;
+    }
+
+    /* ── Code blocks ──────────────────────────────────────────────────────── */
+    .code-block {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .code-header {
+      background: #2a2a35;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .code-lang {
+      font-size: 0.75rem;
+      color: var(--text2);
+      font-family: monospace;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text2);
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 0.73rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      color: var(--text);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    pre {
+      padding: 18px 20px;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.88rem;
+      line-height: 1.8;
+    }
+
+    code {
+      color: #e8e8f0;
+    }
+
+    .hl-green { color: #6ee7b7; }
+    .hl-blue { color: #93c5fd; }
+    .hl-yellow { color: #fcd34d; }
+    .hl-purple { color: #c4b5fd; }
+    .hl-gray { color: #6b7280; }
+    .hl-orange { color: var(--brand); }
+
+    /* Inline code */
+    p code, li code {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-size: 0.85em;
+      color: var(--brand);
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    /* ── Tutorials ────────────────────────────────────────────────────────── */
+    .tutorials-bg {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tutorial-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .tutorial-item {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .tutorial-header {
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.2s;
+    }
+
+    .tutorial-header:hover {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .tutorial-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(217,119,6,0.15);
+      color: var(--brand);
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .tutorial-title {
+      font-weight: 600;
+      font-size: 0.97rem;
+      flex: 1;
+    }
+
+    .tutorial-tag {
+      font-size: 0.72rem;
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-weight: 600;
+    }
+
+    .tag-beginner { background: rgba(52,211,153,0.1); color: #34d399; }
+    .tag-intermediate { background: rgba(251,191,36,0.1); color: #fbbf24; }
+    .tag-advanced { background: rgba(239,68,68,0.1); color: #f87171; }
+
+    .tutorial-arrow {
+      color: var(--text2);
+      transition: transform 0.25s;
+    }
+
+    .tutorial-item.open .tutorial-arrow {
+      transform: rotate(90deg);
+    }
+
+    .tutorial-body {
+      display: none;
+      padding: 0 22px 22px;
+      border-top: 1px solid var(--border);
+    }
+
+    .tutorial-item.open .tutorial-body {
+      display: block;
+    }
+
+    .tutorial-body p {
+      color: var(--text2);
+      font-size: 0.9rem;
+      margin: 14px 0 10px;
+    }
+
+    .tutorial-body ul, .tutorial-body ol {
+      color: var(--text2);
+      font-size: 0.9rem;
+      padding-left: 20px;
+    }
+
+    .tutorial-body li {
+      margin-bottom: 5px;
+    }
+
+    /* ── Tutorial internals ───────────────────────────────────────────────── */
+    .tut-section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin: 20px 0 10px;
+    }
+
+    .tut-intro {
+      background: rgba(255,255,255,0.04);
+      border-left: 3px solid var(--brand);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 14px 0;
+      color: var(--text2);
+      font-size: 0.9rem;
+    }
+
+    .callout {
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 0.87rem;
+      margin: 12px 0;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .callout-tip {
+      background: rgba(52,211,153,0.08);
+      border: 1px solid rgba(52,211,153,0.2);
+      color: #6ee7b7;
+    }
+
+    .callout-warn {
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.2);
+      color: #fcd34d;
+    }
+
+    .callout-info {
+      background: rgba(147,197,253,0.08);
+      border: 1px solid rgba(147,197,253,0.2);
+      color: #93c5fd;
+    }
+
+    .callout-icon { flex-shrink: 0; font-size: 1rem; }
+    .callout-text { line-height: 1.6; }
+
+    .steps-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    .steps-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: var(--text2) !important;
+      font-size: 0.9rem !important;
+      margin-bottom: 0 !important;
+    }
+
+    .step-dot {
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(217,119,6,0.2);
+      border: 1px solid rgba(217,119,6,0.5);
+      color: var(--brand);
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .diff-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    @media (max-width: 640px) {
+      .diff-grid { grid-template-columns: 1fr; }
+    }
+
+    .diff-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 6px 12px;
+      text-transform: uppercase;
+    }
+
+    .diff-before .diff-label { color: #f87171; background: rgba(239,68,68,0.1); }
+    .diff-after  .diff-label { color: #34d399; background: rgba(52,211,153,0.1); }
+
+    .diff-before pre { border-left: 2px solid rgba(239,68,68,0.4); }
+    .diff-after  pre { border-left: 2px solid rgba(52,211,153,0.4); }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      margin: 10px 0;
+    }
+
+    .checklist li {
+      display: flex;
+      gap: 8px;
+      font-size: 0.88rem !important;
+      color: var(--text2) !important;
+      margin-bottom: 0 !important;
+    }
+
+    .checklist li::before {
+      content: '✓';
+      color: #34d399;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .file-tree {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.85rem;
+      line-height: 1.9;
+      margin: 10px 0;
+      color: var(--text2);
+    }
+
+    .ft-dir  { color: #93c5fd; }
+    .ft-file { color: #e8e8f0; }
+    .ft-new  { color: #34d399; }
+    .ft-mod  { color: var(--brand); }
+
+    /* ── Commands table ───────────────────────────────────────────────────── */
+    .cmd-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    .cmd-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .cmd-name {
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 0.88rem;
+      color: var(--brand);
+      background: rgba(217,119,6,0.1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    .cmd-desc {
+      color: var(--text2);
+      font-size: 0.86rem;
+    }
+
+    /* ── Tips ─────────────────────────────────────────────────────────────── */
+    .tips-bg {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tips-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 18px;
+    }
+
+    .tip-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+    }
+
+    .tip-card.highlight {
+      border-color: rgba(217,119,6,0.35);
+      background: rgba(217,119,6,0.05);
+    }
+
+    .tip-icon {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .tip-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .tip-desc {
+      color: var(--text2);
+      font-size: 0.87rem;
+    }
+
+    /* ── Pricing ──────────────────────────────────────────────────────────── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .price-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .price-card.popular {
+      border-color: var(--brand);
+      background: rgba(217,119,6,0.06);
+      position: relative;
+    }
+
+    .popular-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--brand);
+      color: #000;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 99px;
+      white-space: nowrap;
+    }
+
+    .price-name {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .price-amount {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .price-amount span {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text2);
+    }
+
+    .price-desc {
+      color: var(--text2);
+      font-size: 0.83rem;
+      line-height: 1.5;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .price-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .price-features li {
+      font-size: 0.85rem;
+      color: var(--text2);
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .price-features li::before {
+      content: '✓';
+      color: #34d399;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .price-features li.no::before {
+      content: '✕';
+      color: #6b7280;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────────────── */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 40px 24px;
+      text-align: center;
+      color: var(--text2);
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: var(--brand);
+      text-decoration: none;
+    }
+
+    /* ── Scrollbar ────────────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+    /* ── Divider ──────────────────────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+  </style>
 </head>
-</html>
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Star Trek</a>
-      </h1>
-      
+
+<!-- ── Nav ─────────────────────────────────────────────────────────────────── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <div class="logo-icon">◆</div>
+    Claude Code 指南
+  </a>
+  <ul class="nav-links">
+    <li><a href="#features">功能</a></li>
+    <li><a href="#install">安装</a></li>
+    <li><a href="#tutorials">教程</a></li>
+    <li><a href="#commands">命令</a></li>
+    <li><a href="#tips">技巧</a></li>
+    <li><a href="#pricing">价格</a></li>
+    <li><a href="https://claude.ai" target="_blank" class="nav-cta">开始使用</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- ── Hero ─────────────────────────────────────────────────────────────────── -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-badge">◆ Anthropic 官方出品 · 2026</div>
+    <h1>在终端里调用<br /><span>AI 编程搭档</span></h1>
+    <p class="hero-sub">
+      Claude Code 是直接运行在你终端里的 AI 编程助手，理解整个代码库上下文，帮你编写、调试、重构代码，甚至管理 Git 工作流。
+    </p>
+    <div class="hero-actions">
+      <a href="#install" class="btn btn-primary">▶ 快速安装</a>
+      <a href="#tutorials" class="btn btn-secondary">查看教程</a>
     </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http:ythvg.github.com"></form>
+
+    <div class="hero-terminal">
+      <div class="terminal-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span class="terminal-title">~/my-project — zsh</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="t-prompt">❯</span> <span class="t-cmd">claude</span></div>
+        <div class="t-comment"># Claude Code 启动，读取项目上下文...</div>
+        <div>&nbsp;</div>
+        <div><span class="t-claude">Claude:</span> 你好！我已加载你的项目。有什么可以帮你？</div>
+        <div>&nbsp;</div>
+        <div><span class="t-prompt">❯</span> <span class="t-cmd">给登录接口加上 JWT 鉴权，包括测试</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-output">● 读取 src/auth/login.ts...</span></div>
+        <div><span class="t-output">● 读取 tests/auth.test.ts...</span></div>
+        <div><span class="t-output">● 修改 src/auth/middleware.ts</span></div>
+        <div><span class="t-output">● 新建 src/auth/jwt.ts</span></div>
+        <div><span class="t-output">● 更新 tests/auth.test.ts</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-claude">Claude:</span> 完成！已添加 JWT 鉴权中间件和 4 个测试用例。</div>
       </div>
     </div>
   </div>
-</header>
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-HashTable" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/15/HashTable/" class="article-date">
-  <time datetime="2019-06-15T07:38:08.000Z" itemprop="datePublished">2019-06-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/15/HashTable/">散列表</a>
-    </h1>
-  
+</div>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>散列算法的作用是尽可能快地在数据结构中找到一个值。散列函数的作用是给定一个键值，然后返回值在表中的地址</p>
-<h1 id="基本实现"><a href="#基本实现" class="headerlink" title="基本实现"></a>基本实现</h1><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HashTable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>() &#123;</span><br><span class="line">        <span class="keyword">this</span>.table = [];</span><br><span class="line">    &#125;</span><br><span class="line">    put(key, value) &#123;</span><br><span class="line">        <span class="keyword">const</span> position = <span class="keyword">this</span>.loseloseHashCode(key);</span><br><span class="line">        <span class="keyword">this</span>.table[position] = value;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">get</span>(key) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.table[loseloseHashCode(key)];</span><br><span class="line">    &#125;</span><br><span class="line">    remove(key) &#123;</span><br><span class="line">        <span class="keyword">this</span>.table[loseloseHashCode(key)] = undefined;</span><br><span class="line">    &#125;</span><br><span class="line">    loseloseHashCode(key) &#123;</span><br><span class="line">        let hash = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (let i = <span class="number">0</span>; i &lt; key.length; i++) &#123;</span><br><span class="line">            hash += key.charCodeAt(i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 为了得到比较小的数值，我们会使用hash值和一个任意数做除法的余数</span></span><br><span class="line">        <span class="keyword">return</span> hash % <span class="number">37</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="碰撞处理"><a href="#碰撞处理" class="headerlink" title="碰撞处理"></a>碰撞处理</h1><h3 id="分离链接法"><a href="#分离链接法" class="headerlink" title="分离链接法"></a>分离链接法</h3><p>分离链接法包括为散列表的每一个位置创建一个链表并将元素存储在里面。它是解决冲突的最简单的方法，但是它在HashTable实例之外还需要额外的存储空间<br><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">class HashTable &#123;</span><br><span class="line">    constructor() &#123;</span><br><span class="line">        this.table = [];</span><br><span class="line">    &#125;</span><br><span class="line">    put<span class="built_in">(key</span>, <span class="keyword">value</span>) &#123;</span><br><span class="line">        const LList = this.table[this.loseloseHashCode<span class="built_in">(key</span>)];</span><br><span class="line">        const valuePair = &#123;<span class="built_in"> key</span>, <span class="keyword">value</span> &#125;;</span><br><span class="line">        <span class="keyword">if</span> (LList === undefined) &#123;</span><br><span class="line">            LList = new LinkedList();</span><br><span class="line">        &#125;</span><br><span class="line">        table<span class="built_in">[position</span>].append(valuePair);</span><br><span class="line">    &#125;</span><br><span class="line">    get<span class="built_in">(key</span>) &#123;</span><br><span class="line">        const LList = this.table[this.loseloseHashCode<span class="built_in">(key</span>)];</span><br><span class="line">        <span class="keyword">if</span> (LList !== undefined) &#123;</span><br><span class="line">            <span class="keyword">let</span> curNode = LList<span class="built_in">.head</span>;</span><br><span class="line">            while(curNode.<span class="keyword">next</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (curNode.<span class="keyword">next</span><span class="built_in">.key</span> ===<span class="built_in"> key</span>) &#123;</span><br><span class="line">                    <span class="keyword">return</span> curNode.<span class="keyword">next</span>.<span class="type">item</span>.<span class="keyword">value</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                curNode = curNode.<span class="keyword">next</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> undefined;</span><br><span class="line">    &#125;</span><br><span class="line">   <span class="built_in"> remove</span><span class="built_in">(key</span>) &#123;</span><br><span class="line">        const LList = this.table[this.loseloseHashCode<span class="built_in">(key</span>)];</span><br><span class="line">        <span class="keyword">if</span> (LList !== undefined) &#123;</span><br><span class="line">            <span class="keyword">let</span> curNode = LList<span class="built_in">.head</span>;</span><br><span class="line">            while(curNode.<span class="keyword">next</span>) &#123;</span><br><span class="line">                <span class="keyword">if</span> (curNode.<span class="keyword">next</span><span class="built_in">.key</span> ===<span class="built_in"> key</span>) &#123;</span><br><span class="line">                    LList<span class="built_in">.remove</span><span class="built_in">(key</span>);</span><br><span class="line">                    <span class="keyword">return</span><span class="built_in"> true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span><span class="built_in"> false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    loseloseHashCode<span class="built_in">(key</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> hash = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt;<span class="built_in"> key</span>.length; i++) &#123;</span><br><span class="line">            hash +=<span class="built_in"> key</span>.charCodeAt(i);</span><br><span class="line">        &#125;</span><br><span class="line">        // 为了得到比较小的数值，我们会使用hash值和一个任意数做除法的余数</span><br><span class="line">        <span class="keyword">return</span> hash % <span class="number">37</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h3 id="线性探测法"><a href="#线性探测法" class="headerlink" title="线性探测法"></a>线性探测法</h3><p>另一种解决冲突的方法是线性探查。当想向表中某个位置加入一个新元素的时候，如果索引为index的位置已经被占据了，就尝试index+1的位置。如果index+1的位置也被占据了，就尝试index+2的位置，以此类推</p>
-<h1 id="创建更好的散列函数"><a href="#创建更好的散列函数" class="headerlink" title="创建更好的散列函数"></a>创建更好的散列函数</h1><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">djb2HashCode</span> <span class="params">(key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> hash = <span class="number">5381</span>; <span class="comment">// 初始化一个hash变量并赋值为一个质数（大多数实现都使用5381）</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; key.length; i++) &#123; </span><br><span class="line">    <span class="comment">// 将hash与33相乘（用来当作一个魔力数），并和当前迭代到的字符的ASCII码值相加</span></span><br><span class="line">        hash = hash * <span class="number">33</span> + key.charCodeAt(i); <span class="comment">//&#123;3&#125;</span></span><br><span class="line">    &#125;</span><br><span class="line">   <span class="comment">// 最后将使用相加的和与另一个随机质数（比我们认为的散列表的大小要大， 比如1000）相除的余数</span></span><br><span class="line">    <span class="keyword">return</span> hash % <span class="number">1013</span>; </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-      
+<!-- ── Features ──────────────────────────────────────────────────────────────── -->
+<div class="features-bg" id="features">
+  <section>
+    <div class="container">
+      <div class="section-label">核心能力</div>
+      <h2 class="section-title">不只是代码补全</h2>
+      <p class="section-desc">Claude Code 理解你的整个代码库，能完成完整的工程任务，而不是只给你一行代码。</p>
+
+      <div class="features-grid">
+        <div class="feat-card">
+          <span class="feat-icon">📂</span>
+          <div class="feat-title">理解完整代码库</div>
+          <div class="feat-desc">自动读取项目文件、依赖关系、架构结构，在整个代码库的上下文下回答问题和修改代码。</div>
+        </div>
+        <div class="feat-card">
+          <span class="feat-icon">✏️</span>
+          <div class="feat-title">自主读写文件</div>
+          <div class="feat-desc">直接创建、修改、删除文件，进行精确的字符串替换编辑，不会破坏周围代码。</div>
+        </div>
+        <div class="feat-card">
+          <span class="feat-icon">🖥️</span>
+          <div class="feat-title">执行终端命令</div>
+          <div class="feat-desc">运行测试、构建、安装依赖、执行脚本，看到输出后继续智能处理。</div>
+        </div>
+        <div class="feat-card">
+          <span class="feat-icon">🔀</span>
+          <div class="feat-title">Git 工作流管理</div>
+          <div class="feat-desc">分析变更、起草 commit message、创建 PR、查看 issue，完整 Git 工作流支持。</div>
+        </div>
+        <div class="feat-card">
+          <span class="feat-icon">🔍</span>
+          <div class="feat-title">智能代码搜索</div>
+          <div class="feat-desc">用 Glob/Grep 在项目中精确搜索文件和内容，快速定位任意函数、类、变量。</div>
+        </div>
+        <div class="feat-card">
+          <span class="feat-icon">🌐</span>
+          <div class="feat-title">Web 搜索 & 文档查询</div>
+          <div class="feat-desc">实时搜索最新文档、技术方案、包版本，结合网络知识解决问题。</div>
+        </div>
+        <div class="feat-card">
+          <span class="feat-icon">🧠</span>
+          <div class="feat-title">持久记忆</div>
+          <div class="feat-desc">跨会话记住项目偏好、技术选型、个人习惯，下次打开继续有效。</div>
+        </div>
+        <div class="feat-card">
+          <span class="feat-icon">🔌</span>
+          <div class="feat-title">MCP 扩展协议</div>
+          <div class="feat-desc">通过 Model Context Protocol 连接数据库、Slack、GitHub 等外部工具，无限扩展能力。</div>
+        </div>
+        <div class="feat-card">
+          <span class="feat-icon">🛡️</span>
+          <div class="feat-title">安全第一</div>
+          <div class="feat-desc">危险操作（push、删文件、修改 CI）会主动确认，不会悄悄执行破坏性命令。</div>
+        </div>
+      </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2019/06/15/HashTable/" data-id="cjxiz9uge0000crq8z23pmebc" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
+  </section>
+</div>
 
-    </footer>
-  </div>
-  
-</article>
+<!-- ── Install ────────────────────────────────────────────────────────────────── -->
+<section id="install">
+  <div class="container">
+    <div class="section-label">快速开始</div>
+    <h2 class="section-title">三步完成安装</h2>
+    <p class="section-desc">需要 Node.js 18+ 和一个 Claude 账号（Pro 计划起）。</p>
 
+    <div class="install-grid">
+      <div class="install-steps">
+        <div class="install-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>安装 Claude Code</h4>
+            <p>通过 npm 全局安装 CLI 工具</p>
+            <div class="code-block" style="margin-top:10px">
+              <pre><code><span class="hl-green">$</span> npm install -g @anthropic-ai/claude-code</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>进入项目目录</h4>
+            <p>在任意项目根目录启动 Claude Code</p>
+            <div class="code-block" style="margin-top:10px">
+              <pre><code><span class="hl-green">$</span> cd my-project
+<span class="hl-green">$</span> claude</code></pre>
+            </div>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>完成认证</h4>
+            <p>首次运行会跳转浏览器登录 Claude 账号，需要 Pro 计划或 API Key</p>
+          </div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>开始对话</h4>
+            <p>直接用自然语言描述你要做的事，Claude 会自动读取项目上下文</p>
+          </div>
+        </div>
+      </div>
 
-  
-    <article id="post-Map" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/15/Map/" class="article-date">
-  <time datetime="2019-06-15T07:37:51.000Z" itemprop="datePublished">2019-06-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/15/Map/">字典</a>
-    </h1>
-  
+      <div>
+        <div class="code-block">
+          <div class="code-header">
+            <span class="code-lang">bash · 使用 API Key 启动</span>
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          </div>
+          <pre><code><span class="hl-gray"># 方式一：环境变量</span>
+<span class="hl-green">export</span> ANTHROPIC_API_KEY=<span class="hl-yellow">"sk-ant-..."</span>
+claude
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>字典是一种以键 - 值对形式存储数据的数据结构</p>
-<h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> Map([iterable])</span><br><span class="line"><span class="built_in">map</span>.<span class="built_in">set</span>(<span class="built_in">key</span>, value) <span class="comment">// 根据键（key）存储值（value），返回该Map对象</span></span><br><span class="line"><span class="built_in">map</span>.<span class="built_in">get</span>(<span class="built_in">key</span>) <span class="comment">// 根据键返回值，如果 map 中该键不存在，返回 undefined</span></span><br><span class="line"><span class="built_in">map</span>.has(<span class="built_in">key</span>) <span class="comment">// 如果键存在，返回 true，否则返回 false</span></span><br><span class="line"><span class="built_in">map</span>.delete(<span class="built_in">key</span>) <span class="comment">// 移除该键的值</span></span><br><span class="line"><span class="built_in">map</span>.<span class="built_in">clear</span>() <span class="comment">// 清空 map</span></span><br><span class="line"><span class="built_in">map</span>.<span class="built_in">size</span> <span class="comment">// 返回当前元素个数</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 迭代 Map</span></span><br><span class="line"><span class="built_in">map</span>.keys() – 返回键的迭代器，</span><br><span class="line"><span class="built_in">map</span>.values() – 返回值的迭代器，</span><br><span class="line"><span class="built_in">map</span>.entries() – 返回 [<span class="built_in">key</span>, value] 迭代器入口，<span class="keyword">for</span>..of 循环会默认使用它</span><br></pre></td></tr></table></figure>
-<h1 id="Object-和-Map-对比"><a href="#Object-和-Map-对比" class="headerlink" title="Object 和 Map 对比"></a>Object 和 Map 对比</h1><ul>
-<li>一个Object的键只能是字符串或者Symbols，但一个 Map 的键可以是任意值，包括函数、对象、基本类型</li>
-<li>Map 中的键值是有序的，而添加到对象中的键则不是。因此，当对它进行遍历时，Map 对象是按插入的顺序返回键值<ul>
-<li>可以通过 size 属性直接获取一个 Map 的键值对个数，而 Object 的键值对个数只能手动计算</li>
-</ul>
-</li>
-<li>Map 可直接进行迭代，而 Object 的迭代需要先获取它的键数组，然后再进行迭代</li>
-<li>Map 在涉及频繁增删键值对的场景下会有些性能优势</li>
-</ul>
+<span class="hl-gray"># 方式二：直接传参</span>
+claude --api-key sk-ant-...
 
-      
+<span class="hl-gray"># 方式三：登录 Claude.ai 账号（推荐）</span>
+claude  <span class="hl-gray"># 首次运行自动引导登录</span></code></pre>
+        </div>
+
+        <div class="code-block" style="margin-top:14px">
+          <div class="code-header">
+            <span class="code-lang">bash · 常用启动选项</span>
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          </div>
+          <pre><code><span class="hl-gray"># 单次执行（非交互模式）</span>
+claude -p <span class="hl-yellow">"解释 src/main.ts 的作用"</span>
+
+<span class="hl-gray"># 指定工作目录</span>
+claude --cwd /path/to/project
+
+<span class="hl-gray"># 查看帮助</span>
+claude --help</code></pre>
+        </div>
+      </div>
     </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2019/06/15/Map/" data-id="cjxiz9uii0004crq8x56y6a70" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
-
-    </footer>
   </div>
-  
-</article>
-
-
-  
-    <article id="post-Set" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/15/Set/" class="article-date">
-  <time datetime="2019-06-15T07:37:45.000Z" itemprop="datePublished">2019-06-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/15/Set/">集合</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>集合是由一组无序且不重复的元素组成的</p>
-<h1 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h1><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">new <span class="keyword">Set</span>([iterable]); <span class="comment">// 如果传递一个[可迭代对象]，它的所有元素将不重复地被添加到新的 Set 中。</span></span><br><span class="line"><span class="keyword">set</span>.add(value)  // 添加值，返回<span class="comment"> set</span> 自身</span><br><span class="line"><span class="keyword">set</span>.delete(value)  // 删除值，如果该<span class="comment"> value</span> 在调用方法的时候存在则返回<span class="comment"> true</span> ，否则返回<span class="comment"> false</span></span><br><span class="line"><span class="keyword">set</span>.has(value)  // 如果<span class="comment"> set</span> 中存在该值则返回<span class="comment"> true</span> ，否则返回<span class="comment"> false</span></span><br><span class="line"><span class="keyword">set</span>.clear() // 清空<span class="comment"> set</span></span><br><span class="line"><span class="keyword">set</span>.size  // 元素个数</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>.keys()  // 返回<span class="comment"> set</span> 中值的迭代对象</span><br><span class="line"><span class="keyword">set</span>.values() // 和<span class="comment"> set.keys</span> 一样</span><br><span class="line"><span class="keyword">set</span>.entries() // 返回形如<span class="comment"> [value, value]</span> 的迭代对象，为了兼容<span class="comment"> Map</span> 而存在。</span><br></pre></td></tr></table></figure>
-<h1 id="Set迭代"><a href="#Set迭代" class="headerlink" title="Set迭代"></a>Set迭代</h1><p>可以使用 for..of 或者 forEach 来循环查看 set<br><figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (<span class="keyword">let</span> <span class="keyword">value</span> of <span class="keyword">set</span>) alert(<span class="keyword">value</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>.forEach((<span class="keyword">value</span>, valueAgain, <span class="keyword">set</span>) =&gt; &#123;</span><br><span class="line">  alert(<span class="keyword">value</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
-<h1 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h1><h3 id="数组去重"><a href="#数组去重" class="headerlink" title="数组去重"></a>数组去重</h3><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Use to remove duplicate elements from the array </span></span><br><span class="line">const numbers = [<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">4</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">5</span>,<span class="number">32</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>]</span><br><span class="line">console.log([...new Set(numbers)]) </span><br><span class="line"><span class="comment">// [2, 3, 4, 5, 6, 7, 32]</span></span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2019/06/15/Set/" data-id="cjxiz9ujc000acrq8w3mn1skb" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-LinkedList" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/15/LinkedList/" class="article-date">
-  <time datetime="2019-06-15T07:37:37.000Z" itemprop="datePublished">2019-06-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/15/LinkedList/">链表</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>链表存储有序的元素集合，但不同于数组，链表中的元素在内存中并不是连续放置的。每个元素由一个存储元素本身的节点和一个指向下一个元素的引用（也称指针或链接）组成</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/3373227-0e766273d5619430.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
-<h1 id="为什么使用链表"><a href="#为什么使用链表" class="headerlink" title="为什么使用链表"></a>为什么使用链表</h1><p>数组的大小是固定的，从数组的起点或中间插入或移除项的成本很高，因为需要移动元素。链表的一个好处在于，添加或移除元素的时候不需要移动其他元素，因此插入一个元素的效率很高。<br>数组的另一个细节是可以直接访问任何位置的任何元素，而要想访问链表中间的一个元素，需要从起点（表头）开始迭代列表直到找到所需的元素。</p>
-<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">class Node &#123;</span><br><span class="line">    constructor(<span class="type">item</span>) &#123;</span><br><span class="line">        this.<span class="type">item</span> = <span class="type">item</span>;</span><br><span class="line">        this.<span class="keyword">next</span> = null;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> </span><br><span class="line"> class LinkedList &#123;</span><br><span class="line">     constructor() &#123;</span><br><span class="line">         this<span class="built_in">.head</span> = new Node(<span class="string">"head"</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     find(<span class="type">item</span>) &#123;</span><br><span class="line">         <span class="keyword">let</span> curNode = this<span class="built_in">.head</span>;</span><br><span class="line">         while(curNode.<span class="type">item</span> !== <span class="type">item</span>) &#123;</span><br><span class="line">             curNode = curNode.<span class="keyword">next</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">return</span> curNode</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">insert</span>(newItem, <span class="type">item</span>) &#123;</span><br><span class="line">         const newNode = new Node(newItem);</span><br><span class="line">         const curNode  = this.find(<span class="type">item</span>);</span><br><span class="line">         newNode.<span class="keyword">next</span> = curNode.<span class="keyword">next</span>;</span><br><span class="line">         curNode.<span class="keyword">next</span> = newNode;</span><br><span class="line">     &#125;</span><br><span class="line">     append(<span class="type">item</span>) &#123;</span><br><span class="line">         const curNode = this<span class="built_in">.head</span>;</span><br><span class="line">         while(curNode.<span class="keyword">next</span>) &#123;</span><br><span class="line">             curNode = curNode.<span class="keyword">next</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         curNode.<span class="keyword">next</span> = <span class="type">item</span>;</span><br><span class="line">     &#125;</span><br><span class="line">     findPrevious(<span class="type">item</span>) &#123;</span><br><span class="line">         <span class="keyword">let</span> prevNode = this<span class="built_in">.head</span>;</span><br><span class="line">         while(prevNode.<span class="keyword">next</span> &amp;&amp; prevNode.<span class="keyword">next</span>.<span class="type">item</span> !== <span class="type">item</span>) &#123;</span><br><span class="line">             prevNode = prevNode.<span class="keyword">next</span>;</span><br><span class="line">         &#125;</span><br><span class="line">         <span class="keyword">return</span> prevNode;</span><br><span class="line">     &#125;</span><br><span class="line">    <span class="built_in"> remove</span>(<span class="type">item</span>) &#123;</span><br><span class="line">         const prevNode = this.findPrevious(<span class="type">item</span>);</span><br><span class="line">         prevNode.<span class="keyword">next</span> = prevNode.<span class="keyword">next</span>.<span class="keyword">next</span>;</span><br><span class="line">     &#125;</span><br><span class="line">     display() &#123;</span><br><span class="line">         <span class="keyword">let</span> curNode = this<span class="built_in">.head</span>.<span class="keyword">next</span>;</span><br><span class="line">         while(curNode !== null) &#123;</span><br><span class="line">             console.log(curNode.<span class="type">item</span>);</span><br><span class="line">             curNode = curNode.<span class="keyword">next</span>;</span><br><span class="line">         &#125;</span><br><span class="line">     &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2019/06/15/LinkedList/" data-id="cjxiz9uib0003crq8zptkjsbr" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Queue" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/15/Queue/" class="article-date">
-  <time datetime="2019-06-15T07:37:19.000Z" itemprop="datePublished">2019-06-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/15/Queue/">队列</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>队列是遵循FIFO（First In First Out，先进先出）原则的一组有序的线性结构</p>
-<p><img src="https://upload-images.jianshu.io/upload_images/3373227-08871fd518416e80.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
-<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">class<span class="built_in"> Queue </span>&#123;</span><br><span class="line">    constructor() &#123;</span><br><span class="line">        this.queue = [];</span><br><span class="line">    &#125;</span><br><span class="line">    enQueue(item) &#123;</span><br><span class="line">        this.queue.push(item);</span><br><span class="line">    &#125;</span><br><span class="line">    deQueue() &#123;</span><br><span class="line">        this.queue.shift();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="优先队列"><a href="#优先队列" class="headerlink" title="优先队列"></a>优先队列</h1><p>优先队列中元素的添加和移除是基于优先级的。一个现实的例子就是机场登机的顺序。头等舱和商务舱乘客的优先级要高于经济舱乘客<br><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PriorityQueue</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>() &#123;</span><br><span class="line">        <span class="keyword">this</span>.queue = [];</span><br><span class="line">    &#125;</span><br><span class="line">    enQueue(item, priority) &#123;</span><br><span class="line">        let queueItem = &#123; item, priority &#125;;</span><br><span class="line">        let added = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">for</span> (let i = <span class="number">0</span>; i &lt; <span class="keyword">this</span>.queue.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (priority &lt; <span class="keyword">this</span>.queue[i].priority) &#123;</span><br><span class="line">                <span class="keyword">this</span>.queue.splice(i, <span class="number">0</span>, queueItem);</span><br><span class="line">                added = <span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!added) &#123;</span><br><span class="line">            <span class="keyword">this</span>.queue.push(queueItem);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    deQueue() &#123;</span><br><span class="line">        <span class="keyword">this</span>.queue.shift();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h1 id="循环队列"><a href="#循环队列" class="headerlink" title="循环队列"></a>循环队列</h1><p>循环队列的一个例子就是击鼓传花游戏（HotPotato）。在这个游戏中，孩子们围成一个圆圈，把花尽快地传递给旁边的人。某一时刻传花停止，这个时候花在谁手里，谁就退出圆圈结束游戏。重复这个过程，直到只剩一个孩子（胜者）<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">function <span class="title">hotPotato</span><span class="params">(nameList, num)</span> </span>&#123;</span><br><span class="line">    let <span class="built_in">queue</span> = <span class="keyword">new</span> <span class="built_in">queue</span>();</span><br><span class="line">    <span class="keyword">for</span> (let i = <span class="number">0</span>; i &lt; nameList.length; i++) &#123;</span><br><span class="line">        <span class="built_in">queue</span>.enQueue(nameList[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span>(<span class="built_in">queue</span>.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (let i = <span class="number">0</span>; i &lt; num; i++) &#123;</span><br><span class="line">            <span class="built_in">queue</span>.enQueue(<span class="built_in">queue</span>.deQueue());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="built_in">queue</span>.deQueue(); <span class="comment">// 被淘汰</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">queue</span>.deQueue();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h1 id="javascript任务队列"><a href="#javascript任务队列" class="headerlink" title="javascript任务队列"></a>javascript任务队列</h1><p>当我们在浏览器中打开新标签时，就会创建一个任务队列。这是因为每个标签都是单线程处 理所有的任务，它被称为事件循环。浏览器要负责多个任务，如渲染HTML，执行JavaScript代码， 处理用户交互（用户输入、鼠标点击等），执行和处理异步请求。</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2019/06/15/Queue/" data-id="cjxiz9uil0005crq8em5kin3i" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Stack" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/15/Stack/" class="article-date">
-  <time datetime="2019-06-15T07:37:12.000Z" itemprop="datePublished">2019-06-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/15/Stack/">栈</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <ul>
-<li><a href="https://zh.wikipedia.org/wiki/%E5%A0%86%E6%A0%88" target="_blank" rel="noopener">栈</a>是一种后入先出（LIFO，last-in-ﬁrst-out）的数据结构</li>
-<li>栈使用两种基本操作：推入（压栈，push）和弹出（弹栈，pop）</li>
-<li>在javascript中，栈可以看成是数组的子集</li>
-</ul>
-<p><img src="https://upload-images.jianshu.io/upload_images/3373227-36db9c83b8fcb1a0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt></p>
-<h1 id="1、实现"><a href="#1、实现" class="headerlink" title="1、实现"></a>1、实现</h1><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Stack</span></span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>() &#123;</span><br><span class="line">        <span class="keyword">this</span>.stack= [];</span><br><span class="line">    &#125;</span><br><span class="line">    push(item) &#123;</span><br><span class="line">        <span class="keyword">this</span>.stack.push(item);</span><br><span class="line">    &#125;</span><br><span class="line">    pop() &#123;</span><br><span class="line">        <span class="keyword">this</span>.stack.pop();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="2、应用"><a href="#2、应用" class="headerlink" title="2、应用"></a>2、应用</h1><h3 id="数制间的相互转换"><a href="#数制间的相互转换" class="headerlink" title="数制间的相互转换"></a>数制间的相互转换</h3><p>可以利用栈将一个数字从一种数制转换成另一种数制。假设想将数字 n 转换为以 b 为基数 的数字，实现转换的算法如下:</p>
-<ol>
-<li>最高位为 n % b，将此位压入栈</li>
-<li>使用 n/b 代替 n</li>
-<li>重复步骤 1 和 2，直到 n 等于 0，且没有余数</li>
-<li>持续将栈内元素弹出，直到栈为空，依次将这些元素排列，就得到转换后数字的字符 串形式<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">function mulBase(<span class="built_in">num</span>, base) &#123;    </span><br><span class="line">    const s = <span class="built_in">new</span> Stack();</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        s.<span class="built_in">push</span>(<span class="built_in">num</span> <span class="symbol">%</span> base);    </span><br><span class="line">        <span class="built_in">num</span> = Math.<span class="built_in">floor</span>(<span class="built_in">num</span> /= base);</span><br><span class="line">    &#125; <span class="keyword">while</span> (<span class="built_in">num</span> &gt; <span class="number">0</span>);</span><br><span class="line">    <span class="built_in">let</span> converted = <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">while</span> (s.<span class="built_in">length</span>() &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        converted += s.<span class="built_in">pop</span>();</span><br><span class="line">    &#125;    </span><br><span class="line">    <span class="built_in">return</span> converted;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ol>
-<h3 id="括号匹配"><a href="#括号匹配" class="headerlink" title="括号匹配"></a><a href="https://leetcode.com/problems/valid-parentheses/" target="_blank" rel="noopener">括号匹配</a></h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;string&#125; s</span></span><br><span class="line"><span class="comment"> * @return &#123;boolean&#125;</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">isValid</span>(<span class="params">s</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> stack = [];</span><br><span class="line">    <span class="keyword">const</span> mapping = &#123;</span><br><span class="line">        <span class="string">')'</span>: <span class="string">'('</span>,</span><br><span class="line">        <span class="string">'&#125;'</span>: <span class="string">'&#123;'</span>,</span><br><span class="line">        <span class="string">']'</span>: <span class="string">'['</span></span><br><span class="line">    &#125;;</span><br><span class="line">    <span class="keyword">for</span> (v <span class="keyword">of</span> s) &#123;</span><br><span class="line">        <span class="keyword">if</span> (v <span class="keyword">in</span> mapping) &#123;</span><br><span class="line">            <span class="keyword">let</span> top_el = stack.pop();</span><br><span class="line">            <span class="keyword">if</span> (top_el !== mapping[v]) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            stack.push(v)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> stack.length === <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2019/06/15/Stack/" data-id="cjxiz9uk0000dcrq8dn07i352" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-Array" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2019/06/15/Array/" class="article-date">
-  <time datetime="2019-06-15T07:30:30.000Z" itemprop="datePublished">2019-06-15</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2019/06/15/Array/">数组</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h1 id="1、数组的定义"><a href="#1、数组的定义" class="headerlink" title="1、数组的定义"></a>1、数组的定义</h1><ul>
-<li>一个存储元素的线性集合（collection），元素可以通过索引来任意存取，索引通常是数字，用来计算元素之间存储位置的偏移量。</li>
-</ul>
-<p>JavaScript 中的数组是一种特殊的对象，用来表示偏移量的索引是该对象的属性，索引可 能是整数。然而，这些数字索引在内部被转换为字符串类型，这是因为 JavaScript 对象中的属性名必须是字符串。数组在 JavaScript 中只是一种特殊的对象，所以效率上不如其他 语言中的数组高。</p>
-<h1 id="2、使用数组"><a href="#2、使用数组" class="headerlink" title="2、使用数组"></a>2、使用数组</h1><h3 id="创建数组"><a href="#创建数组" class="headerlink" title="创建数组"></a>创建数组</h3><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过 [] 操作符声明一个数组变量</span></span><br><span class="line">var numbers = [];</span><br><span class="line">var numbers = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>];</span><br></pre></td></tr></table></figure>
-<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调用 Array 的构造函数创建数组</span></span><br><span class="line"><span class="keyword">var</span> numbers = <span class="keyword">new</span> <span class="type">Array</span>(); </span><br><span class="line"><span class="keyword">var</span> numbers = <span class="keyword">new</span> <span class="type">Array</span>(<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>);  <span class="comment">//可以为构造函数传入一组元素作为数组的初始值</span></span><br><span class="line"><span class="keyword">var</span> numbers = <span class="keyword">new</span> <span class="type">Array</span>(<span class="number">10</span>);  <span class="comment">//可以只传入一个参数，用来指定数组的长度</span></span><br></pre></td></tr></table></figure>
-<h3 id="由字符串生成数组"><a href="#由字符串生成数组" class="headerlink" title="由字符串生成数组"></a>由字符串生成数组</h3><p>调用字符串对象的 split() 方法也可以生成数组。该方法通过一些常见的分隔符，比如分 隔单词的空格，将一个字符串分成几部分，并将每部分作为一个元素保存于一个新建的数 组中<br><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">var sentence</span> = <span class="string">"the quick brown fox jumped over the lazy dog"</span>; </span><br><span class="line"><span class="attribute">var words</span> = sentence.split(<span class="string">" "</span>);</span><br></pre></td></tr></table></figure></p>
-<h3 id="Array-from"><a href="#Array-from" class="headerlink" title="Array.from()"></a>Array.from()</h3><p>从类数组对象或者可迭代对象中创建一个新的数组实例<br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Array</span>.from(<span class="symbol">'foo</span>');  // <span class="keyword">Array</span> [<span class="string">"f"</span>, <span class="string">"o"</span>, <span class="string">"o"</span>]</span><br></pre></td></tr></table></figure></p>
-<h3 id="判断是否数组类型"><a href="#判断是否数组类型" class="headerlink" title="判断是否数组类型"></a>判断是否数组类型</h3><p>可以调用 Array.isArray() 来判断一个对象是否是数组</p>
-<h1 id="3、数组访问函数"><a href="#3、数组访问函数" class="headerlink" title="3、数组访问函数"></a>3、数组访问函数</h1><p>JavaScript 提供了一组用来访问数组元素的函数，这些函数返回目标数组的某种表现</p>
-<h3 id="查找元素"><a href="#查找元素" class="headerlink" title="查找元素"></a>查找元素</h3><p>indexOf() 和 lastIndexOf()函数是最常用的存取函数之一，用来查找传进来的参数在目标数组中是否存在。 如果目标数组包含该参数，就返回该元素在数组中的索引；如果不包含，就返回 -1。如果数组中包含多个相同的元素，indexOf() 函数总是返回第一个与参数相同的元素的索 引<br><figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> names = [<span class="string">"David"</span>, <span class="string">"Cynthia"</span>, <span class="string">"Raymond"</span>, <span class="string">"Clayton"</span>, <span class="string">"Jennifer"</span>]; </span><br><span class="line">names.indexOf(<span class="string">"Cynthia"</span>)  <span class="comment">// 1</span></span><br></pre></td></tr></table></figure></p>
-<p>find() 方法返回数组中满足提供的测试函数的第一个元素的值。否则返回undefined<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">arr</span><span class="selector-class">.find</span>(<span class="selector-tag">callback</span><span class="selector-attr">[, thisArg]</span>)</span><br></pre></td></tr></table></figure></p>
-<h3 id="数组的字符串表示"><a href="#数组的字符串表示" class="headerlink" title="数组的字符串表示"></a>数组的字符串表示</h3><p>有两个方法可以将数组转化为字符串：join() 和 toString()<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">arr</span><span class="selector-class">.join</span>(<span class="selector-attr">[separator]</span>)</span><br></pre></td></tr></table></figure></p>
-<h3 id="由已有数组创建新数组"><a href="#由已有数组创建新数组" class="headerlink" title="由已有数组创建新数组"></a>由已有数组创建新数组</h3><p>concat 方法可以合并多个数组创建一个新数组，slice() 方法截取一个数组的子集创建一个新数组<br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">array</span>.concat(value1[, value2[, ...[, valueN]]])</span><br><span class="line"><span class="keyword">array</span>.slice(<span class="keyword">begin</span>, <span class="keyword">end</span>);</span><br></pre></td></tr></table></figure></p>
-<h1 id="4、可变函数"><a href="#4、可变函数" class="headerlink" title="4、可变函数"></a>4、可变函数</h1><p>JavaScript 拥有一组可变函数，使用它们，可以不必引用数组中的某个元素，就能改变数组内容</p>
-<h3 id="为数组添加元素"><a href="#为数组添加元素" class="headerlink" title="为数组添加元素"></a>为数组添加元素</h3><p>有两个方法可以为数组添加元素：push() 和 unshift()。</p>
-<h3 id="从数组中删除元素"><a href="#从数组中删除元素" class="headerlink" title="从数组中删除元素"></a>从数组中删除元素</h3><p>使用 pop() 方法可以删除数组末尾的元素，shift() 方法可以删除数组的第一个元素</p>
-<h3 id="从数组中间位置添加和删除元素"><a href="#从数组中间位置添加和删除元素" class="headerlink" title="从数组中间位置添加和删除元素"></a>从数组中间位置添加和删除元素</h3><p>使用 splice() 方法<br><figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">array.splice(start<span class="comment">[, deleteCount<span class="comment">[, item1<span class="comment">[, item2<span class="comment">[, ...]</span>]</span>]</span>]</span>)</span><br></pre></td></tr></table></figure></p>
-<h3 id="为数组排序"><a href="#为数组排序" class="headerlink" title="为数组排序"></a>为数组排序</h3><p>reverse() 方法将数组中元素的位置颠倒,并返回该数组。该方法会改变原数组<br>sort()方法用原地算法对数组的元素进行排序，并返回数组<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">arr</span><span class="selector-class">.sort</span>(<span class="selector-attr">[compareFunction]</span>)</span><br></pre></td></tr></table></figure></p>
-<h1 id="5、迭代器方法"><a href="#5、迭代器方法" class="headerlink" title="5、迭代器方法"></a>5、迭代器方法</h1><p>迭代器方法方法对数组中的每个元素应用一个函数，可以返回一个 值、一组值或者一个新数组</p>
-<h3 id="不生成新数组的迭代器方法"><a href="#不生成新数组的迭代器方法" class="headerlink" title="不生成新数组的迭代器方法"></a>不生成新数组的迭代器方法</h3><p>forEach()方法接受一个函数作为参数，对数组中的每个元素使用该函数<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">arr</span><span class="selector-class">.forEach</span>(<span class="selector-tag">callback</span><span class="selector-attr">[, thisArg]</span>);</span><br></pre></td></tr></table></figure></p>
-<p>every() 方法测试数组的所有元素是否都通过了指定函数的测试<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">arr</span><span class="selector-class">.every</span>(<span class="selector-tag">callback</span><span class="selector-attr">[, thisArg]</span>)</span><br></pre></td></tr></table></figure></p>
-<p>some() 方法测试是否至少有一个元素通过由提供的函数实现的测试<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">arr</span><span class="selector-class">.some</span>(<span class="selector-tag">callback</span>(<span class="selector-tag">element</span><span class="selector-attr">[, index[, array]</span>])<span class="selector-attr">[, thisArg]</span>)</span><br></pre></td></tr></table></figure></p>
-<p>reduce() 方法对数组中的每个元素执行一个由您提供的reducer函数(升序执行)，将其结果汇总为单个返回值。reduceRight则反方向执行<br><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">arr</span><span class="selector-class">.reduce</span>(<span class="selector-tag">callback</span><span class="selector-attr">[, initialValue]</span>)</span><br></pre></td></tr></table></figure></p>
-<h3 id="生成新数组的迭代器方法"><a href="#生成新数组的迭代器方法" class="headerlink" title="生成新数组的迭代器方法"></a>生成新数组的迭代器方法</h3><p>map() 方法创建一个新数组，其结果是该数组中的每个元素都调用一个提供的函数后返回的结果<br><figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var new_array = arr.map(<span class="keyword">function</span> <span class="title">callback</span>(currentValue[, index[, array]]) &#123;</span><br><span class="line"> // <span class="keyword">Return</span> <span class="type">element</span> <span class="keyword">for</span> new_array &#125;[, </span><br><span class="line">thisArg])</span><br></pre></td></tr></table></figure></p>
-<p>filter() 方法创建一个新数组, 其包含通过所提供函数实现的测试的所有元素<br><figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> newArray = arr.filter(callback(element[, <span class="keyword">index</span>[, <span class="keyword">array</span>]])[, thisArg])</span><br></pre></td></tr></table></figure></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2019/06/15/Array/" data-id="cjxiz9uhk0001crq8oxtcv803" class="article-share-link">Share</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
-
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-docker-notes" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/06/25/docker-notes/" class="article-date">
-  <time datetime="2018-06-25T11:03:58.000Z" itemprop="datePublished">2018-06-25</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/25/docker-notes/">Docker学习笔记</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <hr>
-<h3 id="Docker镜像"><a href="#Docker镜像" class="headerlink" title="Docker镜像"></a>Docker镜像</h3><ul>
-<li><p>获取镜像</p>
-  <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">docker</span> <span class="selector-tag">pull</span> <span class="selector-tag">NAME</span><span class="selector-attr">[:TAG]</span></span><br><span class="line"><span class="selector-tag">e</span><span class="selector-class">.g</span>. <span class="selector-tag">docker</span> <span class="selector-tag">pull</span> <span class="selector-tag">ubuntu</span><span class="selector-pseudo">:latest</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看镜像信息</p>
-  <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br><span class="line"></span><br><span class="line"><span class="comment"># 详细</span></span><br><span class="line">docker <span class="keyword">inspect </span>ID</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>添加镜像标签</p>
-  <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">tag</span> <span class="title">TGNAME</span> NAME</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>搜寻镜像</p>
-  <figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker search <span class="keyword">NAME</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>删除镜像</p>
-  <figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi NAME<span class="string">|ID</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建镜像</p>
-  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 基于已有的容器创建 -m --author, -a --author, </span></span><br><span class="line">docker <span class="keyword">commit</span> [OPTIONS] <span class="keyword">CONTAINER</span> [REPOSITORY[:TAG]]</span><br><span class="line">e.g. docker <span class="keyword">commit</span> -m <span class="string">"Added a new file"</span> -a <span class="string">"jim.fun"</span> <span class="number">0</span>f99624 <span class="keyword">test</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>上传镜像</p>
-  <figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker push NAME:<span class="string">[TAG]</span></span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h3 id="Docker容器"><a href="#Docker容器" class="headerlink" title="Docker容器"></a>Docker容器</h3><ul>
-<li><p>启动容器</p>
-  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker run NAME</span><br><span class="line">e<span class="selector-class">.g</span>. docker run -t -<span class="selector-tag">i</span> ubuntu /bin/bash</span><br><span class="line">-t 分配一个伪终端并绑定到标准输入，-<span class="selector-tag">i</span> 让容器的标准输入保持打开, -d Daemonized 守护态运行</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>终止容器</p>
-  <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">stop</span> <span class="keyword">ID</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>重启容器</p>
-  <figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">docker restart ID</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>进入容器</p>
-  <figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    docker exec [<span class="keyword">OPTIONS</span>] ID</span><br><span class="line"></span><br><span class="line"><span class="comment">* 删除容器</span></span><br></pre></td></tr></table></figure>
-<p>  docker rm [OPTIONS] CONTAINER</p>
-</li>
-<li><p>导出和导入容器</p>
-<p>  windows env get some problems</p>
-</li>
-</ul>
-<h3 id="Docker仓库"><a href="#Docker仓库" class="headerlink" title="Docker仓库"></a>Docker仓库</h3><ul>
-<li><a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker HUb</a></li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2018/06/25/docker-notes/" data-id="cjxiz9ukd000hcrq882vcvxcw" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-javascript-stack" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/06/19/javascript-stack/" class="article-date">
-  <time datetime="2018-06-19T04:05:20.000Z" itemprop="datePublished">2018-06-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/19/javascript-stack/">Javascript Full Stack - concentrate</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <hr>
-<h3 id="Javascript-Basic"><a href="#Javascript-Basic" class="headerlink" title="Javascript Basic"></a>Javascript Basic</h3><ul>
-<li><p><a href="http://javascript.info/" target="_blank" rel="noopener">The modern Javascript Tutorial</a></p>
-</li>
-<li><p><a href="https://github.com/getify/You-Dont-Know-JS" target="_blank" rel="noopener">You-Dont-Know-JS</a></p>
-</li>
-<li><p><a href="http://es6-features.org/#Constants" target="_blank" rel="noopener">ECMAScript 6 — New Features</a></p>
-</li>
-<li><p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript" target="_blank" rel="noopener">mdn javascript</a></p>
-</li>
-<li><p>《professional javascript for web developers》</p>
-</li>
-</ul>
-<h3 id="node-js-Basic"><a href="#node-js-Basic" class="headerlink" title="node.js Basic"></a>node.js Basic</h3><ul>
-<li><p><a href="https://nodejs.org/dist/latest-v8.x/docs/api/" target="_blank" rel="noopener">Node.js API Docs</a></p>
-</li>
-<li><p>《深入浅出node.js》</p>
-</li>
-<li><p>《node.js in pratice》</p>
-</li>
-</ul>
-<h3 id="Css-amp-Html"><a href="#Css-amp-Html" class="headerlink" title="Css &amp; Html"></a>Css &amp; Html</h3><ul>
-<li><p><a href="https://www.w3schools.com/css/default.asp" target="_blank" rel="noopener">w3 css</a></p>
-</li>
-<li><p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTML" target="_blank" rel="noopener">mdn html</a></p>
-</li>
-</ul>
-<h3 id="React-A-JavaScript-library-for-building-user-interfaces"><a href="#React-A-JavaScript-library-for-building-user-interfaces" class="headerlink" title="React - A JavaScript library for building user interfaces"></a><a href="https://reactjs.org/" target="_blank" rel="noopener">React</a> - A JavaScript library for building user interfaces</h3><ul>
-<li><p><a href="https://reacttraining.com/react-router/" target="_blank" rel="noopener">React Router</a></p>
-</li>
-<li><p>UI Framework</p>
-<ul>
-<li><a href="https://ant.design/docs/react/introduce-cn" target="_blank" rel="noopener">Ant Design</a></li>
-</ul>
-</li>
-</ul>
-<h3 id="Koa-js-next-generation-web-framework-for-node-js"><a href="#Koa-js-next-generation-web-framework-for-node-js" class="headerlink" title="Koa.js - next generation web framework for node.js"></a><a href="https://koajs.com" target="_blank" rel="noopener">Koa.js</a> - next generation web framework for node.js</h3><ul>
-<li><p><a href="https://github.com/koajs/examples" target="_blank" rel="noopener">examples</a></p>
-</li>
-<li><p><a href="https://github.com/ellerbrock/awesome-koa" target="_blank" rel="noopener">awesome koa.js</a></p>
-</li>
-</ul>
-<h3 id="Desktop"><a href="#Desktop" class="headerlink" title="Desktop"></a>Desktop</h3><ul>
-<li><a href="https://electronjs.org/" target="_blank" rel="noopener">electron</a></li>
-</ul>
-<h3 id="Mobile"><a href="#Mobile" class="headerlink" title="Mobile"></a>Mobile</h3><ul>
-<li><a href="https://facebook.github.io/react-native/" target="_blank" rel="noopener">React Native</a> - Build native mobile apps using JavaScript and React</li>
-</ul>
-<h3 id="Project-Tools"><a href="#Project-Tools" class="headerlink" title="Project Tools"></a>Project Tools</h3><ul>
-<li><p><a href="https://webpack.js.org/" target="_blank" rel="noopener">webpack</a> - bundle </p>
-</li>
-<li><p><a href="https://babeljs.io/" target="_blank" rel="noopener">babel</a> - Babel is a JavaScript compiler</p>
-</li>
-<li><p>Code Style</p>
-<ul>
-<li><a href="https://editorconfig.org/" target="_blank" rel="noopener">EditorConconfig</a></li>
-</ul>
-</li>
-</ul>
-<h3 id="Version-Control"><a href="#Version-Control" class="headerlink" title="Version Control"></a>Version Control</h3><ul>
-<li><a href="https://git-scm.com/book/zh/v2" target="_blank" rel="noopener">Pro Git</a></li>
-</ul>
-<h3 id="Database"><a href="#Database" class="headerlink" title="Database"></a>Database</h3><ul>
-<li><a href="https://www.mongodb.com/cn" target="_blank" rel="noopener">mongodb</a></li>
-</ul>
-<h3 id="Dev-Tools"><a href="#Dev-Tools" class="headerlink" title="Dev Tools"></a>Dev Tools</h3><ul>
-<li><p><a href="http://billie66.github.io/TLCL/book/" target="_blank" rel="noopener">linux command line</a></p>
-</li>
-<li><p><a href="https://code.visualstudio.com/" target="_blank" rel="noopener">vscode</a> </p>
-</li>
-<li><p><a href="https://coolshell.cn/articles/5426.html" target="_blank" rel="noopener">vim</a></p>
-</li>
-<li><p><a href="http://wowubuntu.com/markdown/" target="_blank" rel="noopener">markdown</a></p>
-</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2018/06/19/javascript-stack/" data-id="cjxiz9ukg000jcrq8h91mgy5m" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-awesome-projects" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2018/06/09/awesome-projects/" class="article-date">
-  <time datetime="2018-06-09T12:52:47.000Z" itemprop="datePublished">2018-06-09</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/06/09/awesome-projects/">有趣的开源项目</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <hr>
-<h2 id="Command-Line-Tools"><a href="#Command-Line-Tools" class="headerlink" title="Command Line Tools"></a>Command Line Tools</h2><ul>
-<li><p><a href="https://github.com/jakubroztocil/httpie" target="_blank" rel="noopener">httpie</a> - Modern command line HTTP clients</p>
-</li>
-<li><p><a href="https://github.com/dbcli/mycli" target="_blank" rel="noopener">mycli</a> - A Terminal Client for MySQL with AutoCompletion and Syntax Highlighting</p>
-</li>
-</ul>
-<h2 id="Http"><a href="#Http" class="headerlink" title="Http"></a>Http</h2><ul>
-<li><a href="https://httpbin.org/" target="_blank" rel="noopener">httpbin.org</a> - HTTP Request &amp; Response Service, written in Python + Flask.</li>
-</ul>
-<h2 id="File-Managers"><a href="#File-Managers" class="headerlink" title="File Managers"></a>File Managers</h2><ul>
-<li><a href="https://github.com/coderaiser/cloudcmd" target="_blank" rel="noopener">Cloud Commander</a>(<a href="https://cloudcmd.io" target="_blank" rel="noopener">website</a>) - Orthodox web file manager with console and editor.</li>
-</ul>
-<h2 id="video"><a href="#video" class="headerlink" title="video"></a>video</h2><ul>
-<li><p><a href="https://github.com/mdhiggins/sickbeard_mp4_automator" target="_blank" rel="noopener">sickbeard_mp4_automator</a> - Automatically convert video files to a standardized mp4 format with proper metadata tagging to create a beautiful and uniform media library</p>
-</li>
-<li><p><a href="https://github.com/bgrins/videoconverter.js" target="_blank" rel="noopener">videoconverter.js</a> - Convert videos in your browser</p>
-</li>
-</ul>
-<h2 id="developer"><a href="#developer" class="headerlink" title="developer"></a>developer</h2><ul>
-<li><p><a href="https://www.meteor.com/" target="_blank" rel="noopener">meteor</a> - Meteor is an open source platform for web, mobile, and desktop.</p>
-</li>
-<li><p><a href="https://github.com/mongo-express/mongo-express" target="_blank" rel="noopener">mongo-express</a> - Web-based MongoDB admin interface, written with Node.js and express</p>
-</li>
-<li><p><a href="https://github.com/typicode/json-server" target="_blank" rel="noopener">json-server</a> - Get a full fake REST API with zero coding in less than 30 seconds (seriously)</p>
-</li>
-<li><p><a href="https://github.com/typicode/hotel" target="_blank" rel="noopener">hotel</a> - A simple process manager for developers. Start apps from your browser and access them using local domains</p>
-</li>
-<li><p><a href="https://brew.sh/" target="_blank" rel="noopener">brew</a> - The missing package manager for macOS</p>
-</li>
-<li><p><a href="https://github.com/swagger-api/swagger-node" target="_blank" rel="noopener">swagger</a> - Swagger module for node.js</p>
-</li>
-</ul>
-<h2 id="oprating-system"><a href="#oprating-system" class="headerlink" title="oprating system"></a>oprating system</h2><ul>
-<li><a href="https://github.com/NodeOS/NodeOS" target="_blank" rel="noopener">NodeOS</a> - Lightweight operating system using Node.js as userspace</li>
-</ul>
-<h2 id="Restful-API"><a href="#Restful-API" class="headerlink" title="Restful API"></a>Restful API</h2><ul>
-<li><a href="http://www.baugarten.me/node-restful/" target="_blank" rel="noopener">Node-restful</a> - Create awesome APIs using express</li>
-</ul>
-<h2 id="Crawer"><a href="#Crawer" class="headerlink" title="Crawer"></a>Crawer</h2><ul>
-<li><a href="https://scrapy.org/" target="_blank" rel="noopener">Scrapy</a> - An open source and collaborative framework for extracting the data you need from websites</li>
-</ul>
-<h2 id="AI"><a href="#AI" class="headerlink" title="AI"></a>AI</h2><ul>
-<li><a href="https://github.com/tensorflow/tensorflow" target="_blank" rel="noopener">tensorflow</a> - Computation using data flow graphs for scalable machine learning </li>
-</ul>
-<h2 id="Chrome-extensions"><a href="#Chrome-extensions" class="headerlink" title="Chrome extensions"></a>Chrome extensions</h2><ul>
-<li><a href="https://github.com/vdsabev/image-downloader" target="_blank" rel="noopener">image-downloader</a> - A Google Chrome browser extension that displays all images on a web page and allows the user to choose which ones to download.</li>
-</ul>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http:ythvg.github.com/2018/06/09/awesome-projects/" data-id="cjxiz9uk7000fcrq855bjh28m" class="article-share-link">Share</a>
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-
-
-  <nav id="page-nav">
-    
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
-  </nav>
-
 </section>
-        
-          <aside id="sidebar">
-  
-    
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
-    <div class="widget">
-      <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/data-structure-algorithm/">data structure & algorithm</a></li></ul>
-    </div>
-  </div>
+<hr class="divider" />
 
+<!-- ── Tutorials ───────────────────────────────────────────────────────────────── -->
+<div class="tutorials-bg" id="tutorials">
+  <section>
+    <div class="container">
+      <div class="section-label">实战教程</div>
+      <h2 class="section-title">从入门到精通</h2>
+      <p class="section-desc">点击展开每个教程，包含完整对话示例、代码片段和注意事项。</p>
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
-    <div class="widget tagcloud">
-      <a href="/tags/data-structure-algorithm/" style="font-size: 10px;">data structure & algorithm</a>
-    </div>
-  </div>
+      <div class="tutorial-list">
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">June 2019</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">June 2018</a></li></ul>
-    </div>
-  </div>
+        <!-- T1 ─ 探索陌生代码库 -->
+        <div class="tutorial-item open">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">1</div>
+            <span class="tutorial-title">快速读懂陌生代码库</span>
+            <span class="tutorial-tag tag-beginner">入门</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro">接手一个从未见过的项目时，不要瞎猜，让 Claude Code 帮你在 5 分钟内建立全局认知——架构、模块划分、数据流向全部梳理清楚。</div>
 
+            <div class="tut-section-title">第一步：获取全局视图</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>这个项目是做什么的？主要技术栈是什么？项目结构怎么组织的？
 
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2019/06/15/HashTable/">散列表</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/15/Map/">字典</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/15/Set/">集合</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/15/LinkedList/">链表</a>
-          </li>
-        
-          <li>
-            <a href="/2019/06/15/Queue/">队列</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
+<span class="hl-purple">Claude：</span>
+● 读取 package.json, README.md...
+● 扫描 src/ 目录结构...
 
-  
-</aside>
-        
+这是一个 <span class="hl-green">电商后台 REST API</span>，基于：
+  - Node.js 20 + TypeScript + Express 4
+  - 数据库：PostgreSQL（Prisma ORM）
+  - 缓存：Redis（ioredis）
+  - 认证：JWT + Refresh Token
+
+<span class="hl-blue">目录结构：</span>
+  src/
+  ├── routes/      API 路由定义
+  ├── controllers/ 请求处理逻辑
+  ├── services/    业务逻辑层
+  ├── models/      Prisma 数据模型
+  ├── middlewares/ 鉴权、错误处理等
+  └── utils/       通用工具函数
+
+启动命令：npm run dev（端口 3000）</code></pre>
+            </div>
+
+            <div class="tut-section-title">第二步：深入具体业务流程</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>用户下单的完整流程是怎样的？从 API 请求到数据库写入，帮我梳理每一步
+
+<span class="hl-purple">Claude：</span>
+● 读取 src/routes/orders.ts...
+● 读取 src/controllers/orderController.ts...
+● 读取 src/services/orderService.ts...
+
+<span class="hl-blue">下单流程（POST /api/orders）：</span>
+
+1. <span class="hl-green">路由层</span>  src/routes/orders.ts:18
+   → 鉴权中间件 verifyToken()
+   → 请求体校验 validateOrder()
+
+2. <span class="hl-green">控制器</span>  src/controllers/orderController.ts:42
+   → 解构 userId, items, addressId
+   → 调用 orderService.create()
+
+3. <span class="hl-green">服务层</span>  src/services/orderService.ts:67
+   → 锁定库存（Redis 分布式锁）
+   → 计算总价（含优惠券）
+   → 写入 Order + OrderItem 表（事务）
+   → 发布 order.created 事件
+
+4. <span class="hl-green">事件处理</span>  src/events/orderEvents.ts:23
+   → 发送确认邮件
+   → 通知仓库系统</code></pre>
+            </div>
+
+            <div class="tut-section-title">第三步：定位潜在问题</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>这个项目有哪些明显的技术债或潜在风险？
+
+<span class="hl-purple">Claude：</span>扫描代码后发现以下问题：
+
+⚠ <span class="hl-yellow">高优先级</span>
+  - src/services/paymentService.ts:134 — API Key 硬编码在源码中
+  - src/routes/admin.ts — 缺少权限校验，任意登录用户可访问
+
+⚡ <span class="hl-orange">性能问题</span>
+  - orderController.ts:89 — N+1 查询问题，循环内调用数据库
+  - 没有使用数据库连接池，高并发下可能耗尽连接
+
+📝 <span class="hl-blue">代码质量</span>
+  - utils.ts 超过 900 行，建议按功能拆分
+  - 缺少统一错误处理，各处 catch 逻辑不一致</code></pre>
+            </div>
+
+            <div class="callout callout-tip">
+              <span class="callout-icon">💡</span>
+              <span class="callout-text">问完全局视图后，再针对你最关心的模块深挖。Claude 会精确定位到文件名和行号，方便你直接跳转阅读。</span>
+            </div>
+
+            <div class="tut-section-title">常用探索问题模板</div>
+            <ul class="checklist">
+              <li>「这个项目的整体架构是怎样的？」</li>
+              <li>「X 功能的入口在哪里？帮我梳理完整调用链」</li>
+              <li>「哪些地方有安全风险或明显的性能问题？」</li>
+              <li>「如何在本地运行和调试这个项目？」</li>
+              <li>「这个项目的测试覆盖情况如何？」</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- T2 ─ 修复 Bug -->
+        <div class="tutorial-item">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">2</div>
+            <span class="tutorial-title">调试与修复 Bug</span>
+            <span class="tutorial-tag tag-beginner">入门</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro">把完整的报错信息、日志直接粘给 Claude，它会读取相关文件、定位根因、给出修复代码，并在修复后运行测试验证。</div>
+
+            <div class="tut-section-title">场景一：运行时类型错误</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例 · TypeError</span></div>
+              <pre><code><span class="hl-orange">你：</span>测试报错了，帮我看看：
+
+TypeError: Cannot read properties of undefined (reading 'id')
+    at UserService.getProfile (src/services/user.ts:58:30)
+    at async UserController.profile (src/controllers/user.ts:24:20)
+
+<span class="hl-purple">Claude：</span>
+● 读取 src/services/user.ts...
+
+问题定位：第 58 行直接访问了 user.id，但 findUnique() 在
+用户不存在时返回 null，而不是抛异常。
+
+<span class="hl-blue">修复前（第 55-60 行）：</span>
+  const user = await prisma.user.findUnique({ where: { id } });
+  return { id: user.id, name: user.name };  // ← 未做 null 检查
+
+<span class="hl-green">修复后：</span>
+  const user = await prisma.user.findUnique({ where: { id } });
+  if (!user) throw new AppError('用户不存在', 404);
+  return { id: user.id, name: user.name };
+
+同时更新 user.test.ts，补充「用户不存在时返回 404」测试用例。
+执行修改？
+
+<span class="hl-orange">你：</span>好的
+
+<span class="hl-purple">Claude：</span>
+● 修改 src/services/user.ts ✓
+● 更新 tests/user.test.ts ✓
+● 运行 npm test...
+
+  ✓ user service > getProfile > 正常用户 (12ms)
+  ✓ user service > getProfile > 用户不存在返回404 (8ms)
+
+  全部通过 ✓</code></pre>
+            </div>
+
+            <div class="tut-section-title">场景二：异步竞态问题</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例 · 并发 Bug</span></div>
+              <pre><code><span class="hl-orange">你：</span>高并发压测时，库存会超卖，但单次测试完全正常。
+这是库存扣减的代码：
+
+async function deductStock(productId: string, qty: number) {
+  const product = await Product.findById(productId);
+  if (product.stock &lt; qty) throw new Error('库存不足');
+  await Product.update({ stock: product.stock - qty });
+}
+
+<span class="hl-purple">Claude：</span>
+这是经典的 <span class="hl-yellow">TOCTOU（检查时间与使用时间不一致）</span>竞态问题。
+
+并发场景：两个请求同时读到 stock=1，都通过了检查，
+都执行了扣减，结果 stock 变成 -1。
+
+<span class="hl-green">方案一：数据库原子更新（推荐）</span>
+  await Product.update(
+    { stock: { decrement: qty } },
+    { where: { id: productId, stock: { gte: qty } } }
+  );
+  // 利用数据库行锁，只有 stock >= qty 时才更新
+  // 检查影响行数：0 表示库存不足
+
+<span class="hl-blue">方案二：Redis 分布式锁</span>
+  const lock = await redisLock.acquire(`stock:${productId}`);
+  try {
+    // ... 串行执行检查+扣减
+  } finally {
+    await lock.release();
+  }
+
+方案一性能更好，帮你实现？</code></pre>
+            </div>
+
+            <div class="tut-section-title">场景三：找不到 Bug 时</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例 · 无明显报错</span></div>
+              <pre><code><span class="hl-orange">你：</span>用户登录成功，但下次请求又变成未登录状态，Cookie 看起来是对的，
+不知道哪里有问题
+
+<span class="hl-purple">Claude：</span>
+● 读取 src/middlewares/auth.ts...
+● 读取 src/utils/cookie.ts...
+● 读取 src/config/index.ts...
+
+发现问题：
+
+1. cookie 设置时 domain 是 "api.example.com"
+2. 但前端请求来自 "www.example.com"
+
+Cookie 的 domain 不匹配，浏览器不会发送它。
+
+修复：将 cookie domain 改为 ".example.com"（注意前面的点，
+表示匹配所有子域名），或者去掉 domain 限制。
+
+另外注意 SameSite 设置：
+  - 前后端同域 → SameSite: Strict
+  - 前后端跨子域 → SameSite: Lax
+  - 前后端完全跨域 → SameSite: None; Secure</code></pre>
+            </div>
+
+            <div class="callout callout-warn">
+              <span class="callout-icon">⚠️</span>
+              <span class="callout-text">粘贴错误信息时，带上完整的堆栈追踪。只告诉 Claude「报错了」而不贴错误信息，会显著降低诊断准确率。</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- T3 ─ 添加新功能 -->
+        <div class="tutorial-item">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">3</div>
+            <span class="tutorial-title">添加新功能（端到端完整示例）</span>
+            <span class="tutorial-tag tag-intermediate">进阶</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro">以「给商品列表接口加分页 + 筛选功能」为例，展示 Claude Code 如何从读懂现有代码到完整实现一个新功能的全流程。</div>
+
+            <div class="tut-section-title">需求描述</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>给 GET /api/products 接口加上：
+1. 分页：page（默认1）、pageSize（默认20，最大100）
+2. 筛选：category、minPrice、maxPrice、inStock
+3. 排序：sortBy（price/createdAt）、order（asc/desc）
+4. 返回格式：{ data, total, page, pageSize, totalPages }
+不引入新依赖，同步写测试。
+
+<span class="hl-purple">Claude：</span>
+● 读取 src/routes/products.ts...
+● 读取 src/controllers/productController.ts...
+● 读取 src/services/productService.ts...
+● 读取 tests/products.test.ts...
+
+理解现有代码结构后，我将修改以下文件：
+
+  src/controllers/productController.ts — 解析查询参数
+  src/services/productService.ts      — 构造 Prisma 查询
+  tests/products.test.ts              — 新增测试用例
+
+开始执行...</code></pre>
+            </div>
+
+            <div class="tut-section-title">Claude 生成的实际代码</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">TypeScript · productService.ts（关键片段）</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code><span class="hl-blue">interface</span> ProductQuery {
+  page: <span class="hl-purple">number</span>;
+  pageSize: <span class="hl-purple">number</span>;
+  category?: <span class="hl-purple">string</span>;
+  minPrice?: <span class="hl-purple">number</span>;
+  maxPrice?: <span class="hl-purple">number</span>;
+  inStock?: <span class="hl-purple">boolean</span>;
+  sortBy?: <span class="hl-yellow">'price'</span> | <span class="hl-yellow">'createdAt'</span>;
+  order?: <span class="hl-yellow">'asc'</span> | <span class="hl-yellow">'desc'</span>;
+}
+
+<span class="hl-blue">async function</span> <span class="hl-green">listProducts</span>(q: ProductQuery) {
+  <span class="hl-blue">const</span> where: Prisma.ProductWhereInput = {};
+  <span class="hl-blue">if</span> (q.category) where.category = q.category;
+  <span class="hl-blue">if</span> (q.inStock !== <span class="hl-purple">undefined</span>) where.stock = q.inStock ? { gt: <span class="hl-yellow">0</span> } : <span class="hl-yellow">0</span>;
+  <span class="hl-blue">if</span> (q.minPrice || q.maxPrice) {
+    where.price = {};
+    <span class="hl-blue">if</span> (q.minPrice) where.price.gte = q.minPrice;
+    <span class="hl-blue">if</span> (q.maxPrice) where.price.lte = q.maxPrice;
+  }
+
+  <span class="hl-blue">const</span> skip = (q.page - <span class="hl-yellow">1</span>) * q.pageSize;
+  <span class="hl-blue">const</span> [data, total] = <span class="hl-blue">await</span> prisma.$transaction([
+    prisma.product.findMany({
+      where, skip, take: q.pageSize,
+      orderBy: { [q.sortBy ?? <span class="hl-yellow">'createdAt'</span>]: q.order ?? <span class="hl-yellow">'desc'</span> },
+    }),
+    prisma.product.count({ where }),
+  ]);
+
+  <span class="hl-blue">return</span> {
+    data, total, page: q.page,
+    pageSize: q.pageSize,
+    totalPages: Math.ceil(total / q.pageSize),
+  };
+}</code></pre>
+            </div>
+
+            <div class="tut-section-title">自动生成的测试用例</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">TypeScript · products.test.ts（片段）</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code>describe(<span class="hl-yellow">'GET /api/products'</span>, () => {
+  it(<span class="hl-yellow">'默认返回第1页，每页20条'</span>, <span class="hl-blue">async</span> () => {
+    <span class="hl-blue">const</span> res = <span class="hl-blue">await</span> request(app).get(<span class="hl-yellow">'/api/products'</span>);
+    expect(res.body.page).toBe(<span class="hl-yellow">1</span>);
+    expect(res.body.pageSize).toBe(<span class="hl-yellow">20</span>);
+    expect(res.body.data).toHaveLength(<span class="hl-yellow">20</span>);
+  });
+
+  it(<span class="hl-yellow">'按分类筛选'</span>, <span class="hl-blue">async</span> () => {
+    <span class="hl-blue">const</span> res = <span class="hl-blue">await</span> request(app)
+      .get(<span class="hl-yellow">'/api/products?category=electronics'</span>);
+    expect(res.body.data.every(p => p.category === <span class="hl-yellow">'electronics'</span>)).toBe(<span class="hl-yellow">true</span>);
+  });
+
+  it(<span class="hl-yellow">'pageSize 超过100时限制为100'</span>, <span class="hl-blue">async</span> () => {
+    <span class="hl-blue">const</span> res = <span class="hl-blue">await</span> request(app).get(<span class="hl-yellow">'/api/products?pageSize=200'</span>);
+    expect(res.body.pageSize).toBe(<span class="hl-yellow">100</span>);
+  });
+
+  it(<span class="hl-yellow">'价格范围筛选'</span>, <span class="hl-blue">async</span> () => {
+    <span class="hl-blue">const</span> res = <span class="hl-blue">await</span> request(app)
+      .get(<span class="hl-yellow">'/api/products?minPrice=100&amp;maxPrice=500'</span>);
+    res.body.data.forEach(p => {
+      expect(p.price).toBeGreaterThanOrEqual(<span class="hl-yellow">100</span>);
+      expect(p.price).toBeLessThanOrEqual(<span class="hl-yellow">500</span>);
+    });
+  });
+});</code></pre>
+            </div>
+
+            <div class="callout callout-tip">
+              <span class="callout-icon">💡</span>
+              <span class="callout-text">需求描述越具体，Claude 输出质量越高。明确说明参数名、默认值、限制、返回格式，可以节省大量来回确认的时间。</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- T4 ─ Git 工作流 -->
+        <div class="tutorial-item">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">4</div>
+            <span class="tutorial-title">Git 工作流：Commit、PR、Code Review</span>
+            <span class="tutorial-tag tag-intermediate">进阶</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro">Claude Code 深度集成 Git 和 GitHub CLI，可以帮你分析变更、写 commit message、创建 PR 并完成代码审查，形成完整工程工作流。</div>
+
+            <div class="tut-section-title">用 /commit 自动提交</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">完整 commit 工作流</span></div>
+              <pre><code><span class="hl-gray"># 完成功能开发后，在 Claude Code 中输入：</span>
+/commit
+
+<span class="hl-purple">Claude：</span>
+● git status...
+  修改：src/services/productService.ts
+  修改：src/controllers/productController.ts
+  修改：tests/products.test.ts
+
+● git diff 分析变更内容...
+
+起草的 commit message：
+
+  <span class="hl-green">feat(products): 添加分页、筛选和排序功能</span>
+
+  - 支持 page/pageSize 参数，pageSize 上限 100
+  - 新增 category/minPrice/maxPrice/inStock 筛选
+  - 支持按 price/createdAt 排序（asc/desc）
+  - 返回 total、totalPages 元数据
+  - 补充 12 个测试用例，全部通过
+
+确认提交？
+
+<span class="hl-orange">你：</span>确认
+
+<span class="hl-purple">Claude：</span>git commit 成功 ✓  (a3f9c12)</code></pre>
+            </div>
+
+            <div class="tut-section-title">创建 Pull Request</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">创建 PR 并自动填写说明</span></div>
+              <pre><code><span class="hl-orange">你：</span>帮我创建 PR，base 分支是 main，目标是让这个功能合入
+
+<span class="hl-purple">Claude：</span>
+● 分析 git log（共 3 个 commit）...
+● 检查远端分支状态...
+
+推送当前分支到 origin...
+  git push -u origin feat/product-pagination ✓
+
+创建 PR：
+  标题：feat: 商品列表接口支持分页、筛选和排序
+
+  正文草稿：
+  ## 变更说明
+  为 GET /api/products 接口添加以下功能：
+  - 分页：page / pageSize（默认 1 / 20，上限 100）
+  - 筛选：category / minPrice / maxPrice / inStock
+  - 排序：sortBy（price|createdAt）+ order（asc|desc）
+
+  ## 接口变更
+  新增查询参数，响应格式新增 total / totalPages 字段，
+  完全向后兼容（现有调用不受影响）。
+
+  ## 测试
+  - 新增 12 个单元测试，覆盖所有参数组合
+  - 全部通过 ✓
+
+确认创建？
+
+<span class="hl-orange">你：</span>确认
+
+<span class="hl-purple">Claude：</span>PR 已创建 → https://github.com/xxx/xxx/pull/42 ✓</code></pre>
+            </div>
+
+            <div class="tut-section-title">Code Review 辅助</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">让 Claude review 当前变更</span></div>
+              <pre><code><span class="hl-orange">你：</span>/review
+
+<span class="hl-purple">Claude：</span>
+● 分析 git diff...
+
+<span class="hl-yellow">⚠ 发现 2 个问题：</span>
+
+1. <span class="hl-yellow">安全</span> — productController.ts:34
+   sortBy 参数直接拼入 orderBy，可能有 SQL 注入风险。
+   建议：用白名单校验
+   <span class="hl-green">const ALLOWED_SORT = ['price', 'createdAt'] as const;</span>
+   <span class="hl-green">if (!ALLOWED_SORT.includes(sortBy)) throw new Error(...);</span>
+
+2. <span class="hl-blue">性能</span> — productService.ts:51
+   count 查询没有利用索引，数据量大时会全表扫描。
+   建议：在 category + price 上建联合索引。
+
+<span class="hl-green">✓ 其余代码质量良好</span></code></pre>
+            </div>
+
+            <div class="callout callout-warn">
+              <span class="callout-icon">⚠️</span>
+              <span class="callout-text">Claude 不会主动执行 git push 或 force push，需要你明确要求。这是安全设计——推送到远端是不可逆的共享操作。</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- T5 ─ 重构 -->
+        <div class="tutorial-item">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">5</div>
+            <span class="tutorial-title">代码重构与技术债清理</span>
+            <span class="tutorial-tag tag-intermediate">进阶</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro">重构是高风险操作，最怕改着改着就改坏了。Claude Code 每次重构前都会先读懂代码、制定安全方案，并在完成后运行测试确认没有破坏任何东西。</div>
+
+            <div class="tut-section-title">场景一：拆分过大的文件</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>src/utils.ts 已经 900 行了，按功能拆分，
+但现有的 import 路径（import { ... } from '../utils'）不能改
+
+<span class="hl-purple">Claude：</span>
+● 分析 src/utils.ts 各函数用途和依赖关系...
+● 扫描项目中所有 import '../utils' 的地方...（共 23 处）
+
+建议拆分方案：
+
+  src/utils/
+  ├── date.ts      formatDate, parseDate, diffDays (180行)
+  ├── string.ts    capitalize, slugify, truncate   (210行)
+  ├── number.ts    formatCurrency, round, clamp    (120行)
+  ├── request.ts   buildQuery, parseHeaders        (160行)
+  └── index.ts     重导出所有函数（保持原路径兼容）
+
+index.ts 内容：
+  export * from './date';
+  export * from './string';
+  export * from './number';
+  export * from './request';
+
+这样所有 import { formatDate } from '../utils' 无需任何修改。
+执行？</code></pre>
+            </div>
+
+            <div class="tut-section-title">场景二：消除重复代码</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">重构前后对比</span></div>
+              <div class="diff-grid">
+                <div class="diff-before code-block" style="margin:0">
+                  <div class="diff-label">重构前（每个 controller 各写一遍）</div>
+                  <pre><code><span class="hl-gray">// userController.ts</span>
+try {
+  const users = await UserService.list();
+  res.json({ success: true, data: users });
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ success: false,
+    message: err.message });
+}
+
+<span class="hl-gray">// productController.ts</span>
+try {
+  const products = await ProductService.list();
+  res.json({ success: true, data: products });
+} catch (err) {
+  console.error(err);
+  res.status(500).json({ success: false,
+    message: err.message });
+}</code></pre>
+                </div>
+                <div class="diff-after code-block" style="margin:0">
+                  <div class="diff-label">重构后（统一封装）</div>
+                  <pre><code><span class="hl-gray">// middlewares/asyncHandler.ts</span>
+<span class="hl-blue">export const</span> asyncHandler =
+  (fn: RequestHandler) =>
+  (req, res, next) => {
+    Promise.resolve(fn(req, res, next))
+      .catch(next);
+  };
+
+<span class="hl-gray">// userController.ts（重构后）</span>
+<span class="hl-blue">export const</span> listUsers = asyncHandler(
+  <span class="hl-blue">async</span> (req, res) => {
+    <span class="hl-blue">const</span> users = <span class="hl-blue">await</span> UserService.list();
+    res.json({ success: <span class="hl-yellow">true</span>, data: users });
+  }
+);</code></pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="tut-section-title">场景三：将回调改为 async/await</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>src/legacy/ 下有很多老的 callback 风格代码，
+帮我改成 async/await，但不要改函数签名
+
+<span class="hl-purple">Claude：</span>
+● 扫描 src/legacy/ 目录，找到 8 个文件使用 callback 模式...
+
+处理 src/legacy/fileHelper.ts：
+  发现 readFile, writeFile, parseCSV 3 个函数
+
+注意：第 45 行的 EventEmitter 回调不适合改为 async/await，
+保留不动。其余 6 处全部可以安全改写。
+
+改完后运行现有测试验证行为不变...
+  ✓ 全部 34 个测试通过</code></pre>
+            </div>
+
+            <div class="callout callout-tip">
+              <span class="callout-icon">💡</span>
+              <span class="callout-text">重构时记得加上约束条件，例如「保持 API 不变」「不引入新依赖」「改完后运行测试」。Claude 会主动遵守这些约束。</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- T6 ─ 测试 -->
+        <div class="tutorial-item">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">6</div>
+            <span class="tutorial-title">编写测试：单元测试 & 集成测试</span>
+            <span class="tutorial-tag tag-intermediate">进阶</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro">描述你想测什么，Claude 会读懂被测代码逻辑，帮你覆盖正常路径、边界情况和错误路径，生成真正有价值的测试用例。</div>
+
+            <div class="tut-section-title">为现有函数补充测试</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>src/services/couponService.ts 的 applyCoupon 函数
+还没有测试，帮我写完整的测试，覆盖所有边界情况
+
+<span class="hl-purple">Claude：</span>
+● 读取 src/services/couponService.ts...
+
+分析出 applyCoupon 的逻辑分支：
+  ✓ 正常使用优惠券（固定金额 / 百分比折扣）
+  ✓ 优惠券已过期
+  ✓ 优惠券已使用次数耗尽
+  ✓ 订单金额未达到最低消费
+  ✓ 优惠券不存在
+  ✓ 同一用户重复使用
+  ✓ 优惠券折扣超过订单金额（不能负数）
+  ✓ 并发使用同一张优惠券（需测试幂等性）
+
+生成 8 个测试用例...</code></pre>
+            </div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">TypeScript · coupon.test.ts（生成结果）</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code>describe(<span class="hl-yellow">'CouponService.applyCoupon'</span>, () => {
+  <span class="hl-blue">let</span> coupon: Coupon;
+
+  beforeEach(<span class="hl-blue">async</span> () => {
+    coupon = <span class="hl-blue">await</span> createTestCoupon({
+      code: <span class="hl-yellow">'SAVE20'</span>,
+      type: <span class="hl-yellow">'percent'</span>,
+      value: <span class="hl-yellow">20</span>,           <span class="hl-gray">// 八折</span>
+      minAmount: <span class="hl-yellow">100</span>,      <span class="hl-gray">// 满100可用</span>
+      maxUses: <span class="hl-yellow">10</span>,
+      expiresAt: dayjs().add(<span class="hl-yellow">7</span>, <span class="hl-yellow">'day'</span>).toDate(),
+    });
+  });
+
+  it(<span class="hl-yellow">'正常使用百分比折扣券'</span>, <span class="hl-blue">async</span> () => {
+    <span class="hl-blue">const</span> result = <span class="hl-blue">await</span> applyCoupon(<span class="hl-yellow">'SAVE20'</span>, <span class="hl-yellow">200</span>, userId);
+    expect(result.discount).toBe(<span class="hl-yellow">40</span>);    <span class="hl-gray">// 200 * 20%</span>
+    expect(result.finalAmount).toBe(<span class="hl-yellow">160</span>);
+  });
+
+  it(<span class="hl-yellow">'优惠券已过期时抛出错误'</span>, <span class="hl-blue">async</span> () => {
+    <span class="hl-blue">await</span> updateCoupon(coupon.id, {
+      expiresAt: dayjs().subtract(<span class="hl-yellow">1</span>, <span class="hl-yellow">'day'</span>).toDate()
+    });
+    <span class="hl-blue">await</span> expect(applyCoupon(<span class="hl-yellow">'SAVE20'</span>, <span class="hl-yellow">200</span>, userId))
+      .rejects.toThrow(<span class="hl-yellow">'优惠券已过期'</span>);
+  });
+
+  it(<span class="hl-yellow">'未满最低消费时拒绝使用'</span>, <span class="hl-blue">async</span> () => {
+    <span class="hl-blue">await</span> expect(applyCoupon(<span class="hl-yellow">'SAVE20'</span>, <span class="hl-yellow">80</span>, userId))
+      .rejects.toThrow(<span class="hl-yellow">'订单金额未达到最低消费 ¥100'</span>);
+  });
+
+  it(<span class="hl-yellow">'折扣不超过订单金额（最终金额不为负）'</span>, <span class="hl-blue">async</span> () => {
+    <span class="hl-blue">await</span> updateCoupon(coupon.id, { type: <span class="hl-yellow">'fixed'</span>, value: <span class="hl-yellow">500</span> });
+    <span class="hl-blue">const</span> result = <span class="hl-blue">await</span> applyCoupon(<span class="hl-yellow">'SAVE20'</span>, <span class="hl-yellow">100</span>, userId);
+    expect(result.finalAmount).toBe(<span class="hl-yellow">0</span>);  <span class="hl-gray">// 不能是负数</span>
+  });
+});</code></pre>
+            </div>
+
+            <div class="tut-section-title">检查测试覆盖率并补全</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>运行覆盖率检查后，orderService 只有 45% 覆盖率，
+帮我把关键路径补全到 80% 以上
+
+<span class="hl-purple">Claude：</span>
+● 运行 npm run test:coverage...
+● 分析覆盖率报告...
+
+未覆盖的关键路径：
+  src/services/orderService.ts
+  - 第 89-102 行：订单取消逻辑（0% 覆盖）
+  - 第 134-156 行：退款处理（0% 覆盖）
+  - 第 178 行：并发下单冲突处理（0% 覆盖）
+
+为这 3 个场景新增测试...
+完成后覆盖率：82.4% ✓</code></pre>
+            </div>
+
+            <div class="callout callout-info">
+              <span class="callout-icon">ℹ️</span>
+              <span class="callout-text">不要只追求覆盖率数字。让 Claude 重点覆盖业务核心路径、错误处理和边界情况，比机械地提高行覆盖率更有价值。</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- T7 ─ CLAUDE.md -->
+        <div class="tutorial-item">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">7</div>
+            <span class="tutorial-title">CLAUDE.md：给 Claude 写项目说明书</span>
+            <span class="tutorial-tag tag-advanced">高级</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro"><code>CLAUDE.md</code> 是放在项目根目录的说明文件，每次启动 Claude Code 都会自动读取。把项目背景、技术规范、禁止事项写进去，省去每次重复解释的麻烦。</div>
+
+            <div class="tut-section-title">快速生成模板</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>/init
+
+<span class="hl-purple">Claude：</span>
+● 分析项目结构、package.json、现有代码...
+已生成 CLAUDE.md，包含：项目简介、技术栈、目录结构、
+开发命令、代码规范。请检查并补充你的特殊要求。</code></pre>
+            </div>
+
+            <div class="tut-section-title">完整 CLAUDE.md 示例</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">CLAUDE.md · 推荐写法</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code><span class="hl-gray"># 项目说明</span>
+这是「XX 电商平台」的后端 API 服务，Node.js + TypeScript。
+对接移动端 App 和 PC 管理后台，日均请求量约 50 万。
+
+<span class="hl-gray">## 技术栈</span>
+- 运行时：Node.js 20 LTS
+- 框架：Express 4（不迁移到其他框架）
+- 数据库：PostgreSQL 15，ORM 用 Prisma
+- 缓存：Redis 7，客户端用 ioredis
+- 测试：Vitest + Supertest，运行命令：npm test
+- CI：GitHub Actions（.github/workflows/ci.yml）
+
+<span class="hl-gray">## 目录结构</span>
+src/
+├── routes/      路由（只定义路径和中间件顺序）
+├── controllers/ 解析请求，调用 service
+├── services/    业务逻辑（不直接操作数据库）
+├── repositories/数据库操作（唯一可以用 Prisma 的层）
+├── middlewares/ 认证、限流、错误处理
+└── utils/       纯函数工具
+
+<span class="hl-gray">## 重要约束（必须遵守）</span>
+- 禁止在 controllers/ 直接使用 Prisma，必须通过 repositories/
+- 所有新 API 必须有对应的 Vitest 测试，覆盖正常+错误路径
+- 不引入新 npm 依赖，需要时先问我
+- 不修改数据库 schema，迁移文件由专人管理
+- 密钥和配置全部从环境变量读取，不硬编码
+
+<span class="hl-gray">## 常用命令</span>
+- 本地开发：npm run dev（热重载）
+- 运行测试：npm test
+- 类型检查：npm run typecheck
+- 代码格式化：npm run lint:fix
+
+<span class="hl-gray">## 注意事项</span>
+- 生产环境用 PM2 集群模式，代码必须无状态
+- 所有时间存储 UTC，输出时按用户时区转换
+- 金额全部用整数（分为单位），不用浮点数</code></pre>
+            </div>
+
+            <div class="tut-section-title">让 Claude 自动更新记忆</div>
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">对话示例</span></div>
+              <pre><code><span class="hl-orange">你：</span>记住：我们最近把测试框架从 Jest 迁移到了 Vitest，
+以后生成测试代码都用 Vitest 的语法
+
+<span class="hl-purple">Claude：</span>已记录。
+更新 CLAUDE.md → 测试部分：jest → vitest
+以后生成的测试将使用 import { describe, it, expect } from 'vitest'。</code></pre>
+            </div>
+
+            <div class="callout callout-tip">
+              <span class="callout-icon">💡</span>
+              <span class="callout-text">CLAUDE.md 可以提交到 Git，让团队所有成员共享同一套 Claude 使用规范，保证 AI 生成代码风格的一致性。</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- T8 ─ MCP -->
+        <div class="tutorial-item">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">8</div>
+            <span class="tutorial-title">MCP：让 Claude 直连数据库和外部工具</span>
+            <span class="tutorial-tag tag-advanced">高级</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro">Model Context Protocol（MCP）是 Claude 的扩展协议，通过配置 MCP Server，Claude 可以直接查询数据库、读取文件系统、调用第三方 API，大幅扩展能力边界。</div>
+
+            <div class="tut-section-title">配置文件位置</div>
+            <div class="file-tree">
+<span class="ft-dir">~/.claude/</span>
+├── <span class="ft-file">settings.json</span>      &lt;— 全局 MCP 配置（所有项目生效）
+└── <span class="ft-dir">projects/</span>
+
+<span class="ft-dir">./</span>（项目根目录）
+└── <span class="ft-file">.claude/settings.json</span>  &lt;— 项目级 MCP 配置（仅此项目生效）
+            </div>
+
+            <div class="tut-section-title">连接 PostgreSQL 数据库</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">~/.claude/settings.json</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code>{
+  <span class="hl-blue">"mcpServers"</span>: {
+    <span class="hl-blue">"postgres"</span>: {
+      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
+      <span class="hl-blue">"args"</span>: [<span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-postgres"</span>],
+      <span class="hl-blue">"env"</span>: {
+        <span class="hl-blue">"DATABASE_URL"</span>: <span class="hl-yellow">"postgresql://user:pass@localhost:5432/mydb"</span>
+      }
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="code-block">
+              <div class="code-header"><span class="code-lang">连接后可以直接这样问</span></div>
+              <pre><code><span class="hl-orange">你：</span>查一下最近 7 天新注册但还没有下单的用户有多少？
+
+<span class="hl-purple">Claude：</span>
+● 查询数据库...
+
+SELECT COUNT(*) FROM users u
+WHERE u.created_at >= NOW() - INTERVAL '7 days'
+  AND NOT EXISTS (
+    SELECT 1 FROM orders o WHERE o.user_id = u.id
+  );
+
+结果：1,247 名用户（占新注册用户的 38.2%）
+
+<span class="hl-orange">你：</span>帮我找出这些用户中，浏览过商品但没加购物车的，
+这是需要重点运营的目标用户群
+
+<span class="hl-purple">Claude：</span>
+● 分析 user_behavior 表结构...
+● 构建查询...</code></pre>
+            </div>
+
+            <div class="tut-section-title">常用 MCP Server 列表</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">完整多工具 MCP 配置示例</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code>{
+  <span class="hl-blue">"mcpServers"</span>: {
+    <span class="hl-gray">// PostgreSQL 数据库</span>
+    <span class="hl-blue">"postgres"</span>: {
+      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
+      <span class="hl-blue">"args"</span>: [<span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-postgres"</span>],
+      <span class="hl-blue">"env"</span>: { <span class="hl-blue">"DATABASE_URL"</span>: <span class="hl-yellow">"postgresql://..."</span> }
+    },
+
+    <span class="hl-gray">// GitHub：读 issue、PR、代码</span>
+    <span class="hl-blue">"github"</span>: {
+      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
+      <span class="hl-blue">"args"</span>: [<span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-github"</span>],
+      <span class="hl-blue">"env"</span>: { <span class="hl-blue">"GITHUB_TOKEN"</span>: <span class="hl-yellow">"ghp_..."</span> }
+    },
+
+    <span class="hl-gray">// 本地文件系统（指定目录）</span>
+    <span class="hl-blue">"filesystem"</span>: {
+      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
+      <span class="hl-blue">"args"</span>: [
+        <span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-filesystem"</span>,
+        <span class="hl-yellow">"/Users/me/documents"</span>  <span class="hl-gray">// 允许访问的目录</span>
+      ]
+    },
+
+    <span class="hl-gray">// Slack（读消息、发消息）</span>
+    <span class="hl-blue">"slack"</span>: {
+      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
+      <span class="hl-blue">"args"</span>: [<span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-slack"</span>],
+      <span class="hl-blue">"env"</span>: { <span class="hl-blue">"SLACK_BOT_TOKEN"</span>: <span class="hl-yellow">"xoxb-..."</span> }
+    }
+  }
+}</code></pre>
+            </div>
+
+            <div class="callout callout-warn">
+              <span class="callout-icon">⚠️</span>
+              <span class="callout-text">MCP 连接生产数据库时请谨慎，建议使用只读账号，或连接只读副本。Claude 会在执行写操作前向你确认，但多一层保护更安全。</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- T9 ─ 自动化脚本 -->
+        <div class="tutorial-item">
+          <div class="tutorial-header" onclick="toggleTutorial(this)">
+            <div class="tutorial-num">9</div>
+            <span class="tutorial-title">非交互模式：集成到脚本和 CI/CD</span>
+            <span class="tutorial-tag tag-advanced">高级</span>
+            <span class="tutorial-arrow">▶</span>
+          </div>
+          <div class="tutorial-body">
+            <div class="tut-intro">用 <code>claude -p "..."</code> 可以让 Claude 以非交互模式运行，直接返回结果，方便集成到 shell 脚本、CI 流水线、Git Hooks 中。</div>
+
+            <div class="tut-section-title">命令行单次执行</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">bash · 非交互模式基本用法</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code><span class="hl-gray"># 解释单个文件</span>
+claude -p <span class="hl-yellow">"解释 src/utils/jwt.ts 的作用和安全风险"</span>
+
+<span class="hl-gray"># 生成 commit message（基于 git diff）</span>
+git diff HEAD | claude -p <span class="hl-yellow">"根据这个 diff 生成符合 Conventional Commits 规范的 commit message"</span>
+
+<span class="hl-gray"># 输出 JSON 格式（便于脚本处理）</span>
+claude -p <span class="hl-yellow">"分析 package.json 中有哪些过时的依赖，以 JSON 格式返回"</span> \
+  --output-format json</code></pre>
+            </div>
+
+            <div class="tut-section-title">Git Pre-commit Hook：自动 Review</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">.git/hooks/pre-commit</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code><span class="hl-green">#!/bin/bash</span>
+<span class="hl-gray"># 提交前自动检查安全问题</span>
+
+DIFF=$(git diff --staged)
+<span class="hl-blue">if</span> [ -z <span class="hl-yellow">"$DIFF"</span> ]; then
+  <span class="hl-blue">exit 0</span>
+fi
+
+echo <span class="hl-yellow">"🔍 Claude Code 正在检查提交..."</span>
+
+RESULT=$(echo <span class="hl-yellow">"$DIFF"</span> | claude -p <span class="hl-yellow">"
+检查这个 diff 是否有以下问题：
+1. 硬编码的密钥、密码、Token
+2. console.log 调试代码残留
+3. TODO/FIXME 注释未处理
+4. 明显的安全漏洞（SQL 注入、XSS 等）
+
+如果发现问题，输出具体位置和说明。
+如果没有问题，只输出：CLEAN
+"</span>)
+
+<span class="hl-blue">if</span> [ <span class="hl-yellow">"$RESULT"</span> != <span class="hl-yellow">"CLEAN"</span> ]; then
+  echo <span class="hl-yellow">"⚠️  发现问题，请修复后再提交："</span>
+  echo <span class="hl-yellow">"$RESULT"</span>
+  <span class="hl-blue">exit 1</span>
+fi
+
+echo <span class="hl-yellow">"✅ 检查通过"</span></code></pre>
+            </div>
+
+            <div class="tut-section-title">GitHub Actions 集成</div>
+            <div class="code-block">
+              <div class="code-header">
+                <span class="code-lang">.github/workflows/claude-review.yml</span>
+                <button class="copy-btn" onclick="copyCode(this)">复制</button>
+              </div>
+              <pre><code><span class="hl-blue">name:</span> Claude Code Review
+<span class="hl-blue">on:</span>
+  <span class="hl-blue">pull_request:</span>
+    <span class="hl-blue">types:</span> [opened, synchronize]
+
+<span class="hl-blue">jobs:</span>
+  <span class="hl-blue">review:</span>
+    <span class="hl-blue">runs-on:</span> ubuntu-latest
+    <span class="hl-blue">steps:</span>
+      - <span class="hl-blue">uses:</span> actions/checkout@v4
+        <span class="hl-blue">with:</span>
+          <span class="hl-blue">fetch-depth:</span> 0
+
+      - <span class="hl-blue">name:</span> Install Claude Code
+        <span class="hl-blue">run:</span> npm install -g @anthropic-ai/claude-code
+
+      - <span class="hl-blue">name:</span> AI Code Review
+        <span class="hl-blue">env:</span>
+          <span class="hl-blue">ANTHROPIC_API_KEY:</span> ${{ secrets.ANTHROPIC_API_KEY }}
+        <span class="hl-blue">run:</span> |
+          git diff origin/main...HEAD | claude -p "
+            对这个 PR 的代码变更进行 review，关注：
+            1. 潜在的 bug 和边界情况
+            2. 安全漏洞
+            3. 性能问题
+            4. 代码风格和可维护性
+            输出 Markdown 格式
+          " > review.md
+          cat review.md
+
+      - <span class="hl-blue">name:</span> Post Review Comment
+        <span class="hl-blue">uses:</span> actions/github-script@v7
+        <span class="hl-blue">with:</span>
+          <span class="hl-blue">script:</span> |
+            const fs = require('fs');
+            const body = fs.readFileSync('review.md', 'utf8');
+            github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: context.issue.number,
+              body: `## 🤖 Claude Code Review\n\n${body}`
+            });</code></pre>
+            </div>
+
+            <div class="callout callout-info">
+              <span class="callout-icon">ℹ️</span>
+              <span class="callout-text">在 CI 中使用 API Key 时，需要在 GitHub Secrets 中配置 <code>ANTHROPIC_API_KEY</code>，并注意 API 调用费用（建议只在关键分支的 PR 触发）。</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      &copy; 2019 Jim.Fun<br>
-      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
     </div>
+  </section>
+</div>
+
+<!-- ── Commands ────────────────────────────────────────────────────────────────── -->
+<section id="commands">
+  <div class="container">
+    <div class="section-label">命令速查</div>
+    <h2 class="section-title">常用斜杠命令</h2>
+    <p class="section-desc">在对话中输入 <code>/</code> 开头的命令，触发内置功能。</p>
+
+    <div class="cmd-grid">
+      <div class="cmd-card">
+        <div class="cmd-name">/commit</div>
+        <div class="cmd-desc">分析 git 变更，自动起草 commit message 并提交</div>
+      </div>
+      <div class="cmd-card">
+        <div class="cmd-name">/help</div>
+        <div class="cmd-desc">查看所有可用命令和快捷键列表</div>
+      </div>
+      <div class="cmd-card">
+        <div class="cmd-name">/clear</div>
+        <div class="cmd-desc">清空当前对话上下文，开始新的对话</div>
+      </div>
+      <div class="cmd-card">
+        <div class="cmd-name">/compact</div>
+        <div class="cmd-desc">压缩对话历史，节省 context 窗口空间</div>
+      </div>
+      <div class="cmd-card">
+        <div class="cmd-name">/review</div>
+        <div class="cmd-desc">对当前 git diff 进行代码 review，给出改进建议</div>
+      </div>
+      <div class="cmd-card">
+        <div class="cmd-name">/memory</div>
+        <div class="cmd-desc">查看 Claude 对当前项目的持久记忆内容</div>
+      </div>
+      <div class="cmd-card">
+        <div class="cmd-name">/init</div>
+        <div class="cmd-desc">为当前项目生成 CLAUDE.md 配置文件模板</div>
+      </div>
+      <div class="cmd-card">
+        <div class="cmd-name">/fast</div>
+        <div class="cmd-desc">切换快速模式（更快响应，适合简单任务）</div>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px">
+      <div class="section-label" style="margin-bottom:16px">键盘快捷键</div>
+      <div class="cmd-grid">
+        <div class="cmd-card">
+          <div class="cmd-name">Esc</div>
+          <div class="cmd-desc">中断当前 Claude 正在执行的操作</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">↑ / ↓</div>
+          <div class="cmd-desc">浏览历史对话输入记录</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">Ctrl + C</div>
+          <div class="cmd-desc">退出 Claude Code</div>
+        </div>
+        <div class="cmd-card">
+          <div class="cmd-name">Shift + Tab</div>
+          <div class="cmd-desc">切换自动接受工具调用模式</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Tips ───────────────────────────────────────────────────────────────────── -->
+<div class="tips-bg" id="tips">
+  <section>
+    <div class="container">
+      <div class="section-label">使用技巧</div>
+      <h2 class="section-title">高效使用 10 条建议</h2>
+      <p class="section-desc">掌握这些技巧，让 Claude Code 发挥出最大价值。</p>
+
+      <div class="tips-grid">
+        <div class="tip-card highlight">
+          <span class="tip-icon">🎯</span>
+          <div class="tip-title">描述目标，而非步骤</div>
+          <div class="tip-desc">说"给用户接口加分页"，不要说"修改第 45 行加 limit 参数"。让 Claude 自主决定怎么做。</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">📋</span>
+          <div class="tip-title">粘贴完整错误信息</div>
+          <div class="tip-desc">把完整的错误堆栈、日志直接粘进对话，包含的上下文越多，定位越准确。</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🧪</span>
+          <div class="tip-title">要求一并更新测试</div>
+          <div class="tip-desc">每次要求新功能时加上"同步更新测试"，确保改动有测试覆盖。</div>
+        </div>
+        <div class="tip-card highlight">
+          <span class="tip-icon">💾</span>
+          <div class="tip-title">用 CLAUDE.md 写项目规范</div>
+          <div class="tip-desc">把代码风格、禁止事项、常用命令写进 CLAUDE.md，每次启动都自动生效。</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🔄</span>
+          <div class="tip-title">迭代，不要一次性</div>
+          <div class="tip-desc">先做基础版本，确认没问题再加细节。避免一条指令包含太多要求。</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🚫</span>
+          <div class="tip-title">明确说禁止事项</div>
+          <div class="tip-desc">"不要引入新依赖"、"保持 API 兼容性"、"不修改 README"——限制越清晰越好。</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🗂️</span>
+          <div class="tip-title">大任务先规划</div>
+          <div class="tip-desc">复杂任务先说"帮我列一下实施步骤"，确认方向再执行，避免返工。</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🌐</span>
+          <div class="tip-title">充分利用 Web 搜索</div>
+          <div class="tip-desc">遇到你不确定的包版本、API 文档，直接叫 Claude 去搜最新资料。</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">🧠</span>
+          <div class="tip-title">用"记住"写入长期记忆</div>
+          <div class="tip-desc">说"记住：我们用 pnpm 不用 npm"，下次对话 Claude 会记得。</div>
+        </div>
+        <div class="tip-card">
+          <span class="tip-icon">⚡</span>
+          <div class="tip-title">用 -p 做快速单次查询</div>
+          <div class="tip-desc"><code>claude -p "解释这个函数"</code> 快速得到答案，不用进入交互模式。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ── Pricing ────────────────────────────────────────────────────────────────── -->
+<section id="pricing">
+  <div class="container">
+    <div class="section-label">价格方案</div>
+    <h2 class="section-title">选择适合你的计划</h2>
+    <p class="section-desc">个人开发者从 Pro 开始即可，重度编码用户 Max 计划远比 API 按量付费划算。</p>
+
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-name">Free</div>
+        <div class="price-amount">$0 <span>/ 月</span></div>
+        <div class="price-desc">体验 Claude 基础能力，不含 Claude Code 访问权限</div>
+        <ul class="price-features">
+          <li>基础 Sonnet 模型访问</li>
+          <li>网页 / iOS / Android</li>
+          <li class="no">Claude Code 终端</li>
+          <li class="no">项目与记忆</li>
+        </ul>
+      </div>
+
+      <div class="price-card popular">
+        <div class="popular-badge">个人开发者首选</div>
+        <div class="price-name">Pro</div>
+        <div class="price-amount">$20 <span>/ 月</span></div>
+        <div class="price-desc">包含完整 Claude Code 访问，适合日常开发工作</div>
+        <ul class="price-features">
+          <li>Claude Code 终端访问</li>
+          <li>Sonnet + Opus 模型</li>
+          <li>无限项目与记忆</li>
+          <li>Web 搜索 & MCP 连接</li>
+          <li>Google Workspace 集成</li>
+          <li class="no">优先响应队列</li>
+        </ul>
+      </div>
+
+      <div class="price-card">
+        <div class="price-name">Max 5×</div>
+        <div class="price-amount">$100 <span>/ 月</span></div>
+        <div class="price-desc">Pro 的 5 倍用量，适合重度 Claude Code 用户</div>
+        <ul class="price-features">
+          <li>Pro 全部功能</li>
+          <li>5× 用量配额</li>
+          <li>Extended Thinking</li>
+          <li>优先响应队列</li>
+        </ul>
+      </div>
+
+      <div class="price-card">
+        <div class="price-name">Max 20×</div>
+        <div class="price-amount">$200 <span>/ 月</span></div>
+        <div class="price-desc">Pro 的 20 倍用量，全天候密集编码，比 API 便宜约 18 倍</div>
+        <ul class="price-features">
+          <li>Max 5× 全部功能</li>
+          <li>20× 用量配额</li>
+          <li>零等待优先通道</li>
+          <li>最大 context 窗口</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top: 40px; max-width: 700px; margin-left: auto; margin-right: auto">
+      <div class="code-header"><span class="code-lang">API 按量计费（集成自己产品时使用）</span></div>
+      <pre><code>Opus 4.6    $5  / 百万输入 token · $25  / 百万输出 token
+Sonnet 4.6  $3  / 百万输入 token · $15  / 百万输出 token
+Haiku 4.5   $1  / 百万输入 token · $5   / 百万输出 token
+
+<span class="hl-green">省钱方式：</span>
+  Prompt Cache 命中 → 输入费用 ÷ 10（降低 90%）
+  Batch API          → 所有费用 × 0.5（打 5 折）</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────────────────────────── -->
+<footer>
+  <div class="container">
+    <p>Claude Code 由 <a href="https://anthropic.com" target="_blank">Anthropic</a> 出品 · 本页面信息基于 2026 年 3 月数据</p>
+    <p style="margin-top:8px">官方文档：<a href="https://docs.anthropic.com/claude-code" target="_blank">docs.anthropic.com/claude-code</a> · 反馈：<a href="https://github.com/anthropics/claude-code/issues" target="_blank">GitHub Issues</a></p>
   </div>
 </footer>
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
 
-<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+</main>
 
+<script>
+  // Toggle tutorials
+  function toggleTutorial(header) {
+    const item = header.parentElement;
+    item.classList.toggle('open');
+  }
 
-  <link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
-  <script src="/fancybox/jquery.fancybox.pack.js"></script>
+  // Copy code
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    const text = pre.innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '已复制！';
+      btn.style.color = '#34d399';
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.style.color = '';
+      }, 1800);
+    });
+  }
 
+  // Active nav on scroll — 用 scroll 事件 + rAF 节流，避免 IntersectionObserver 卡顿
+  const NAV_IDS = ['features', 'install', 'tutorials', 'commands', 'tips', 'pricing'];
+  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
 
-<script src="/js/script.js"></script>
+  let ticking = false;
+  function updateActiveNav() {
+    const scrollY = window.scrollY + 80;
+    let current = '';
+    for (const id of NAV_IDS) {
+      const el = document.getElementById(id);
+      if (el && el.offsetTop <= scrollY) current = id;
+    }
+    navLinks.forEach(a => {
+      const isActive = a.getAttribute('href') === '#' + current;
+      a.style.color = isActive ? 'var(--text)' : '';
+    });
+    ticking = false;
+  }
 
-
-
-  </div>
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(updateActiveNav);
+      ticking = true;
+    }
+  }, { passive: true });
+</script>
 </body>
 </html>
