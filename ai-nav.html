@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>AI 导航 — 大模型工具全收录</title>
+<style>
+:root{
+  --bg:#0d0d12;--bg2:#13131a;--bg3:#1a1a24;--bg4:#22222e;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e2e2f0;--text2:#8888a8;
+  --purple:#a78bfa;--blue:#60a5fa;--green:#34d399;--orange:#fb923c;
+  --pink:#f472b6;--yellow:#fbbf24;--cyan:#22d3ee;
+  --radius:12px;--nav-h:58px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(13,13,18,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:16px;z-index:200}
+.nav-logo{font-weight:800;font-size:1.1rem;white-space:nowrap;background:linear-gradient(90deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.nav-search{flex:1;max-width:480px;position:relative}
+.nav-search input{width:100%;padding:8px 14px 8px 36px;background:var(--bg3);border:1px solid var(--border2);border-radius:99px;color:var(--text);font-size:0.9rem;outline:none;transition:border-color .2s}
+.nav-search input:focus{border-color:rgba(167,139,250,.5)}
+.nav-search input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text2);font-size:0.9rem;pointer-events:none}
+.nav-count{font-size:0.8rem;color:var(--text2);white-space:nowrap;margin-left:auto}
+
+/* Layout */
+.layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
+
+/* Sidebar */
+.sidebar{width:196px;flex-shrink:0;padding:16px 10px;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;border-right:1px solid var(--border)}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:#2a2a38;border-radius:2px}
+.sidebar-title{font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);padding:0 10px;margin:16px 0 6px}
+.sidebar-title:first-child{margin-top:0}
+.cat-btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;border-radius:8px;background:transparent;color:var(--text2);font-size:0.87rem;cursor:pointer;transition:all .15s;text-align:left}
+.cat-btn:hover{background:var(--bg3);color:var(--text)}
+.cat-btn.active{background:rgba(167,139,250,.12);color:var(--purple)}
+.cat-btn .cat-count{margin-left:auto;font-size:0.7rem;background:var(--bg4);padding:1px 7px;border-radius:99px;color:var(--text2)}
+.cat-btn.active .cat-count{background:rgba(167,139,250,.2);color:var(--purple)}
+
+/* Main */
+.main{flex:1;padding:24px 22px 80px;min-width:0}
+
+/* Hero */
+.hero-strip{background:linear-gradient(135deg,rgba(167,139,250,.07),rgba(34,211,238,.05));border:1px solid rgba(167,139,250,.14);border-radius:16px;padding:22px 28px;margin-bottom:28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.hero-text h1{font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,var(--purple),var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-text p{color:var(--text2);font-size:0.88rem;margin-top:5px}
+.hero-stats{display:flex;gap:28px;margin-left:auto}
+.stat-num{font-size:1.7rem;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.stat-label{font-size:0.7rem;color:var(--text2);margin-top:2px;text-align:center}
+
+/* Section header */
+.section-hd{display:flex;align-items:center;gap:10px;margin:6px 0 14px}
+.section-hd h2{font-size:0.97rem;font-weight:700}
+.section-count{font-size:0.72rem;color:var(--text2);background:var(--bg3);padding:2px 9px;border-radius:99px}
+
+/* Grid */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:36px}
+
+/* Card */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:15px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:9px;position:relative;overflow:hidden;transition:all .18s}
+.card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;pointer-events:none;border-radius:var(--radius)}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)}
+
+.card[data-cat="chat"]:hover{border-color:rgba(167,139,250,.4)}
+.card[data-cat="chat"]::before{background:radial-gradient(ellipse at 0 0,rgba(167,139,250,.07),transparent 65%)}
+.card[data-cat="coding"]:hover{border-color:rgba(96,165,250,.4)}
+.card[data-cat="coding"]::before{background:radial-gradient(ellipse at 0 0,rgba(96,165,250,.07),transparent 65%)}
+.card[data-cat="image"]:hover{border-color:rgba(244,114,182,.4)}
+.card[data-cat="image"]::before{background:radial-gradient(ellipse at 0 0,rgba(244,114,182,.07),transparent 65%)}
+.card[data-cat="video"]:hover{border-color:rgba(251,191,36,.4)}
+.card[data-cat="video"]::before{background:radial-gradient(ellipse at 0 0,rgba(251,191,36,.07),transparent 65%)}
+.card[data-cat="audio"]:hover{border-color:rgba(52,211,153,.4)}
+.card[data-cat="audio"]::before{background:radial-gradient(ellipse at 0 0,rgba(52,211,153,.07),transparent 65%)}
+.card[data-cat="search"]:hover{border-color:rgba(34,211,238,.4)}
+.card[data-cat="search"]::before{background:radial-gradient(ellipse at 0 0,rgba(34,211,238,.07),transparent 65%)}
+.card[data-cat="api"]:hover{border-color:rgba(251,146,60,.4)}
+.card[data-cat="api"]::before{background:radial-gradient(ellipse at 0 0,rgba(251,146,60,.07),transparent 65%)}
+.card[data-cat="agent"]:hover{border-color:rgba(163,230,53,.4)}
+.card[data-cat="agent"]::before{background:radial-gradient(ellipse at 0 0,rgba(163,230,53,.07),transparent 65%)}
+.card[data-cat="learn"]:hover{border-color:rgba(248,113,113,.4)}
+.card[data-cat="learn"]::before{background:radial-gradient(ellipse at 0 0,rgba(248,113,113,.07),transparent 65%)}
+.card:hover::before{opacity:1}
+
+.card-top{display:flex;align-items:flex-start;gap:10px}
+.card-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;background:var(--bg3)}
+.card-meta{flex:1;min-width:0}
+.card-name{font-weight:700;font-size:0.92rem;display:flex;align-items:center;gap:5px;flex-wrap:wrap;line-height:1.3}
+.card-url{font-size:0.72rem;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-desc{font-size:0.81rem;color:var(--text2);line-height:1.55;flex:1}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px}
+
+/* Badges */
+.badge{font-size:0.66rem;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:.2px;white-space:nowrap}
+.badge-free{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.25)}
+.badge-paid{background:rgba(251,146,60,.12);color:#fb923c;border:1px solid rgba(251,146,60,.25)}
+.badge-freemium{background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.25)}
+.badge-api{background:rgba(96,165,250,.12);color:#60a5fa;border:1px solid rgba(96,165,250,.25)}
+.badge-open{background:rgba(163,230,53,.12);color:#a3e635;border:1px solid rgba(163,230,53,.25)}
+.badge-new{background:rgba(251,191,36,.14);color:#fbbf24;border:1px solid rgba(251,191,36,.3)}
+.badge-hot{background:rgba(244,114,182,.1);color:#f472b6;border:1px solid rgba(244,114,182,.22)}
+.badge-cn{background:rgba(34,211,238,.1);color:#22d3ee;border:1px solid rgba(34,211,238,.22)}
+
+/* Tags */
+.tag{font-size:0.68rem;padding:2px 7px;border-radius:6px;background:var(--bg4);color:var(--text2)}
+
+/* Empty */
+.empty{text-align:center;padding:80px 20px;color:var(--text2);display:none}
+.empty-icon{font-size:3rem;margin-bottom:12px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#2a2a38;border-radius:3px}
+
+@media(max-width:700px){
+  .sidebar{display:none}
+  .hero-stats{display:none}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .main{padding:16px 14px 60px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">✦ AI 导航</div>
+  <div class="nav-search">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索工具名、功能、描述…" autocomplete="off"/>
+  </div>
+  <div class="nav-count" id="navCount"></div>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sidebar-title">全部</div>
+    <button class="cat-btn active" data-cat="all" onclick="filterCat('all',this)">
+      <span>🗂</span>全部工具<span class="cat-count" id="cnt-all"></span>
+    </button>
+
+    <div class="sidebar-title">模型 &amp; 对话</div>
+    <button class="cat-btn" data-cat="chat" onclick="filterCat('chat',this)">
+      <span>🤖</span>对话助手<span class="cat-count" id="cnt-chat"></span>
+    </button>
+    <button class="cat-btn" data-cat="api" onclick="filterCat('api',this)">
+      <span>⚡</span>API &amp; 平台<span class="cat-count" id="cnt-api"></span>
+    </button>
+
+    <div class="sidebar-title">创作生成</div>
+    <button class="cat-btn" data-cat="image" onclick="filterCat('image',this)">
+      <span>🎨</span>图像生成<span class="cat-count" id="cnt-image"></span>
+    </button>
+    <button class="cat-btn" data-cat="video" onclick="filterCat('video',this)">
+      <span>🎬</span>视频生成<span class="cat-count" id="cnt-video"></span>
+    </button>
+    <button class="cat-btn" data-cat="audio" onclick="filterCat('audio',this)">
+      <span>🎵</span>音频 &amp; 语音<span class="cat-count" id="cnt-audio"></span>
+    </button>
+
+    <div class="sidebar-title">开发效率</div>
+    <button class="cat-btn" data-cat="coding" onclick="filterCat('coding',this)">
+      <span>💻</span>AI 编程<span class="cat-count" id="cnt-coding"></span>
+    </button>
+    <button class="cat-btn" data-cat="search" onclick="filterCat('search',this)">
+      <span>🔍</span>AI 搜索<span class="cat-count" id="cnt-search"></span>
+    </button>
+    <button class="cat-btn" data-cat="agent" onclick="filterCat('agent',this)">
+      <span>🔧</span>Agent &amp; 自动化<span class="cat-count" id="cnt-agent"></span>
+    </button>
+
+    <div class="sidebar-title">学习资源</div>
+    <button class="cat-btn" data-cat="learn" onclick="filterCat('learn',this)">
+      <span>📚</span>学习 &amp; 社区<span class="cat-count" id="cnt-learn"></span>
+    </button>
+  </aside>
+
+  <main class="main">
+    <div class="hero-strip">
+      <div class="hero-text">
+        <h1>AI &amp; 大模型工具导航</h1>
+        <p>精选全球主流 AI 工具、大模型平台与开发资源，持续更新</p>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num" id="totalCount">0</div><div class="stat-label">收录工具</div></div>
+        <div><div class="stat-num">9</div><div class="stat-label">分类</div></div>
+        <div><div class="stat-num">2026</div><div class="stat-label">持续更新</div></div>
+      </div>
+    </div>
+
+    <div class="empty" id="noResult">
+      <div class="empty-icon">🔭</div>
+      <p>没有找到匹配的工具，换个关键词试试</p>
+    </div>
+
+    <div id="cardContainer"></div>
+  </main>
+</div>
+
+<script>
+const TOOLS = [
+  // 对话助手
+  {cat:'chat',icon:'🟢',name:'ChatGPT',url:'chat.openai.com',desc:'OpenAI 旗舰对话产品，支持 GPT-4o、o3 等模型，全球用户量最大的 AI 助手。',tags:['文字','代码','分析'],badges:['freemium','hot']},
+  {cat:'chat',icon:'🟠',name:'Claude',url:'claude.ai',desc:'Anthropic 出品，以安全性和长上下文著称，200K token 窗口，代码与推理能力突出。',tags:['文字','代码','200K'],badges:['freemium','hot']},
+  {cat:'chat',icon:'🔵',name:'Gemini',url:'gemini.google.com',desc:'Google DeepMind 出品，原生多模态，深度集成 Google 搜索与 Workspace 全家桶。',tags:['多模态','搜索'],badges:['freemium']},
+  {cat:'chat',icon:'⚫',name:'Grok',url:'grok.com',desc:'xAI 出品，实时接入 X（推特）数据，风格直接大胆，推理模型 Grok-3 能力强劲。',tags:['实时','推理'],badges:['freemium','new']},
+  {cat:'chat',icon:'🟤',name:'Copilot',url:'copilot.microsoft.com',desc:'微软 AI 助手，集成 GPT-4o，深度嵌入 Windows / Office 365 生态。',tags:['Office','搜索'],badges:['freemium']},
+  {cat:'chat',icon:'🦙',name:'Meta AI',url:'meta.ai',desc:'Meta 出品，基于 Llama 4，免费使用，集成在 WhatsApp / Instagram / Facebook。',tags:['Llama','社交'],badges:['free']},
+  {cat:'chat',icon:'🌙',name:'Mistral Le Chat',url:'chat.mistral.ai',desc:'Mistral AI 的对话产品，欧洲开源大模型领军，速度快，支持多语言，隐私友好。',tags:['欧洲','开源'],badges:['freemium']},
+  {cat:'chat',icon:'🐬',name:'DeepSeek',url:'chat.deepseek.com',desc:'国内顶尖开源大模型，数学与代码能力卓越，推理模型 R1 性能媲美 o1，完全免费。',tags:['推理','代码','开源'],badges:['free','hot','cn']},
+  {cat:'chat',icon:'🌸',name:'通义千问',url:'tongyi.aliyun.com',desc:'阿里云出品，Qwen 系列，支持超长上下文，工具调用能力强，国内访问稳定快速。',tags:['阿里','长文本'],badges:['freemium','cn']},
+  {cat:'chat',icon:'🔴',name:'文心一言',url:'yiyan.baidu.com',desc:'百度文心大模型，深度结合百度搜索与知识图谱，支持插件生态，国内用户多。',tags:['百度','搜索'],badges:['freemium','cn']},
+  {cat:'chat',icon:'💙',name:'Kimi',url:'kimi.moonshot.cn',desc:'月之暗面出品，支持 200 万 token 超长上下文，擅长长文档分析、论文阅读与总结。',tags:['长文本','文档'],badges:['freemium','cn']},
+  {cat:'chat',icon:'🟡',name:'豆包',url:'doubao.com',desc:'字节跳动出品，速度极快，价格低廉，多模态能力完善，国内日活最高的 AI 产品。',tags:['字节','多模态'],badges:['freemium','cn','hot']},
+  {cat:'chat',icon:'🟣',name:'智谱清言',url:'chatglm.cn',desc:'清华系 AI，GLM-4 系列，代码与学术能力优秀，支持多模态输入，API 对开发者开放。',tags:['清华','学术'],badges:['freemium','cn']},
+  {cat:'chat',icon:'🌿',name:'Poe',url:'poe.com',desc:'Quora 出品的 AI 聚合平台，一个账号同时访问 GPT-4o、Claude、Gemini 等多种模型。',tags:['聚合','多模型'],badges:['freemium']},
+  {cat:'chat',icon:'🔮',name:'Character.AI',url:'character.ai',desc:'角色扮演 AI 平台，数百万 AI 角色，月活超 2 亿，适合娱乐、创作与陪伴场景。',tags:['角色','娱乐'],badges:['freemium']},
+
+  // API & 平台
+  {cat:'api',icon:'⚡',name:'OpenAI API',url:'platform.openai.com',desc:'GPT-4o、o3、DALL-E、Whisper、Embeddings，业界标准 API，生态最完善，文档详尽。',tags:['GPT-4o','o3','Embeddings'],badges:['api','paid']},
+  {cat:'api',icon:'🟠',name:'Anthropic API',url:'console.anthropic.com',desc:'Claude 系列模型 API，支持 Prompt Caching（降低90%成本）、Tool Use、视觉输入。',tags:['Claude','缓存','工具调用'],badges:['api','paid']},
+  {cat:'api',icon:'🔵',name:'Google AI Studio',url:'aistudio.google.com',desc:'Gemini 系列 API，支持 2M token 上下文，实验功能最先放出，免费额度大，适合开发者。',tags:['Gemini','免费','2M'],badges:['api','free']},
+  {cat:'api',icon:'🤗',name:'Hugging Face',url:'huggingface.co',desc:'全球最大开源 AI 社区，数十万模型/数据集，Inference API，Spaces 免费部署。',tags:['开源','模型库','部署'],badges:['freemium','open']},
+  {cat:'api',icon:'⚡',name:'Groq',url:'groq.com',desc:'自研 LPU 芯片，推理速度业界最快（500+ token/s），支持 Llama、Mixtral、Gemma 等。',tags:['超快','LPU','Llama'],badges:['api','freemium']},
+  {cat:'api',icon:'🔥',name:'Together AI',url:'together.ai',desc:'开源模型托管与推理平台，支持 Llama、Qwen、DeepSeek 等，价格低于 OpenAI 60%+。',tags:['开源','推理','微调'],badges:['api','paid']},
+  {cat:'api',icon:'🌊',name:'Fireworks AI',url:'fireworks.ai',desc:'高性能开源模型推理，专注速度与成本优化，支持函数调用和 JSON 模式，企业级 SLA。',tags:['速度','企业','JSON'],badges:['api','paid']},
+  {cat:'api',icon:'🟤',name:'Ollama',url:'ollama.com',desc:'本地运行大模型的最简方案，一行命令拉起 Llama、Qwen、Mistral，完全离线，隐私安全。',tags:['本地','离线','隐私'],badges:['free','open']},
+  {cat:'api',icon:'🐉',name:'LM Studio',url:'lmstudio.ai',desc:'本地大模型 GUI 客户端，兼容 OpenAI API，拖拽下载 GGUF 模型，内置聊天界面。',tags:['本地','GUI','GGUF'],badges:['free']},
+  {cat:'api',icon:'🟡',name:'硅基流动',url:'siliconflow.cn',desc:'国内开源模型推理平台，DeepSeek/Qwen/GLM API，价格极低，新用户赠送额度，稳定快速。',tags:['国内','低价','DeepSeek'],badges:['api','freemium','cn']},
+  {cat:'api',icon:'💠',name:'火山引擎',url:'console.volcengine.com',desc:'字节跳动旗下云平台，提供豆包模型 API 及 Coze 开发工具，国内速度快，稳定性强。',tags:['字节','豆包','Coze'],badges:['api','paid','cn']},
+  {cat:'api',icon:'🌐',name:'Cloudflare AI',url:'developers.cloudflare.com/workers-ai',desc:'边缘推理平台，全球 300+ 数据中心，Workers AI 支持 Llama、Mistral，低延迟全球覆盖。',tags:['边缘','全球','低延迟'],badges:['api','freemium']},
+
+  // AI 编程
+  {cat:'coding',icon:'🐱',name:'GitHub Copilot',url:'github.com/features/copilot',desc:'GitHub + OpenAI 出品，IDE 内代码补全与对话，与 GitHub 仓库深度集成，企业最普及。',tags:['补全','VSCode','JetBrains'],badges:['paid','hot']},
+  {cat:'coding',icon:'🖱',name:'Cursor',url:'cursor.com',desc:'AI-first 代码编辑器，基于 VSCode，Tab 补全、Cmd+K 内联编辑、多文件 Composer 模式。',tags:['编辑器','多文件','Agent'],badges:['freemium','hot']},
+  {cat:'coding',icon:'◆',name:'Claude Code',url:'docs.anthropic.com/claude-code',desc:'Anthropic 官方终端 AI，理解整个代码库上下文，自主完成复杂工程任务，支持 MCP 扩展。',tags:['终端','代码库','MCP'],badges:['freemium','hot']},
+  {cat:'coding',icon:'🌊',name:'Windsurf',url:'codeium.com/windsurf',desc:'Codeium 出品的 AI 编辑器，Cascade 功能可自主执行多步骤任务，强力竞争 Cursor。',tags:['编辑器','Agent','VSCode'],badges:['freemium','new']},
+  {cat:'coding',icon:'🔷',name:'Codeium',url:'codeium.com',desc:'免费代码补全工具，支持 70+ 语言和 40+ 编辑器，企业版提供上下文感知代码搜索。',tags:['免费','补全','多语言'],badges:['freemium']},
+  {cat:'coding',icon:'💎',name:'Tabnine',url:'tabnine.com',desc:'本地优先代码补全，支持私有化部署，隐私保护强，支持团队基于私有代码库微调。',tags:['本地','隐私','企业'],badges:['freemium']},
+  {cat:'coding',icon:'🤖',name:'Devin',url:'devin.ai',desc:'全球首个"AI 软件工程师"，可独立完成需求分析、编码、测试、部署完整工程流程。',tags:['自主','全栈','Agent'],badges:['paid','hot']},
+  {cat:'coding',icon:'🔴',name:'Replit AI',url:'replit.com',desc:'在线 IDE + AI，Agent 可从自然语言生成完整 Web App 并一键部署，无需本地环境。',tags:['在线IDE','部署','全栈'],badges:['freemium']},
+  {cat:'coding',icon:'🌐',name:'v0 by Vercel',url:'v0.dev',desc:'自然语言生成 React + Tailwind UI 组件，一键复制代码或部署到 Vercel，前端利器。',tags:['UI生成','React','Tailwind'],badges:['freemium','hot']},
+  {cat:'coding',icon:'🔮',name:'bolt.new',url:'bolt.new',desc:'StackBlitz 出品，全栈 Web App 生成，在浏览器内跑 Node.js，支持框架选择与一键部署。',tags:['全栈','浏览器','部署'],badges:['freemium','new']},
+  {cat:'coding',icon:'🟡',name:'通义灵码',url:'tongyi.aliyun.com/lingma',desc:'阿里云出品，国内代码补全工具，深度理解中文注释，支持主流 IDE，企业版可私有化。',tags:['国内','阿里','中文'],badges:['freemium','cn']},
+
+  // 图像生成
+  {cat:'image',icon:'🎨',name:'Midjourney',url:'midjourney.com',desc:'业界审美标杆，V6 质量惊艳，艺术风格丰富，Discord / Web 操作，适合创意设计。',tags:['艺术','风格','Discord'],badges:['paid','hot']},
+  {cat:'image',icon:'🟢',name:'DALL-E 3',url:'openai.com/dall-e-3',desc:'OpenAI 出品，理解提示词能力极强，集成在 ChatGPT 中，支持精确文字渲染。',tags:['文字渲染','提示理解'],badges:['paid']},
+  {cat:'image',icon:'🔵',name:'Stable Diffusion',url:'stability.ai',desc:'最流行的开源图像模型，可本地运行，ComfyUI/WebUI 生态庞大，完全可控可定制。',tags:['开源','本地','ComfyUI'],badges:['free','open']},
+  {cat:'image',icon:'⚫',name:'Flux',url:'blackforestlabs.ai',desc:'Black Forest Labs 出品（SD 原班人马），写实能力超越 SDXL，开源可商用。',tags:['写实','开源','高质量'],badges:['freemium','open','new']},
+  {cat:'image',icon:'🟡',name:'Ideogram',url:'ideogram.ai',desc:'文字生成图像能力业界最强，Logo、海报、排版图设计首选，支持中文提示词。',tags:['文字','Logo','海报'],badges:['freemium','hot']},
+  {cat:'image',icon:'🦁',name:'Leonardo AI',url:'leonardo.ai',desc:'游戏美术向，角色设计、场景概念图质量高，提供大量风格模型，支持图生图。',tags:['游戏','角色','概念图'],badges:['freemium']},
+  {cat:'image',icon:'🔥',name:'Adobe Firefly',url:'firefly.adobe.com',desc:'Adobe 出品，商用安全（训练数据已授权），深度集成 PS/AE，适合商业设计师。',tags:['商用','Adobe','PS集成'],badges:['freemium']},
+  {cat:'image',icon:'🌸',name:'即梦',url:'jimeng.jianying.com',desc:'字节剪映旗下，国内质量最好的文生图产品，支持中文提示，质量高速度快。',tags:['国内','中文','剪映'],badges:['freemium','cn','hot']},
+  {cat:'image',icon:'🐼',name:'通义万象',url:'tongyi.aliyun.com/wanxiang',desc:'阿里出品，中国风格表现出色，支持图生视频，API 对开发者开放，国内访问稳定。',tags:['阿里','国风','API'],badges:['freemium','cn']},
+  {cat:'image',icon:'🎭',name:'Canva AI',url:'canva.com',desc:'Canva 内置 AI，一键生图、背景移除、图像扩展、Magic Edit，适合非设计师。',tags:['设计','模板','易用'],badges:['freemium']},
+
+  // 视频生成
+  {cat:'video',icon:'🌀',name:'Sora',url:'sora.com',desc:'OpenAI 出品，业界最强视频生成，物理世界理解超越竞品，最长 60 秒，支持 1080p。',tags:['物理','60秒','1080p'],badges:['paid','hot']},
+  {cat:'video',icon:'🎬',name:'Runway',url:'runwayml.com',desc:'视频生成老牌强者，Gen-3 Alpha 质量出众，专业级视频编辑 AI 工具套件。',tags:['Gen-3','编辑','专业'],badges:['freemium','hot']},
+  {cat:'video',icon:'🦅',name:'可灵',url:'kling.kuaishou.com',desc:'快手出品，国产最强视频模型，运动流畅自然，支持高清生成，国内外口碑极佳。',tags:['快手','国产','高清'],badges:['freemium','cn','hot']},
+  {cat:'video',icon:'🦋',name:'即梦视频',url:'jimeng.jianying.com',desc:'字节剪映旗下，Seaweed 模型，支持图生视频和文生视频，中文优化，剪辑工具集成。',tags:['字节','图生视频'],badges:['freemium','cn']},
+  {cat:'video',icon:'🐦',name:'Pika',url:'pika.art',desc:'简单易用的视频生成，支持动态笔刷、对象动画、口型同步，适合社交媒体内容。',tags:['简单','动效','社交'],badges:['freemium']},
+  {cat:'video',icon:'🌊',name:'Luma Dream Machine',url:'lumalabs.ai',desc:'Luma AI 出品，快速高质量视频生成，物理真实感强，支持精细镜头控制。',tags:['快速','物理','镜头'],badges:['freemium']},
+  {cat:'video',icon:'🎭',name:'HeyGen',url:'heygen.com',desc:'AI 数字人视频，上传照片即可生成口播视频，支持 40+ 语言配音与精准唇型同步。',tags:['数字人','配音','唇同步'],badges:['freemium','hot']},
+  {cat:'video',icon:'🎪',name:'Synthesia',url:'synthesia.io',desc:'企业级 AI 数字人视频，200+ 形象，支持 120+ 语言，适合企业培训与营销内容制作。',tags:['企业','数字人','多语言'],badges:['paid']},
+
+  // 音频 & 语音
+  {cat:'audio',icon:'🎤',name:'ElevenLabs',url:'elevenlabs.io',desc:'业界最逼真的 AI 语音克隆和 TTS，情感表达自然细腻，支持 30+ 语言，声音设计强大。',tags:['语音克隆','TTS','情感'],badges:['freemium','hot']},
+  {cat:'audio',icon:'🎵',name:'Suno',url:'suno.com',desc:'一句话生成完整歌曲（含人声+编曲+歌词），音乐风格覆盖全面，使用门槛极低。',tags:['作曲','人声','完整歌曲'],badges:['freemium','hot']},
+  {cat:'audio',icon:'🎼',name:'Udio',url:'udio.com',desc:'音乐生成新贵，音质细腻，支持精细风格控制和歌词编辑，专业音乐人也在使用。',tags:['音质','风格','专业'],badges:['freemium','new']},
+  {cat:'audio',icon:'🔊',name:'Whisper',url:'github.com/openai/whisper',desc:'OpenAI 开源语音识别模型，识别率极高，支持 100 种语言，可本地完全离线部署。',tags:['语音识别','本地','100语言'],badges:['free','open']},
+  {cat:'audio',icon:'🎧',name:'Descript',url:'descript.com',desc:'像编辑文档一样编辑音视频，支持声音克隆、配音替换、自动字幕，播客制作首选。',tags:['视频编辑','声音克隆','播客'],badges:['freemium']},
+  {cat:'audio',icon:'🌐',name:'NotebookLM',url:'notebooklm.google.com',desc:'Google 出品，上传文档即可生成播客对话和深度总结，知识管理与学习神器。',tags:['播客','知识管理','文档'],badges:['free','hot']},
+  {cat:'audio',icon:'🎙',name:'Adobe Podcast',url:'podcast.adobe.com',desc:'Adobe 出品，一键消除背景噪音、提升录音音质，效果媲美专业录音棚，完全免费。',tags:['降噪','音质','Adobe'],badges:['free']},
+
+  // AI 搜索
+  {cat:'search',icon:'🔍',name:'Perplexity AI',url:'perplexity.ai',desc:'AI 搜索标杆产品，每条回答附实时来源，深度研究模式可生成带引用的长篇报告。',tags:['引用','研究','实时'],badges:['freemium','hot']},
+  {cat:'search',icon:'🌐',name:'You.com',url:'you.com',desc:'AI 搜索引擎，支持代码、写作、研究多种模式，可自定义来源偏好，隐私保护好。',tags:['多模式','隐私','代码'],badges:['freemium']},
+  {cat:'search',icon:'🐺',name:'Kagi',url:'kagi.com',desc:'无广告付费搜索引擎，集成 AI 摘要（Universal Summarizer），搜索质量极高。',tags:['无广告','隐私','高质量'],badges:['paid']},
+  {cat:'search',icon:'🦊',name:'Phind',url:'phind.com',desc:'专为开发者设计，搜索技术文档与代码示例准确率超高，支持 GPT-4 与代码高亮。',tags:['开发者','代码','技术'],badges:['freemium']},
+  {cat:'search',icon:'🌊',name:'Devv.ai',url:'devv.ai',desc:'国内开发者 AI 搜索，专注技术问答，支持 GitHub 代码搜索，中文回答质量高。',tags:['国内','代码','GitHub'],badges:['free','cn']},
+  {cat:'search',icon:'🧠',name:'Exa',url:'exa.ai',desc:'为 AI Agent 设计的搜索 API，语义搜索而非关键词匹配，适合 RAG 和智能体应用。',tags:['语义','API','RAG'],badges:['api','freemium']},
+
+  // Agent & 自动化
+  {cat:'agent',icon:'🔗',name:'LangChain',url:'langchain.com',desc:'最流行的 LLM 应用开发框架，链式调用、RAG Pipeline、Agent 构建，Python/JS 双版本。',tags:['框架','RAG','Python'],badges:['open','free']},
+  {cat:'agent',icon:'🦙',name:'LlamaIndex',url:'llamaindex.ai',desc:'专注 RAG 和数据连接的框架，让 LLM 读取私有数据，与数据库、文件、API 无缝集成。',tags:['RAG','数据','知识库'],badges:['open','free']},
+  {cat:'agent',icon:'🤖',name:'AutoGPT',url:'agpt.co',desc:'最早的自主 AI Agent 项目，能自主分解目标、搜索网络、执行代码，开源可本地运行。',tags:['自主','目标分解','开源'],badges:['open','free']},
+  {cat:'agent',icon:'🌊',name:'n8n',url:'n8n.io',desc:'开源工作流自动化平台，可视化连接 AI 与 400+ 应用，支持自部署，Zapier 最强替代。',tags:['工作流','可视化','自部署'],badges:['freemium','open']},
+  {cat:'agent',icon:'⚡',name:'Zapier AI',url:'zapier.com/ai',desc:'自动化老牌，AI 功能支持自然语言创建工作流，连接 6000+ 应用，无代码，即刻上手。',tags:['无代码','6000+应用','自动化'],badges:['freemium']},
+  {cat:'agent',icon:'🟠',name:'Dify',url:'dify.ai',desc:'开源 LLM 应用开发平台，可视化编排 RAG / Agent / 工作流，国内开源社区首选。',tags:['开源','RAG','工作流'],badges:['freemium','open','cn']},
+  {cat:'agent',icon:'🐝',name:'Coze',url:'coze.com',desc:'字节出品 Bot 构建平台，插件与知识库生态丰富，一键发布到飞书 / 微信 / Discord。',tags:['Bot','插件','多平台'],badges:['freemium','cn']},
+  {cat:'agent',icon:'🔷',name:'FastGPT',url:'fastgpt.in',desc:'开源知识库 AI 问答系统，可快速搭建企业私有知识库聊天机器人，中文社区活跃。',tags:['知识库','问答','开源'],badges:['free','open','cn']},
+  {cat:'agent',icon:'🌀',name:'CrewAI',url:'crewai.com',desc:'多智能体协作框架，定义角色、目标和工具，让多个 AI Agent 协同完成复杂任务。',tags:['多Agent','协作','角色'],badges:['open','free']},
+  {cat:'agent',icon:'🔮',name:'Flowise',url:'flowiseai.com',desc:'开源可视化 LLM 流程构建工具，拖拽构建 AI 应用，基于 LangChain，低代码部署。',tags:['可视化','低代码','LangChain'],badges:['free','open']},
+
+  // 学习 & 社区
+  {cat:'learn',icon:'📚',name:'Papers with Code',url:'paperswithcode.com',desc:'最新 AI 论文 + 代码实现，State-of-the-Art 排行榜，科研必备，每日更新。',tags:['论文','SOTA','代码'],badges:['free']},
+  {cat:'learn',icon:'🤗',name:'Hugging Face',url:'huggingface.co',desc:'全球最大开源 AI 社区，数十万模型/数据集，博客、教程、Spaces 演示，一站式平台。',tags:['开源','模型','社区'],badges:['free']},
+  {cat:'learn',icon:'🎓',name:'DeepLearning.AI',url:'deeplearning.ai',desc:'吴恩达创办，LLM 系列课程权威，Prompt Engineering、RAG、Fine-tuning 等实战短课。',tags:['课程','吴恩达','实战'],badges:['freemium']},
+  {cat:'learn',icon:'🔥',name:'fast.ai',url:'fast.ai',desc:'自上而下教学法，实战优先，深度学习课程质量极高，完全免费开放，社区非常活跃。',tags:['深度学习','实战','免费'],badges:['free']},
+  {cat:'learn',icon:'📊',name:'Arxiv CS.AI',url:'arxiv.org/list/cs.AI/recent',desc:'AI 领域论文预印本平台，所有最新研究首发于此，免费开放获取，覆盖全部子领域。',tags:['论文','前沿','开放'],badges:['free']},
+  {cat:'learn',icon:'🔍',name:'LMSYS Chatbot Arena',url:'lmarena.ai',desc:'大模型盲测竞技场，真实用户投票 ELO 排名，最公正客观的模型综合评测平台。',tags:['评测','排行','盲测'],badges:['free']},
+  {cat:'learn',icon:'📈',name:'AI News',url:'buttondown.com/ainews',desc:'每日 AI 行业摘要邮件，覆盖最新论文、产品发布与行业动态，开发者必订资讯源。',tags:['资讯','每日','邮件'],badges:['freemium']},
+  {cat:'learn',icon:'🌊',name:'Andrej Karpathy',url:'youtube.com/@AndrejKarpathy',desc:'前 OpenAI 核心成员，YouTube 系列讲解 LLM 原理与实现，深入浅出，业内必看教程。',tags:['原理','YouTube','必看'],badges:['free']},
+];
+
+const CAT_META = {
+  chat:   {label:'对话助手',    color:'var(--purple)'},
+  api:    {label:'API & 平台',  color:'var(--orange)'},
+  image:  {label:'图像生成',    color:'var(--pink)'},
+  video:  {label:'视频生成',    color:'var(--yellow)'},
+  audio:  {label:'音频 & 语音', color:'var(--green)'},
+  coding: {label:'AI 编程',     color:'var(--blue)'},
+  search: {label:'AI 搜索',     color:'var(--cyan)'},
+  agent:  {label:'Agent & 自动化', color:'#a3e635'},
+  learn:  {label:'学习 & 社区', color:'#f87171'},
+};
+
+const CAT_ICON = {chat:'🤖',api:'⚡',image:'🎨',video:'🎬',audio:'🎵',coding:'💻',search:'🔍',agent:'🔧',learn:'📚'};
+const CAT_ORDER = ['chat','coding','image','video','audio','search','api','agent','learn'];
+
+const BADGE_MAP = {free:'免费',paid:'付费',freemium:'免费+',api:'API',open:'开源',new:'NEW',hot:'🔥热门',cn:'国内'};
+
+let currentCat = 'all';
+let searchQuery = '';
+
+function badgeHTML(b){
+  return `<span class="badge badge-${b}">${BADGE_MAP[b]||b}</span>`;
+}
+
+function renderCards(){
+  const container = document.getElementById('cardContainer');
+  const noResult  = document.getElementById('noResult');
+  const q = searchQuery.toLowerCase();
+
+  const filtered = TOOLS.filter(t => {
+    const matchCat = currentCat === 'all' || t.cat === currentCat;
+    const matchQ   = !q ||
+      t.name.toLowerCase().includes(q) ||
+      t.desc.toLowerCase().includes(q) ||
+      (t.tags||[]).some(tg => tg.toLowerCase().includes(q)) ||
+      (t.badges||[]).some(b => b.toLowerCase().includes(q)) ||
+      (CAT_META[t.cat]?.label||'').includes(q);
+    return matchCat && matchQ;
+  });
+
+  document.getElementById('navCount').textContent = filtered.length + ' 个工具';
+
+  if(!filtered.length){
+    container.innerHTML = '';
+    noResult.style.display = 'block';
+    return;
+  }
+  noResult.style.display = 'none';
+
+  const groups = {};
+  if(currentCat === 'all'){
+    CAT_ORDER.forEach(c => {
+      const items = filtered.filter(t => t.cat === c);
+      if(items.length) groups[c] = items;
+    });
+  } else {
+    groups[currentCat] = filtered;
+  }
+
+  let html = '';
+  for(const [cat, items] of Object.entries(groups)){
+    const meta = CAT_META[cat];
+    html += `<div class="section-hd">
+      <h2 style="color:${meta.color}">${CAT_ICON[cat]} ${meta.label}</h2>
+      <span class="section-count">${items.length}</span>
+    </div><div class="cards-grid">`;
+    for(const t of items){
+      const badges = (t.badges||[]).map(badgeHTML).join('');
+      const tags   = (t.tags||[]).map(tg=>`<span class="tag">${tg}</span>`).join('');
+      html += `<a class="card" data-cat="${t.cat}" href="https://${t.url}" target="_blank" rel="noopener">
+        <div class="card-top">
+          <div class="card-icon">${t.icon}</div>
+          <div class="card-meta">
+            <div class="card-name">${t.name} ${badges}</div>
+            <div class="card-url">${t.url}</div>
+          </div>
+        </div>
+        <div class="card-desc">${t.desc}</div>
+        <div class="card-tags">${tags}</div>
+      </a>`;
+    }
+    html += '</div>';
+  }
+  container.innerHTML = html;
+}
+
+function updateCounts(){
+  document.getElementById('totalCount').textContent = TOOLS.length;
+  document.getElementById('cnt-all').textContent = TOOLS.length;
+  CAT_ORDER.forEach(c => {
+    const el = document.getElementById('cnt-'+c);
+    if(el) el.textContent = TOOLS.filter(t=>t.cat===c).length;
+  });
+}
+
+function filterCat(cat, btn){
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+let searchTimer;
+document.getElementById('searchInput').addEventListener('input', e => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    searchQuery = e.target.value.trim();
+    renderCards();
+  }, 150);
+});
+
+updateCounts();
+renderCards();
+</script>
+</body>
+</html>
