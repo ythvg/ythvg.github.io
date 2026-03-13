@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(open /Users/chao/work/ythvg.github.io/index.html)"
+      "Bash(open /Users/chao/work/ythvg.github.io/index.html)",
+      "Bash(open /Users/chao/work/ythvg.github.io/pages/eth.html)"
     ]
   }
 }

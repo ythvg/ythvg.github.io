@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>以太坊 ETH 完全指南</title>
+<style>
+:root{
+  --bg:#0a0a10;--bg2:#111118;--bg3:#18181f;--bg4:#21212a;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --text:#e4e4f0;--text2:#8888aa;
+  --eth:#627eea;--eth2:#8fa8ff;--eth3:#b4c6ff;
+  --purple:#a78bfa;--blue:#60a5fa;--green:#34d399;--orange:#fb923c;
+  --pink:#f472b6;--yellow:#fbbf24;--cyan:#22d3ee;--red:#f87171;
+  --radius:14px;--nav-h:60px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.7;overflow-x:hidden}
+
+/* ── Nav ── */
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(10,10,16,0.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:20px;z-index:200}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.05rem;text-decoration:none;color:var(--text)}
+.nav-logo .eth-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--eth),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nav-link{padding:6px 14px;border-radius:8px;font-size:0.85rem;color:var(--text2);text-decoration:none;transition:all .15s;background:transparent;border:none;cursor:pointer}
+.nav-link:hover{background:var(--bg3);color:var(--text)}
+.price-tag{background:rgba(98,126,234,.15);border:1px solid rgba(98,126,234,.3);border-radius:99px;padding:5px 14px;font-size:0.82rem;font-weight:700;color:var(--eth2);white-space:nowrap}
+.price-change{font-size:0.75rem;font-weight:600;margin-left:6px}
+.change-up{color:var(--green)}
+.change-down{color:var(--red)}
+
+/* ── Layout ── */
+.page{padding-top:var(--nav-h)}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+
+/* ── Hero ── */
+.hero{position:relative;padding:80px 0 70px;overflow:hidden;text-align:center}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.hero-bg::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:600px;height:600px;background:radial-gradient(circle,rgba(98,126,234,.18) 0%,transparent 65%);border-radius:50%}
+.hero-bg::after{content:'';position:absolute;bottom:-20%;right:5%;width:300px;height:300px;background:radial-gradient(circle,rgba(167,139,250,.1) 0%,transparent 65%);border-radius:50%}
+.eth-logo{width:90px;height:90px;margin:0 auto 28px;position:relative}
+.eth-logo svg{width:100%;height:100%;filter:drop-shadow(0 0 20px rgba(98,126,234,.6))}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:900;letter-spacing:-1px;line-height:1.15;background:linear-gradient(135deg,#fff 30%,var(--eth2) 70%,var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px}
+.hero-sub{font-size:1.05rem;color:var(--text2);max-width:560px;margin:0 auto 36px}
+.hero-stats{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.stat-card{background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:12px;padding:14px 24px;min-width:130px;text-align:center;transition:all .2s}
+.stat-card:hover{background:rgba(98,126,234,.08);border-color:rgba(98,126,234,.25)}
+.stat-val{font-size:1.4rem;font-weight:800;color:var(--eth2)}
+.stat-lbl{font-size:0.72rem;color:var(--text2);margin-top:3px;letter-spacing:.5px}
+
+/* ── Section ── */
+section{padding:64px 0}
+section:nth-child(even){background:rgba(255,255,255,.015)}
+.sec-title{font-size:1.7rem;font-weight:800;margin-bottom:10px}
+.sec-title span{background:linear-gradient(90deg,var(--eth),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sec-sub{color:var(--text2);font-size:0.93rem;margin-bottom:40px}
+.sec-badge{display:inline-flex;align-items:center;gap:6px;font-size:0.72rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--eth);background:rgba(98,126,234,.12);border:1px solid rgba(98,126,234,.25);border-radius:99px;padding:4px 12px;margin-bottom:14px}
+
+/* ── What is ETH ── */
+.intro-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.intro-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:relative;overflow:hidden;transition:all .2s}
+.intro-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.intro-card.c-eth::before{background:linear-gradient(90deg,var(--eth),var(--eth2))}
+.intro-card.c-purple::before{background:linear-gradient(90deg,var(--purple),var(--pink))}
+.intro-card.c-green::before{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.intro-card.c-orange::before{background:linear-gradient(90deg,var(--orange),var(--yellow))}
+.intro-card:hover{transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.4)}
+.intro-icon{font-size:2rem;margin-bottom:14px}
+.intro-card h3{font-size:1rem;font-weight:700;margin-bottom:8px;color:var(--eth3)}
+.intro-card p{font-size:0.86rem;color:var(--text2);line-height:1.65}
+
+/* ── Concepts ── */
+.concepts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.concept-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;display:flex;gap:16px;transition:all .2s}
+.concept-card:hover{border-color:rgba(98,126,234,.3);box-shadow:0 8px 30px rgba(0,0,0,.35)}
+.concept-num{width:36px;height:36px;border-radius:10px;background:rgba(98,126,234,.15);border:1px solid rgba(98,126,234,.25);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;font-weight:800;color:var(--eth2)}
+.concept-body h3{font-size:0.95rem;font-weight:700;margin-bottom:6px;color:var(--text)}
+.concept-body p{font-size:0.82rem;color:var(--text2);line-height:1.6}
+
+/* ── Ecosystem ── */
+.eco-tabs{display:flex;gap:6px;margin-bottom:28px;flex-wrap:wrap}
+.eco-tab{padding:7px 18px;border-radius:99px;border:1px solid var(--border2);background:transparent;color:var(--text2);font-size:0.84rem;cursor:pointer;transition:all .15s}
+.eco-tab:hover{background:var(--bg3);color:var(--text)}
+.eco-tab.active{background:rgba(98,126,234,.18);border-color:rgba(98,126,234,.4);color:var(--eth2)}
+.eco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.eco-item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:12px;transition:all .18s}
+.eco-item:hover{transform:translateY(-2px);border-color:rgba(98,126,234,.35);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.eco-item-icon{width:38px;height:38px;border-radius:10px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0}
+.eco-item-name{font-weight:700;font-size:0.88rem}
+.eco-item-type{font-size:0.7rem;color:var(--text2);margin-top:2px}
+
+/* ── Timeline ── */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:0;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--eth),var(--purple),rgba(167,139,250,.1))}
+.tl-item{position:relative;margin-bottom:32px}
+.tl-dot{position:absolute;left:-35px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--eth);border:2px solid var(--bg);box-shadow:0 0 0 3px rgba(98,126,234,.25)}
+.tl-item.done .tl-dot{background:var(--green)}
+.tl-item.future .tl-dot{background:var(--bg4);border-color:var(--border2)}
+.tl-year{font-size:0.72rem;font-weight:700;letter-spacing:1px;color:var(--eth);text-transform:uppercase;margin-bottom:4px}
+.tl-item.done .tl-year{color:var(--green)}
+.tl-item.future .tl-year{color:var(--text2)}
+.tl-title{font-size:1rem;font-weight:700;margin-bottom:5px}
+.tl-desc{font-size:0.83rem;color:var(--text2);line-height:1.6}
+.tl-badge{display:inline-block;font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:99px;margin-left:8px;vertical-align:middle}
+.tl-badge.upgrade{background:rgba(98,126,234,.15);color:var(--eth2);border:1px solid rgba(98,126,234,.3)}
+.tl-badge.milestone{background:rgba(52,211,153,.1);color:var(--green);border:1px solid rgba(52,211,153,.25)}
+.tl-badge.future{background:rgba(251,191,36,.1);color:var(--yellow);border:1px solid rgba(251,191,36,.25)}
+
+/* ── Gas 计算器 ── */
+.calc-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:32px;max-width:600px}
+.calc-row{display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:20px}
+.calc-field{flex:1;min-width:140px}
+.calc-field label{display:block;font-size:0.78rem;color:var(--text2);margin-bottom:6px;font-weight:600}
+.calc-field input,
+.calc-field select{width:100%;padding:10px 14px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;color:var(--text);font-size:0.92rem;outline:none;transition:border-color .2s}
+.calc-field input:focus,
+.calc-field select:focus{border-color:rgba(98,126,234,.5)}
+.calc-field select option{background:var(--bg3)}
+.calc-btn{padding:10px 24px;background:linear-gradient(135deg,var(--eth),var(--purple));border:none;border-radius:9px;color:#fff;font-weight:700;font-size:0.9rem;cursor:pointer;transition:opacity .2s;white-space:nowrap}
+.calc-btn:hover{opacity:.88}
+.calc-result{background:rgba(98,126,234,.08);border:1px solid rgba(98,126,234,.2);border-radius:10px;padding:18px 22px;display:none}
+.calc-result.show{display:block}
+.calc-result-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:0.9rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.calc-result-row:last-child{border:none;font-weight:700;font-size:1rem;padding-top:10px;margin-top:4px}
+.calc-result-row span:last-child{color:var(--eth2)}
+
+/* ── Resources ── */
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.res-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;text-decoration:none;color:var(--text);display:flex;gap:14px;transition:all .18s}
+.res-card:hover{transform:translateY(-2px);border-color:rgba(98,126,234,.35);box-shadow:0 8px 28px rgba(0,0,0,.35)}
+.res-icon{font-size:1.6rem;flex-shrink:0;line-height:1}
+.res-name{font-weight:700;font-size:0.9rem;margin-bottom:4px}
+.res-desc{font-size:0.78rem;color:var(--text2);line-height:1.5}
+.res-tag{display:inline-block;font-size:0.63rem;font-weight:700;padding:2px 7px;border-radius:99px;margin-top:6px;background:rgba(98,126,234,.12);color:var(--eth2);border:1px solid rgba(98,126,234,.2)}
+
+/* ── Glossary ── */
+.glossary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.glossary-item{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px}
+.glossary-term{font-weight:800;font-size:0.95rem;color:var(--eth2);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.glossary-en{font-size:0.78rem;color:var(--text2);font-weight:400}
+.glossary-def{font-size:0.82rem;color:var(--text2);line-height:1.6}
+
+/* ── Footer ── */
+footer{border-top:1px solid var(--border);padding:36px 24px;text-align:center;color:var(--text2);font-size:0.82rem;line-height:1.8}
+footer a{color:var(--eth2);text-decoration:none}
+footer a:hover{text-decoration:underline}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#2a2a40;border-radius:3px}
+
+/* ── Utils ── */
+.tag{display:inline-block;font-size:0.68rem;padding:2px 8px;border-radius:6px;background:var(--bg4);color:var(--text2);margin:2px}
+.divider{height:1px;background:var(--border);margin:0}
+
+@media(max-width:700px){
+  .intro-grid{grid-template-columns:1fr}
+  .hero h1{font-size:2rem}
+  .hero-stats{gap:8px}
+  .stat-card{padding:12px 16px;min-width:100px}
+  .nav-links{display:none}
+  .calc-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="../index.html">
+    <div class="eth-icon">⟠</div>
+    以太坊 ETH 指南
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="#what">简介</a>
+    <a class="nav-link" href="#concepts">核心概念</a>
+    <a class="nav-link" href="#ecosystem">生态</a>
+    <a class="nav-link" href="#timeline">历史</a>
+    <a class="nav-link" href="#calculator">Gas计算</a>
+    <a class="nav-link" href="#resources">资源</a>
+  </div>
+  <div class="price-tag" id="priceTag">
+    ETH <span id="priceVal">加载中…</span>
+    <span class="price-change" id="priceChange"></span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="container">
+      <div class="eth-logo">
+        <svg viewBox="0 0 256 417" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#627eea"/>
+              <stop offset="100%" stop-color="#a78bfa"/>
+            </linearGradient>
+            <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#8fa8ff"/>
+              <stop offset="100%" stop-color="#c4b5fd"/>
+            </linearGradient>
+          </defs>
+          <polygon fill="url(#g1)" points="127.9611,0 125.1661,9.5 125.1661,285.168 127.9611,287.958 255.9231,212.32"/>
+          <polygon fill="url(#g2)" points="127.962,0 0,212.32 127.962,287.959 127.962,154.158"/>
+          <polygon fill="url(#g1)" opacity=".8" points="127.9611,312.1866 126.3861,314.1066 126.3861,412.3056 127.9611,416.9066 255.9991,236.5866"/>
+          <polygon fill="url(#g2)" opacity=".9" points="127.962,416.9052 127.962,312.1852 0,236.5852"/>
+          <polygon fill="#fff" opacity=".2" points="127.9611,287.9577 255.9211,212.3207 127.9611,154.1587"/>
+          <polygon fill="#fff" opacity=".1" points="0.0009,212.3207 127.9609,287.9577 127.9609,154.1587"/>
+        </svg>
+      </div>
+      <h1>以太坊 Ethereum</h1>
+      <p class="hero-sub">可编程区块链 · 去中心化世界计算机 · 全球第二大加密货币生态</p>
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-val" id="heroPrice">—</div>
+          <div class="stat-lbl">当前价格 (USD)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="heroMcap">—</div>
+          <div class="stat-lbl">市值</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">2015</div>
+          <div class="stat-lbl">创世年份</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">PoS</div>
+          <div class="stat-lbl">共识机制</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">~12s</div>
+          <div class="stat-lbl">出块时间</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">∞</div>
+          <div class="stat-lbl">供应上限</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- What is Ethereum -->
+  <section id="what">
+    <div class="container">
+      <div class="sec-badge">⟠ 基础介绍</div>
+      <h2 class="sec-title">什么是 <span>以太坊</span>？</h2>
+      <p class="sec-sub">以太坊是一个去中心化的开源区块链平台，由 Vitalik Buterin 于 2013 年提出，2015 年正式上线。它不仅仅是加密货币，更是一个可运行智能合约的"世界计算机"。</p>
+      <div class="intro-grid">
+        <div class="intro-card c-eth">
+          <div class="intro-icon">⛓</div>
+          <h3>去中心化区块链</h3>
+          <p>以太坊是由全球数千个节点共同维护的分布式账本。没有单一的控制中心，数据不可篡改，任何人均可参与。每隔约 12 秒产生一个新区块，记录全网交易状态。</p>
+        </div>
+        <div class="intro-card c-purple">
+          <div class="intro-icon">📜</div>
+          <h3>智能合约平台</h3>
+          <p>智能合约是部署在区块链上的自动执行代码。满足条件即自动执行，无需中间人。这是以太坊与比特币最大的区别，也是 DeFi、NFT、DAO 等应用的基石。</p>
+        </div>
+        <div class="intro-card c-green">
+          <div class="intro-icon">💎</div>
+          <h3>ETH 原生代币</h3>
+          <p>Ether（ETH）是以太坊网络的原生货币，用于支付交易手续费（Gas Fee）、参与质押（Staking）获得收益，以及在 DeFi 生态中作为抵押品和交换媒介。</p>
+        </div>
+        <div class="intro-card c-orange">
+          <div class="intro-icon">🌐</div>
+          <h3>开放金融生态</h3>
+          <p>以太坊上部署了价值数千亿美元的 DeFi 协议，涵盖借贷、交易、衍生品、稳定币等全类型金融服务。任何人无需许可、无需 KYC 即可使用这些金融基础设施。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Concepts -->
+  <section id="concepts" style="background:rgba(255,255,255,.02)">
+    <div class="container">
+      <div class="sec-badge">🔑 核心概念</div>
+      <h2 class="sec-title">你需要了解的 <span>关键概念</span></h2>
+      <p class="sec-sub">深入理解以太坊，掌握这些核心概念是基础。</p>
+      <div class="concepts-grid">
+        <div class="concept-card">
+          <div class="concept-num">1</div>
+          <div class="concept-body">
+            <h3>智能合约 Smart Contract</h3>
+            <p>用 Solidity 等语言编写、部署在 EVM 上的程序。一旦部署无法修改，代码即法律。用于实现 DEX、借贷、NFT 铸造等各类去中心化应用。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">2</div>
+          <div class="concept-body">
+            <h3>Gas 手续费</h3>
+            <p>在以太坊上执行任何操作都需要支付 Gas。Gas 费 = Gas Used × (Base Fee + Priority Fee)，单位为 Gwei（1 ETH = 10⁹ Gwei）。网络拥堵时 Gas 费会大幅上涨。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">3</div>
+          <div class="concept-body">
+            <h3>EVM 以太坊虚拟机</h3>
+            <p>Ethereum Virtual Machine 是执行智能合约的运行时环境，所有节点独立运行相同代码并得到相同结果，保证去中心化执行的一致性。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">4</div>
+          <div class="concept-body">
+            <h3>权益证明 PoS</h3>
+            <p>2022 年合并（The Merge）后，以太坊从 PoW 转为 PoS。验证者需质押 32 ETH 参与出块，能耗降低 99.95%，年通胀率大幅下降，网络更加安全。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">5</div>
+          <div class="concept-body">
+            <h3>DeFi 去中心化金融</h3>
+            <p>基于智能合约的金融协议，无需银行、券商等中间机构。包括 DEX（去中心化交易所）、借贷协议、流动性挖矿、收益聚合器等，TVL 峰值超过 1000 亿美元。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">6</div>
+          <div class="concept-body">
+            <h3>NFT 非同质化代币</h3>
+            <p>基于 ERC-721/ERC-1155 标准的唯一性数字资产，每个 NFT 不可互换。广泛用于数字艺术、游戏道具、会员资格证明、现实资产上链等场景。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">7</div>
+          <div class="concept-body">
+            <h3>Layer 2 扩展方案</h3>
+            <p>在以太坊主链之上运行的第二层网络，将大量交易在链下处理再批量提交主链，Gas 费降低 10~100 倍。主流方案包括 Arbitrum、Optimism、zkSync、Starknet。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">8</div>
+          <div class="concept-body">
+            <h3>钱包 Wallet</h3>
+            <p>私钥的管理工具，而非存储 ETH 的地方（ETH 存在链上）。热钱包如 MetaMask 方便日常交互；冷钱包如 Ledger 安全性更高，适合大额资产长期存储。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">9</div>
+          <div class="concept-body">
+            <h3>ERC 代币标准</h3>
+            <p>ERC-20 是同质化代币标准（USDT/USDC/各种 DeFi 代币）；ERC-721 是 NFT 标准；ERC-1155 支持多类型混合；ERC-4337 实现账户抽象（AA）。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">10</div>
+          <div class="concept-body">
+            <h3>DAO 去中心化自治</h3>
+            <p>通过智能合约和治理代币实现社区集体决策的组织形式。代币持有人可提交提案、投票，无需公司结构即可协调全球社区，管理数十亿美元的协议金库。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">11</div>
+          <div class="concept-body">
+            <h3>稳定币 Stablecoin</h3>
+            <p>价格与法币锚定的代币。法币抵押型（USDC/USDT）、加密抵押型（DAI）、算法型（已有失败案例）。稳定币是 DeFi 生态的核心流动性来源。</p>
+          </div>
+        </div>
+        <div class="concept-card">
+          <div class="concept-num">12</div>
+          <div class="concept-body">
+            <h3>MEV 矿工可提取价值</h3>
+            <p>验证者/搜索者通过调整区块内交易顺序获取的额外利润，包括套利、三明治攻击、清算等。Flashbots 等项目旨在让 MEV 更透明、对用户更友好。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ecosystem -->
+  <section id="ecosystem">
+    <div class="container">
+      <div class="sec-badge">🌐 生态地图</div>
+      <h2 class="sec-title">以太坊 <span>生态系统</span></h2>
+      <p class="sec-sub">以太坊拥有最丰富的区块链生态，涵盖 DeFi、NFT、Layer2、基础设施等全类型应用。</p>
+      <div class="eco-tabs">
+        <button class="eco-tab active" onclick="filterEco('all',this)">全部</button>
+        <button class="eco-tab" onclick="filterEco('wallet',this)">👛 钱包</button>
+        <button class="eco-tab" onclick="filterEco('defi',this)">🏦 DeFi</button>
+        <button class="eco-tab" onclick="filterEco('dex',this)">🔄 DEX</button>
+        <button class="eco-tab" onclick="filterEco('l2',this)">⚡ Layer 2</button>
+        <button class="eco-tab" onclick="filterEco('nft',this)">🖼 NFT</button>
+        <button class="eco-tab" onclick="filterEco('infra',this)">🔧 基础设施</button>
+        <button class="eco-tab" onclick="filterEco('stable',this)">💵 稳定币</button>
+      </div>
+      <div class="eco-grid" id="ecoGrid"></div>
+    </div>
+  </section>
+
+  <!-- Timeline -->
+  <section id="timeline" style="background:rgba(255,255,255,.02)">
+    <div class="container">
+      <div class="sec-badge">📅 发展历程</div>
+      <h2 class="sec-title">以太坊 <span>里程碑</span></h2>
+      <p class="sec-sub">从白皮书到世界计算机，以太坊走过了十年的关键升级之路。</p>
+      <div class="timeline">
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2013年11月</div>
+          <div class="tl-title">以太坊白皮书发布 <span class="tl-badge milestone">创世</span></div>
+          <div class="tl-desc">Vitalik Buterin 发布《以太坊白皮书》，提出可编程区块链的构想，描述了智能合约平台的核心设计。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2014年7月</div>
+          <div class="tl-title">以太坊众筹 ICO <span class="tl-badge milestone">融资</span></div>
+          <div class="tl-desc">以太坊基金会完成历史上最成功的 ICO 之一，42 天内募集约 1800 万美元，预售 ETH 均价约 0.31 美元。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2015年7月</div>
+          <div class="tl-title">Frontier 主网上线 <span class="tl-badge milestone">创世</span></div>
+          <div class="tl-desc">以太坊主网正式上线，创世区块生成，区块奖励 5 ETH，开始基于 PoW 运行。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2016年7月</div>
+          <div class="tl-title">The DAO 事件与硬分叉 <span class="tl-badge upgrade">硬分叉</span></div>
+          <div class="tl-desc">The DAO 被黑客攻击损失 360 万 ETH，社区紧急硬分叉回滚，导致链分裂为以太坊（ETH）和以太坊经典（ETC）。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2017年</div>
+          <div class="tl-title">ICO 热潮与 ERC-20 爆发 <span class="tl-badge milestone">生态</span></div>
+          <div class="tl-desc">以太坊成为 ICO 首选平台，ERC-20 代币标准被广泛采用，ETH 价格年内从 8 美元涨至 1400 美元，Gas 费随之飙升。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2020年12月</div>
+          <div class="tl-title">信标链上线 <span class="tl-badge upgrade">升级</span></div>
+          <div class="tl-desc">以太坊 2.0 信标链（Beacon Chain）启动，引入 PoS 机制，质押者开始验证，为大合并做准备。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2021年8月</div>
+          <div class="tl-title">EIP-1559 伦敦升级 <span class="tl-badge upgrade">升级</span></div>
+          <div class="tl-desc">引入基础费用燃烧机制，每笔交易的 Base Fee 被永久销毁，ETH 通胀率大幅下降，"超声货币"叙事形成。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2022年9月</div>
+          <div class="tl-title">The Merge 大合并 <span class="tl-badge milestone">历史性</span></div>
+          <div class="tl-desc">以太坊主网与信标链合并，正式从 PoW 切换为 PoS，能耗降低 99.95%，是区块链史上最复杂的基础设施升级。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2023年4月</div>
+          <div class="tl-title">Shapella 上海升级 <span class="tl-badge upgrade">升级</span></div>
+          <div class="tl-desc">开放质押 ETH 提款功能，验证者首次可提取质押收益，完成 PoS 过渡的最后一步闭环，质押总量随后持续增长。</div>
+        </div>
+        <div class="tl-item done">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2024年3月</div>
+          <div class="tl-title">Dencun 坎昆升级 <span class="tl-badge upgrade">升级</span></div>
+          <div class="tl-desc">引入 EIP-4844（Proto-Danksharding），为 Layer 2 提供专用数据存储（Blob），L2 Gas 费大幅下降 90%+。</div>
+        </div>
+        <div class="tl-item future">
+          <div class="tl-dot"></div>
+          <div class="tl-year">2025～</div>
+          <div class="tl-title">Pectra 升级 <span class="tl-badge future">即将</span></div>
+          <div class="tl-desc">引入 EIP-7702 账户抽象、验证者存款上限提升（32→2048 ETH）、更多 Blob 容量，持续提升网络性能与用户体验。</div>
+        </div>
+        <div class="tl-item future">
+          <div class="tl-dot"></div>
+          <div class="tl-year">未来</div>
+          <div class="tl-title">完整 Danksharding <span class="tl-badge future">规划中</span></div>
+          <div class="tl-desc">完整 Danksharding 将把以太坊数据可用性扩展至每秒 1.3 MB，配合 L2 生态，理论 TPS 可达数十万级别。</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gas Calculator -->
+  <section id="calculator">
+    <div class="container">
+      <div class="sec-badge">⛽ 工具</div>
+      <h2 class="sec-title">Gas <span>费用计算器</span></h2>
+      <p class="sec-sub">估算以太坊交易的 Gas 费用，实时 ETH 价格换算。</p>
+      <div class="calc-card">
+        <div class="calc-row">
+          <div class="calc-field">
+            <label>操作类型</label>
+            <select id="txType" onchange="onTypeChange()">
+              <option value="21000">ETH 转账（21,000 gas）</option>
+              <option value="65000">ERC-20 转账（~65,000 gas）</option>
+              <option value="150000">Uniswap 兑换（~150,000 gas）</option>
+              <option value="200000">NFT 铸造（~200,000 gas）</option>
+              <option value="500000">合约部署（~500,000 gas）</option>
+              <option value="custom">自定义 Gas Limit</option>
+            </select>
+          </div>
+          <div class="calc-field" id="customGasField" style="display:none">
+            <label>Gas Limit</label>
+            <input type="number" id="customGas" placeholder="如 150000" value="150000"/>
+          </div>
+        </div>
+        <div class="calc-row">
+          <div class="calc-field">
+            <label>Base Fee (Gwei)</label>
+            <input type="number" id="baseFee" placeholder="如 15" value="15" step="0.1"/>
+          </div>
+          <div class="calc-field">
+            <label>Priority Fee (Gwei)</label>
+            <input type="number" id="priorityFee" placeholder="如 1" value="1" step="0.1"/>
+          </div>
+          <div class="calc-field">
+            <label>ETH 价格 (USD)</label>
+            <input type="number" id="ethPrice" placeholder="如 3000" value="" id="ethPriceInput"/>
+          </div>
+          <button class="calc-btn" onclick="calcGas()">计算</button>
+        </div>
+        <div class="calc-result" id="calcResult">
+          <div class="calc-result-row"><span>Gas Limit</span><span id="r-gasLimit">—</span></div>
+          <div class="calc-result-row"><span>Gas Price</span><span id="r-gasPrice">—</span></div>
+          <div class="calc-result-row"><span>费用（ETH）</span><span id="r-ethFee">—</span></div>
+          <div class="calc-result-row"><span>💰 费用（USD）</span><span id="r-usdFee">—</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resources -->
+  <section id="resources" style="background:rgba(255,255,255,.02)">
+    <div class="container">
+      <div class="sec-badge">📚 学习资源</div>
+      <h2 class="sec-title">官方 &amp; 权威 <span>参考资源</span></h2>
+      <p class="sec-sub">从入门到进阶，这些是学习以太坊最值得信赖的资源。</p>
+      <div class="res-grid">
+        <a class="res-card" href="https://ethereum.org" target="_blank" rel="noopener">
+          <div class="res-icon">🌐</div>
+          <div><div class="res-name">ethereum.org</div><div class="res-desc">官方网站，最权威的入门教程、开发文档，中文版内容完整，从零基础到开发者全覆盖。</div><span class="res-tag">官方</span></div>
+        </a>
+        <a class="res-card" href="https://docs.soliditylang.org" target="_blank" rel="noopener">
+          <div class="res-icon">📝</div>
+          <div><div class="res-name">Solidity 文档</div><div class="res-desc">以太坊智能合约编程语言官方文档，语法参考、安全最佳实践、设计模式全面。</div><span class="res-tag">开发</span></div>
+        </a>
+        <a class="res-card" href="https://etherscan.io" target="_blank" rel="noopener">
+          <div class="res-icon">🔍</div>
+          <div><div class="res-name">Etherscan</div><div class="res-desc">以太坊主链浏览器，查询交易、地址、合约、Gas 历史，区块链数据透明可查。</div><span class="res-tag">工具</span></div>
+        </a>
+        <a class="res-card" href="https://eips.ethereum.org" target="_blank" rel="noopener">
+          <div class="res-icon">📋</div>
+          <div><div class="res-name">EIP 改进提案</div><div class="res-desc">以太坊改进提案仓库，所有重大协议升级的原始提案，了解以太坊治理流程必读。</div><span class="res-tag">协议</span></div>
+        </a>
+        <a class="res-card" href="https://hardhat.org" target="_blank" rel="noopener">
+          <div class="res-icon">⛑</div>
+          <div><div class="res-name">Hardhat</div><div class="res-desc">最流行的以太坊开发框架，本地测试网、合约部署、调试插件生态完善，开发者首选。</div><span class="res-tag">开发</span></div>
+        </a>
+        <a class="res-card" href="https://wagmi.sh" target="_blank" rel="noopener">
+          <div class="res-icon">⚙️</div>
+          <div><div class="res-name">wagmi</div><div class="res-desc">React Hooks 以太坊开发库，连接钱包、读写合约、监听事件，前端 dApp 开发必备。</div><span class="res-tag">开发</span></div>
+        </a>
+        <a class="res-card" href="https://defillama.com" target="_blank" rel="noopener">
+          <div class="res-icon">📊</div>
+          <div><div class="res-name">DefiLlama</div><div class="res-desc">DeFi 数据聚合平台，各链/各协议 TVL 实时追踪，免广告免费，DeFi 数据最全面。</div><span class="res-tag">数据</span></div>
+        </a>
+        <a class="res-card" href="https://ultrasound.money" target="_blank" rel="noopener">
+          <div class="res-icon">🦇</div>
+          <div><div class="res-name">ultrasound.money</div><div class="res-desc">ETH 供应量实时追踪，销毁量 vs 发行量对比，超声货币叙事可视化展示。</div><span class="res-tag">数据</span></div>
+        </a>
+        <a class="res-card" href="https://l2beat.com" target="_blank" rel="noopener">
+          <div class="res-icon">⚡</div>
+          <div><div class="res-name">L2BEAT</div><div class="res-desc">Layer 2 风险评估与数据平台，TVL、安全评级、技术细节透明对比，选 L2 必看。</div><span class="res-tag">L2</span></div>
+        </a>
+        <a class="res-card" href="https://cryptozombies.io" target="_blank" rel="noopener">
+          <div class="res-icon">🧟</div>
+          <div><div class="res-name">CryptoZombies</div><div class="res-desc">游戏化 Solidity 学习平台，边写代码边养僵尸，零基础入门智能合约开发最佳路径。</div><span class="res-tag">入门</span></div>
+        </a>
+        <a class="res-card" href="https://ethresear.ch" target="_blank" rel="noopener">
+          <div class="res-icon">🔬</div>
+          <div><div class="res-name">ETH Research</div><div class="res-desc">以太坊研究论坛，Vitalik 等核心开发者在此讨论技术提案，前沿研究第一手资料。</div><span class="res-tag">研究</span></div>
+        </a>
+        <a class="res-card" href="https://www.coingecko.com/en/coins/ethereum" target="_blank" rel="noopener">
+          <div class="res-icon">🦎</div>
+          <div><div class="res-name">CoinGecko ETH</div><div class="res-desc">ETH 价格历史、市值、成交量、链上数据多维度展示，加密货币数据最全面的平台。</div><span class="res-tag">行情</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Glossary -->
+  <section id="glossary">
+    <div class="container">
+      <div class="sec-badge">📖 词汇表</div>
+      <h2 class="sec-title">以太坊 <span>常用词汇</span></h2>
+      <p class="sec-sub">快速查阅常见术语，扫清阅读障碍。</p>
+      <div class="glossary-grid">
+        <div class="glossary-item"><div class="glossary-term">地址 <span class="glossary-en">Address</span></div><div class="glossary-def">0x 开头的 42 位十六进制字符串，是以太坊账户的唯一标识，类似银行账号。</div></div>
+        <div class="glossary-item"><div class="glossary-term">私钥 <span class="glossary-en">Private Key</span></div><div class="glossary-def">控制地址资产的 256 位随机数，谁持有私钥谁拥有资产，绝对不能泄露。</div></div>
+        <div class="glossary-item"><div class="glossary-term">助记词 <span class="glossary-en">Seed Phrase</span></div><div class="glossary-def">12 或 24 个英文单词，可恢复整个钱包，比私钥更便于备份，同等重要。</div></div>
+        <div class="glossary-item"><div class="glossary-term">区块 <span class="glossary-en">Block</span></div><div class="glossary-def">约每 12 秒生成一次，包含一批交易记录，所有区块按序链接形成区块链。</div></div>
+        <div class="glossary-item"><div class="glossary-term">哈希 <span class="glossary-en">Hash</span></div><div class="glossary-def">将任意长度数据映射为固定长度摘要的函数，以太坊用 Keccak-256，数据不可逆。</div></div>
+        <div class="glossary-item"><div class="glossary-term">随机数 <span class="glossary-en">Nonce</span></div><div class="glossary-def">账户发送交易的计数器，从 0 开始递增，防止交易重放，每笔交易唯一。</div></div>
+        <div class="glossary-item"><div class="glossary-term">Gwei <span class="glossary-en">Gwei</span></div><div class="glossary-def">ETH 的最小单位之一，1 ETH = 10⁹ Gwei = 10¹⁸ Wei，Gas 价格通常以 Gwei 计。</div></div>
+        <div class="glossary-item"><div class="glossary-term">流动性 <span class="glossary-en">Liquidity</span></div><div class="glossary-def">DEX 交易池中用于兑换的资产，由流动性提供者（LP）注入，获取手续费收益。</div></div>
+        <div class="glossary-item"><div class="glossary-term">滑点 <span class="glossary-en">Slippage</span></div><div class="glossary-def">交易预期价格与实际成交价格的差值，流动性越低或交易量越大，滑点越高。</div></div>
+        <div class="glossary-item"><div class="glossary-term">质押 <span class="glossary-en">Staking</span></div><div class="glossary-def">锁定 32 ETH 成为验证者参与出块，或通过流动性质押（Lido/RocketPool）获得年化收益。</div></div>
+        <div class="glossary-item"><div class="glossary-term">铸造 <span class="glossary-en">Minting</span></div><div class="glossary-def">在链上创建新代币或 NFT 的过程，调用合约的 mint 函数，需要支付 Gas 费。</div></div>
+        <div class="glossary-item"><div class="glossary-term">桥 <span class="glossary-en">Bridge</span></div><div class="glossary-def">跨链资产转移协议，将 ETH/代币从主链锁定并在 L2 或其他链上发行等额代币。</div></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div>⟠ 以太坊 ETH 完全指南 · 数据来源 <a href="https://www.coingecko.com" target="_blank">CoinGecko</a> · 仅供学习参考，不构成投资建议</div>
+  <div style="margin-top:8px;font-size:.75rem;opacity:.5">← <a href="../index.html" style="color:inherit">返回导航首页</a></div>
+</footer>
+
+<script>
+// ── Ecosystem Data ────────────────────────────────────────────────────────
+const ECO = [
+  {type:'wallet', icon:'🦊', name:'MetaMask',    desc:'最流行浏览器钱包',  url:'https://metamask.io'},
+  {type:'wallet', icon:'🌈', name:'Rainbow',     desc:'手机端精美钱包',    url:'https://rainbow.me'},
+  {type:'wallet', icon:'🔷', name:'Coinbase Wallet', desc:'合规交易所钱包', url:'https://wallet.coinbase.com'},
+  {type:'wallet', icon:'🔒', name:'Ledger',      desc:'硬件冷钱包标杆',    url:'https://www.ledger.com'},
+  {type:'wallet', icon:'🛡',  name:'Trezor',     desc:'开源硬件钱包',      url:'https://trezor.io'},
+  {type:'wallet', icon:'⚡', name:'Rabby',       desc:'多链智能钱包',      url:'https://rabby.io'},
+
+  {type:'dex',    icon:'🦄', name:'Uniswap',     desc:'以太坊最大 DEX',   url:'https://app.uniswap.org'},
+  {type:'dex',    icon:'🍣', name:'SushiSwap',   desc:'社区驱动 DEX',     url:'https://www.sushi.com'},
+  {type:'dex',    icon:'⚖️', name:'Curve',       desc:'稳定币兑换专家',   url:'https://curve.fi'},
+  {type:'dex',    icon:'⚖️', name:'Balancer',    desc:'自定义权重流动池', url:'https://balancer.fi'},
+  {type:'dex',    icon:'🌊', name:'1inch',       desc:'DEX 聚合路由',     url:'https://1inch.io'},
+  {type:'dex',    icon:'🦋', name:'dYdX',        desc:'永续合约 DEX',     url:'https://dydx.exchange'},
+
+  {type:'defi',   icon:'🏦', name:'Aave',        desc:'最大借贷协议',     url:'https://aave.com'},
+  {type:'defi',   icon:'🔵', name:'Compound',    desc:'算法利率借贷',     url:'https://compound.finance'},
+  {type:'defi',   icon:'💰', name:'MakerDAO',    desc:'DAI 稳定币发行方', url:'https://makerdao.com'},
+  {type:'defi',   icon:'🌿', name:'Lido',        desc:'液态质押第一',     url:'https://lido.fi'},
+  {type:'defi',   icon:'🚀', name:'RocketPool',  desc:'去中心化质押',     url:'https://rocketpool.net'},
+  {type:'defi',   icon:'🌾', name:'Yearn',       desc:'收益聚合优化器',   url:'https://yearn.fi'},
+
+  {type:'l2',     icon:'🔵', name:'Arbitrum',    desc:'最大 L2 生态',     url:'https://arbitrum.io'},
+  {type:'l2',     icon:'🔴', name:'Optimism',    desc:'OP Stack 发起方',  url:'https://www.optimism.io'},
+  {type:'l2',     icon:'🟣', name:'Polygon',     desc:'多链扩展方案',     url:'https://polygon.technology'},
+  {type:'l2',     icon:'⚡', name:'zkSync',      desc:'ZK Rollup 先行者', url:'https://zksync.io'},
+  {type:'l2',     icon:'🌟', name:'Starknet',    desc:'STARK 证明 L2',    url:'https://www.starknet.io'},
+  {type:'l2',     icon:'🔵', name:'Base',        desc:'Coinbase 官方 L2', url:'https://base.org'},
+
+  {type:'nft',    icon:'🌊', name:'OpenSea',     desc:'最大 NFT 交易市场', url:'https://opensea.io'},
+  {type:'nft',    icon:'✨', name:'Blur',        desc:'专业 NFT 交易所',   url:'https://blur.io'},
+  {type:'nft',    icon:'🖼', name:'Foundation',  desc:'艺术家精品 NFT',    url:'https://foundation.app'},
+  {type:'nft',    icon:'🎨', name:'Zora',        desc:'创作者铸造协议',    url:'https://zora.co'},
+  {type:'nft',    icon:'🟦', name:'Rarible',     desc:'多链 NFT 平台',     url:'https://rarible.com'},
+
+  {type:'infra',  icon:'🔍', name:'Etherscan',   desc:'以太坊区块浏览器', url:'https://etherscan.io'},
+  {type:'infra',  icon:'🔗', name:'Infura',      desc:'节点 API 服务',    url:'https://infura.io'},
+  {type:'infra',  icon:'🔮', name:'Alchemy',     desc:'Web3 开发平台',    url:'https://www.alchemy.com'},
+  {type:'infra',  icon:'📡', name:'The Graph',   desc:'链上数据索引',     url:'https://thegraph.com'},
+  {type:'infra',  icon:'🌐', name:'Chainlink',   desc:'去中心化预言机',   url:'https://chain.link'},
+  {type:'infra',  icon:'⛑',  name:'OpenZeppelin',desc:'合约安全库',       url:'https://openzeppelin.com'},
+
+  {type:'stable', icon:'💵', name:'USDC',        desc:'Circle 发行合规稳定币', url:'https://www.circle.com'},
+  {type:'stable', icon:'💚', name:'USDT',        desc:'Tether 最大稳定币',     url:'https://tether.to'},
+  {type:'stable', icon:'🌟', name:'DAI',         desc:'去中心化超额抵押',      url:'https://makerdao.com'},
+  {type:'stable', icon:'💛', name:'FRAX',        desc:'分数算法稳定币',        url:'https://frax.finance'},
+  {type:'stable', icon:'🔵', name:'crvUSD',      desc:'Curve 原生稳定币',      url:'https://curve.fi'},
+];
+
+let currentEco = 'all';
+function filterEco(type, btn){
+  currentEco = type;
+  document.querySelectorAll('.eco-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderEco();
+}
+function renderEco(){
+  const grid = document.getElementById('ecoGrid');
+  const items = currentEco === 'all' ? ECO : ECO.filter(e=>e.type===currentEco);
+  grid.innerHTML = items.map(e=>`
+    <a class="eco-item" href="${e.url}" target="_blank" rel="noopener">
+      <div class="eco-item-icon">${e.icon}</div>
+      <div>
+        <div class="eco-item-name">${e.name}</div>
+        <div class="eco-item-type">${e.desc}</div>
+      </div>
+    </a>`).join('');
+}
+renderEco();
+
+// ── Gas Calculator ────────────────────────────────────────────────────────
+function onTypeChange(){
+  const sel = document.getElementById('txType');
+  document.getElementById('customGasField').style.display = sel.value==='custom'?'block':'none';
+}
+
+function calcGas(){
+  const sel = document.getElementById('txType');
+  const gasLimit = sel.value === 'custom'
+    ? parseInt(document.getElementById('customGas').value)||21000
+    : parseInt(sel.value);
+  const baseFee     = parseFloat(document.getElementById('baseFee').value)||0;
+  const priorityFee = parseFloat(document.getElementById('priorityFee').value)||0;
+  const ethPriceVal = parseFloat(document.getElementById('ethPrice').value)||currentEthPrice||0;
+  const gasPrice    = baseFee + priorityFee;
+  const ethFee      = gasLimit * gasPrice / 1e9;
+  const usdFee      = ethFee * ethPriceVal;
+  document.getElementById('r-gasLimit').textContent  = gasLimit.toLocaleString() + ' gas';
+  document.getElementById('r-gasPrice').textContent  = gasPrice.toFixed(2) + ' Gwei';
+  document.getElementById('r-ethFee').textContent    = ethFee.toFixed(6) + ' ETH';
+  document.getElementById('r-usdFee').textContent    = ethPriceVal ? '$' + usdFee.toFixed(4) : '请输入 ETH 价格';
+  document.getElementById('calcResult').classList.add('show');
+}
+
+// ── Price Fetch ───────────────────────────────────────────────────────────
+let currentEthPrice = 0;
+async function fetchPrice(){
+  try{
+    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true&include_market_cap=true');
+    const d = await r.json();
+    const price  = d.ethereum.usd;
+    const change = d.ethereum.usd_24h_change;
+    const mcap   = d.ethereum.usd_market_cap;
+    currentEthPrice = price;
+
+    // nav
+    document.getElementById('priceVal').textContent = '$' + price.toLocaleString();
+    const chEl = document.getElementById('priceChange');
+    chEl.textContent = (change>=0?'+':'')+change.toFixed(2)+'%';
+    chEl.className = 'price-change ' + (change>=0?'change-up':'change-down');
+
+    // hero
+    document.getElementById('heroPrice').textContent = '$'+price.toLocaleString();
+    const m = mcap >= 1e12 ? (mcap/1e12).toFixed(2)+'T' : mcap >= 1e9 ? (mcap/1e9).toFixed(1)+'B' : (mcap/1e6).toFixed(0)+'M';
+    document.getElementById('heroMcap').textContent = '$'+m;
+
+    // pre-fill calc
+    document.getElementById('ethPrice').value = price.toFixed(0);
+  } catch(e){
+    document.getElementById('priceVal').textContent = '获取失败';
+  }
+}
+fetchPrice();
+setInterval(fetchPrice, 60000);
+</script>
+</body>
+</html>
