@@ -94,6 +94,16 @@ nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(13,1
 .card[data-c="news"]::before{background:radial-gradient(ellipse at 0 0,rgba(96,165,250,.07),transparent 65%)}
 .card[data-c="learn"]:hover{border-color:rgba(251,146,60,.4)}
 .card[data-c="learn"]::before{background:radial-gradient(ellipse at 0 0,rgba(251,146,60,.07),transparent 65%)}
+.card[data-c="game"]:hover{border-color:rgba(167,139,250,.4)}
+.card[data-c="game"]::before{background:radial-gradient(ellipse at 0 0,rgba(167,139,250,.07),transparent 65%)}
+.card[data-c="travel"]:hover{border-color:rgba(52,211,153,.4)}
+.card[data-c="travel"]::before{background:radial-gradient(ellipse at 0 0,rgba(52,211,153,.07),transparent 65%)}
+.card[data-c="read"]:hover{border-color:rgba(96,165,250,.4)}
+.card[data-c="read"]::before{background:radial-gradient(ellipse at 0 0,rgba(96,165,250,.07),transparent 65%)}
+.card[data-c="health"]:hover{border-color:rgba(52,211,153,.4)}
+.card[data-c="health"]::before{background:radial-gradient(ellipse at 0 0,rgba(52,211,153,.07),transparent 65%)}
+.card[data-c="cloud"]:hover{border-color:rgba(34,211,238,.4)}
+.card[data-c="cloud"]::before{background:radial-gradient(ellipse at 0 0,rgba(34,211,238,.07),transparent 65%)}
 .card[data-c="finance"]:hover{border-color:rgba(251,191,36,.4)}
 .card[data-c="finance"]::before{background:radial-gradient(ellipse at 0 0,rgba(251,191,36,.07),transparent 65%)}
 
@@ -200,6 +210,23 @@ nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(13,1
     </button>
     <button class="cat-btn" data-c="learn" onclick="filterCat('learn',this)">
       <span>📚</span>学习教育<span class="cnt" id="cnt-learn"></span>
+    </button>
+
+    <div class="sidebar-label">娱乐 &amp; 生活</div>
+    <button class="cat-btn" data-c="game" onclick="filterCat('game',this)">
+      <span>🎮</span>游戏<span class="cnt" id="cnt-game"></span>
+    </button>
+    <button class="cat-btn" data-c="travel" onclick="filterCat('travel',this)">
+      <span>✈️</span>旅行出行<span class="cnt" id="cnt-travel"></span>
+    </button>
+    <button class="cat-btn" data-c="read" onclick="filterCat('read',this)">
+      <span>📖</span>阅读书籍<span class="cnt" id="cnt-read"></span>
+    </button>
+    <button class="cat-btn" data-c="health" onclick="filterCat('health',this)">
+      <span>🏃</span>健康运动<span class="cnt" id="cnt-health"></span>
+    </button>
+    <button class="cat-btn" data-c="cloud" onclick="filterCat('cloud',this)">
+      <span>☁️</span>网盘存储<span class="cnt" id="cnt-cloud"></span>
     </button>
   </aside>
 
@@ -463,6 +490,63 @@ const SITES = [
   {c:'news',icon:'📰',name:'Reuters',url:'https://www.reuters.com',desc:'路透社，全球权威财经与国际新闻，客观中立，是众多媒体的消息来源。',tags:['国际','财经','权威'],badges:[]},
   {c:'news',icon:'🛡',name:'The Guardian',url:'https://www.theguardian.com',desc:'英国卫报，独立新闻报道，无付费墙，调查性新闻与社会议题深度报道著称。',tags:['国际','独立','深度'],badges:[]},
   {c:'news',icon:'🔬',name:'Ars Technica',url:'https://arstechnica.com',desc:'面向极客的深度科技报道，技术细节准确，评测深入，评论区技术讨论高质量。',tags:['国际','极客','深度'],badges:[]},
+  {c:'news',icon:'💹',name:'Bloomberg',url:'https://www.bloomberg.com',desc:'全球财经媒体权威，实时市场数据、经济分析与商业报道，华尔街必读。',tags:['国际','财经','市场'],badges:[]},
+  {c:'news',icon:'📊',name:'Financial Times',url:'https://www.ft.com',desc:'金融时报，国际经济与商业报道标杆，粉色报纸标志性，全球精英阅读。',tags:['国际','金融','商业'],badges:[]},
+
+  // ── 游戏 ──────────────────────────────────────────────────
+  {c:'game',icon:'🎮',name:'Steam',url:'https://store.steampowered.com',desc:'全球最大 PC 游戏平台，5 万+ 游戏，社区功能完善，定期大促折扣吸引。',tags:['PC','游戏库','折扣'],badges:['hot']},
+  {c:'game',icon:'⚡',name:'Epic Games',url:'https://store.epicgames.com',desc:'每周免费赠送游戏，UE5 引擎发行商，独占大作多，Fortnite 运营商。',tags:['免费领取','UE5','独占'],badges:['hot']},
+  {c:'game',icon:'📦',name:'GOG',url:'https://www.gog.com',desc:'无 DRM 正版游戏平台，老游戏适配完善，独立游戏精品多，注重游戏所有权。',tags:['无DRM','老游戏','独立'],badges:[]},
+  {c:'game',icon:'🟢',name:'Xbox',url:'https://www.xbox.com',desc:'微软旗下游戏平台，Game Pass 订阅月费制，PC+主机双端，第一方大作丰富。',tags:['微软','Game Pass','主机'],badges:[]},
+  {c:'game',icon:'🔵',name:'PlayStation',url:'https://www.playstation.com',desc:'索尼旗下主机平台，PS5 独占大作品质顶尖，《战神》《蜘蛛侠》等经典系列。',tags:['索尼','PS5','独占'],badges:['hot']},
+  {c:'game',icon:'🔴',name:'Nintendo',url:'https://www.nintendo.com',desc:'任天堂游戏平台，Switch 掌机主机两用，马里奥塞尔达等经典 IP 长青。',tags:['任天堂','Switch','家庭'],badges:['hot']},
+  {c:'game',icon:'🟤',name:'腾讯游戏',url:'https://games.qq.com',desc:'国内最大游戏公司，王者荣耀、英雄联盟、和平精英等现象级游戏运营商。',tags:['国内','手游','端游'],badges:['cn','hot']},
+  {c:'game',icon:'🔴',name:'网易游戏',url:'https://game.163.com',desc:'国内第二大游戏公司，阴阳师、第五人格、逆水寒等多款精品 IP，品质较高。',tags:['国内','手游','IP'],badges:['cn']},
+  {c:'game',icon:'🟡',name:'4399游戏',url:'https://www.4399.com',desc:'国内最大休闲网页游戏平台，怀旧经典小游戏聚集地，无需下载，即点即玩。',tags:['国内','网页游戏','休闲'],badges:['cn']},
+  {c:'game',icon:'🟣',name:'Itch.io',url:'https://itch.io',desc:'独立游戏发布与销售平台，创意实验性游戏聚集，开发者友好，免费游戏多。',tags:['独立游戏','创意','免费'],badges:['free']},
+
+  // ── 旅行出行 ──────────────────────────────────────────────
+  {c:'travel',icon:'🌙',name:'携程',url:'https://www.ctrip.com',desc:'国内最大在线旅行平台，机票、酒店、度假套餐一站预订，会员积分体系完善。',tags:['国内','机票','酒店'],badges:['cn','hot']},
+  {c:'travel',icon:'🔵',name:'去哪儿',url:'https://www.qunar.com',desc:'比价旅行搜索平台，聚合全网机票酒店价格，低价提醒智能，携程系产品。',tags:['国内','比价','机票'],badges:['cn']},
+  {c:'travel',icon:'🐷',name:'飞猪',url:'https://www.fliggy.com',desc:'阿里旗下旅行平台，双十一旅行优惠力度大，与淘宝天猫购物积分互通。',tags:['国内','阿里','优惠'],badges:['cn']},
+  {c:'travel',icon:'🏠',name:'Airbnb',url:'https://www.airbnb.com',desc:'全球民宿共享平台，190+ 国家 700 万+ 房源，独特本地体验，旅行住宿新选择。',tags:['民宿','共享','国际'],badges:['hot']},
+  {c:'travel',icon:'🏨',name:'Booking.com',url:'https://www.booking.com',desc:'全球最大酒店预订平台，覆盖 200+ 国家，免费取消政策灵活，价格竞争力强。',tags:['酒店','全球','国际'],badges:['hot']},
+  {c:'travel',icon:'🌏',name:'Agoda',url:'https://www.agoda.com',desc:'亚太地区酒店住宿预订，东南亚价格优势明显，会员积分抵扣方便。',tags:['酒店','亚太','东南亚'],badges:[]},
+  {c:'travel',icon:'🚄',name:'12306',url:'https://www.12306.cn',desc:'中国铁路官方购票平台，高铁动车城际票务，实名制购票，出行必备。',tags:['国内','高铁','购票'],badges:['cn']},
+  {c:'travel',icon:'🗺',name:'高德地图',url:'https://www.amap.com',desc:'国内最精准导航地图，实时路况、公交换乘、步行导航，打车叫车功能集成。',tags:['国内','导航','打车'],badges:['cn','hot']},
+  {c:'travel',icon:'🔵',name:'Google Maps',url:'https://maps.google.com',desc:'全球最精准地图，街景实景、路线规划、离线地图，海外出行导航首选。',tags:['国际','导航','街景'],badges:['hot']},
+  {c:'travel',icon:'🌟',name:'TripAdvisor',url:'https://www.tripadvisor.com',desc:'全球最大旅游点评平台，景点/酒店/餐厅真实评价，旅行决策参考必看。',tags:['国际','点评','攻略'],badges:[]},
+
+  // ── 阅读书籍 ──────────────────────────────────────────────
+  {c:'read',icon:'📱',name:'微信读书',url:'https://weread.qq.com',desc:'腾讯旗下电子书阅读平台，与微信打通，无限卡会员划算，社交读书功能新颖。',tags:['国内','电子书','社交'],badges:['cn','hot']},
+  {c:'read',icon:'🟢',name:'豆瓣',url:'https://www.douban.com',desc:'国内最大书影音评分社区，豆瓣评分影响力大，书单推荐、影评文艺气息浓厚。',tags:['国内','评分','书影音'],badges:['cn']},
+  {c:'read',icon:'📕',name:'起点中文网',url:'https://www.qidian.com',desc:'国内最大网络小说平台，玄幻、都市、言情各类网文聚集，阅文集团旗下。',tags:['国内','网文','小说'],badges:['cn']},
+  {c:'read',icon:'🍅',name:'番茄小说',url:'https://fanqienovel.com',desc:'字节旗下免费小说平台，看广告免费阅读，书库庞大，移动端体验流畅。',tags:['国内','免费','字节'],badges:['cn','free']},
+  {c:'read',icon:'📚',name:'得到',url:'https://www.dedao.cn',desc:'罗振宇出品的知识付费平台，精品音频课、电子书、每天 60 秒，知识密度高。',tags:['国内','知识付费','课程'],badges:['cn']},
+  {c:'read',icon:'📖',name:'Kindle',url:'https://www.amazon.com/kindle',desc:'亚马逊电子阅读器与平台，Kindle Unlimited 订阅制，墨水屏阅读体验最佳。',tags:['电子阅读','Kindle','订阅'],badges:[]},
+  {c:'read',icon:'📗',name:'Goodreads',url:'https://www.goodreads.com',desc:'全球最大读书社交平台，书单管理、阅读进度、书友推荐，亚马逊旗下。',tags:['国际','书单','社交'],badges:[]},
+  {c:'read',icon:'🏛',name:'Project Gutenberg',url:'https://www.gutenberg.org',desc:'最大免费公版书库，7 万+ 版权过期经典作品免费下载，多格式支持。',tags:['国际','免费','公版书'],badges:['free']},
+  {c:'read',icon:'📜',name:'Z-Library',url:'https://z-library.sk',desc:'全球最大电子书库，数百万书籍论文免费下载，学术研究与阅读爱好者必备。',tags:['免费','电子书','学术'],badges:['free']},
+
+  // ── 健康运动 ──────────────────────────────────────────────
+  {c:'health',icon:'💊',name:'丁香医生',url:'https://dxy.com',desc:'专业医疗科普平台，医生在线问诊，权威健康知识辟谣，用药指南可靠。',tags:['国内','问诊','科普'],badges:['cn']},
+  {c:'health',icon:'🏥',name:'好大夫在线',url:'https://www.haodf.com',desc:'国内最大在线问诊平台，连接优质三甲医院医生，图文/电话/视频问诊齐全。',tags:['国内','问诊','三甲'],badges:['cn']},
+  {c:'health',icon:'💙',name:'京东健康',url:'https://health.jd.com',desc:'京东旗下健康平台，网上药店正品保障，在线问诊，慢病管理服务完善。',tags:['国内','买药','问诊'],badges:['cn']},
+  {c:'health',icon:'🏃',name:'Keep',url:'https://www.keepkeep.com',desc:'国内最大运动健身 App，课程视频专业，跑步骑行记录，运动社区氛围好。',tags:['国内','健身','跑步'],badges:['cn','hot']},
+  {c:'health',icon:'🥗',name:'薄荷健康',url:'https://www.boohee.com',desc:'国内减脂控卡平台，食物热量数据库全面，饮食记录与体重管理科学实用。',tags:['国内','减脂','饮食'],badges:['cn']},
+  {c:'health',icon:'🏅',name:'Strava',url:'https://www.strava.com',desc:'全球运动员社区，跑步骑行路线记录，GPS 轨迹分析，马拉松备赛必备。',tags:['国际','跑步','骑行'],badges:[]},
+  {c:'health',icon:'🌿',name:'Calm',url:'https://www.calm.com',desc:'冥想与睡眠 App，引导冥想、睡前故事、助眠音乐，减压放松全球用户千万。',tags:['国际','冥想','睡眠'],badges:[]},
+  {c:'health',icon:'💪',name:'MyFitnessPal',url:'https://www.myfitnesspal.com',desc:'全球最大卡路里追踪平台，食物数据库庞大，与运动设备联动，减重健身必备。',tags:['国际','热量','减重'],badges:[]},
+
+  // ── 网盘存储 ──────────────────────────────────────────────
+  {c:'cloud',icon:'🔵',name:'百度网盘',url:'https://pan.baidu.com',desc:'国内最大网盘，免费 1TB 存储，资源分享生态庞大，视频倍速在线播放。',tags:['国内','网盘','1TB'],badges:['cn','hot']},
+  {c:'cloud',icon:'🟠',name:'阿里云盘',url:'https://www.aliyundrive.com',desc:'阿里出品，不限速下载，相册备份体验好，签到可领存储空间，体验优于百度盘。',tags:['国内','阿里','不限速'],badges:['cn','hot']},
+  {c:'cloud',icon:'🔵',name:'腾讯微云',url:'https://www.weiyun.com',desc:'腾讯旗下网盘，与微信QQ打通，文件同步快捷，基础版 10GB 免费。',tags:['国内','腾讯','同步'],badges:['cn']},
+  {c:'cloud',icon:'🟤',name:'坚果云',url:'https://www.jianguoyun.com',desc:'专业文件同步网盘，增量同步技术省流量，适合文档工作者，多平台客户端完善。',tags:['国内','同步','文档'],badges:['cn']},
+  {c:'cloud',icon:'🔵',name:'Google Drive',url:'https://drive.google.com',desc:'谷歌云存储，与 Google Docs/Sheets/Slides 深度集成，免费 15GB，协作流畅。',tags:['谷歌','协作','免费'],badges:['hot']},
+  {c:'cloud',icon:'🔷',name:'OneDrive',url:'https://onedrive.microsoft.com',desc:'微软云存储，Office 365 订阅自动同步，与 Windows 系统深度集成，企业常用。',tags:['微软','Office','同步'],badges:[]},
+  {c:'cloud',icon:'🔵',name:'Dropbox',url:'https://www.dropbox.com',desc:'云存储先驱，跨平台文件同步稳定可靠，团队协作共享文件夹功能成熟。',tags:['国际','同步','协作'],badges:[]},
+  {c:'cloud',icon:'⚫',name:'iCloud',url:'https://www.icloud.com',desc:'苹果云服务，iPhone/iPad/Mac 数据无缝同步，照片备份、邮件、文档全覆盖。',tags:['苹果','备份','同步'],badges:[]},
 ];
 
 const CAT_META = {
@@ -479,9 +563,14 @@ const CAT_META = {
   finance:{label:'金融理财',    color:'var(--yellow)',   icon:'💰'},
   news:   {label:'新闻资讯',    color:'var(--blue)',     icon:'📰'},
   learn:  {label:'学习教育',    color:'var(--orange)',   icon:'📚'},
+  game:   {label:'游戏',        color:'var(--purple)',   icon:'🎮'},
+  travel: {label:'旅行出行',    color:'var(--green)',    icon:'✈️'},
+  read:   {label:'阅读书籍',    color:'var(--blue)',     icon:'📖'},
+  health: {label:'健康运动',    color:'var(--teal)',     icon:'🏃'},
+  cloud:  {label:'网盘存储',    color:'var(--cyan)',     icon:'☁️'},
 };
 
-const CAT_ORDER = ['mine','search','social','video','music','ai','dev','design','work','shop','finance','news','learn'];
+const CAT_ORDER = ['mine','search','social','video','music','ai','dev','design','work','shop','finance','news','learn','game','travel','read','health','cloud'];
 const BADGE_LABEL = {cn:'国内',free:'免费',hot:'🔥热门',mine:'自制'};
 
 let currentCat = 'all';
@@ -559,7 +648,7 @@ function renderCards(){
 
 function updateCounts(){
   document.getElementById('totalCount').textContent = SITES.length;
-  document.getElementById('catCount').textContent = CAT_ORDER.length;
+  document.getElementById('catCount').textContent = CAT_ORDER.length - 1; // 排除 mine
   document.getElementById('cnt-all').textContent = SITES.length;
   CAT_ORDER.forEach(c => {
     const el = document.getElementById('cnt-'+c);
