@@ -1,2360 +1,590 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Claude Code 完全指南</title>
-  <style>
-    :root {
-      --brand: #d97706;
-      --brand-dark: #b45309;
-      --brand-light: #fef3c7;
-      --bg: #0f0f13;
-      --bg2: #18181f;
-      --bg3: #22222c;
-      --border: rgba(255,255,255,0.08);
-      --text: #e8e8f0;
-      --text2: #9999b0;
-      --code-bg: #1e1e2a;
-      --radius: 12px;
-      --nav-h: 60px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-    }
-
-    /* ── Nav ─────────────────────────────────────────────────────────────── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: var(--nav-h);
-      background: rgba(15,15,19,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 32px;
-      z-index: 100;
-    }
-
-    .nav-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 1.05rem;
-      color: var(--text);
-      text-decoration: none;
-    }
-
-    .nav-logo .logo-icon {
-      width: 30px;
-      height: 30px;
-      background: linear-gradient(135deg, var(--brand), #f59e0b);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 4px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      color: var(--text2);
-      text-decoration: none;
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      transition: all 0.2s;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-      background: var(--bg3);
-    }
-
-    .nav-cta {
-      background: var(--brand) !important;
-      color: #000 !important;
-      font-weight: 600 !important;
-    }
-
-    .nav-cta:hover {
-      background: var(--brand-dark) !important;
-    }
-
-    @media (max-width: 680px) {
-      .nav-links { display: none; }
-    }
-
-    /* ── Main layout ──────────────────────────────────────────────────────── */
-    main {
-      padding-top: var(--nav-h);
-    }
-
-    section {
-      padding: 80px 24px;
-    }
-
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-    }
-
-    .container-wide {
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-
-    /* ── Hero ─────────────────────────────────────────────────────────────── */
-    .hero {
-      background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(217,119,6,0.18) 0%, transparent 70%),
-                  var(--bg);
-      text-align: center;
-      padding: 120px 24px 80px;
-    }
-
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(217,119,6,0.15);
-      border: 1px solid rgba(217,119,6,0.35);
-      color: var(--brand);
-      padding: 5px 14px;
-      border-radius: 99px;
-      font-size: 0.82rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      margin-bottom: 28px;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.2rem, 5vw, 3.8rem);
-      font-weight: 800;
-      line-height: 1.15;
-      letter-spacing: -1px;
-      margin-bottom: 20px;
-    }
-
-    .hero h1 span {
-      background: linear-gradient(90deg, var(--brand), #f59e0b, #fbbf24);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-sub {
-      font-size: 1.15rem;
-      color: var(--text2);
-      max-width: 560px;
-      margin: 0 auto 40px;
-    }
-
-    .hero-actions {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      padding: 12px 28px;
-      border-radius: 10px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s;
-      cursor: pointer;
-      border: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary {
-      background: var(--brand);
-      color: #000;
-    }
-
-    .btn-primary:hover {
-      background: var(--brand-dark);
-      transform: translateY(-1px);
-    }
-
-    .btn-secondary {
-      background: var(--bg3);
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-
-    .btn-secondary:hover {
-      background: #2e2e3a;
-      transform: translateY(-1px);
-    }
-
-    .hero-terminal {
-      margin-top: 56px;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      text-align: left;
-      max-width: 680px;
-      margin-left: auto;
-      margin-right: auto;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-    }
-
-    .terminal-bar {
-      background: #2a2a35;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .dot { width: 12px; height: 12px; border-radius: 50%; }
-    .dot-r { background: #ff5f57; }
-    .dot-y { background: #febc2e; }
-    .dot-g { background: #28c840; }
-
-    .terminal-title {
-      font-size: 0.8rem;
-      color: var(--text2);
-      margin-left: 8px;
-    }
-
-    .terminal-body {
-      padding: 20px 24px;
-      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-      font-size: 0.9rem;
-      line-height: 1.9;
-    }
-
-    .t-prompt { color: #6ee7b7; }
-    .t-cmd { color: #e8e8f0; }
-    .t-comment { color: #6b7280; }
-    .t-output { color: #a78bfa; }
-    .t-claude { color: var(--brand); }
-
-    /* ── Section titles ───────────────────────────────────────────────────── */
-    .section-label {
-      font-size: 0.78rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--brand);
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      line-height: 1.2;
-      margin-bottom: 14px;
-    }
-
-    .section-desc {
-      color: var(--text2);
-      font-size: 1.05rem;
-      max-width: 560px;
-      margin-bottom: 48px;
-    }
-
-    /* ── Feature cards ────────────────────────────────────────────────────── */
-    .features-bg {
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 18px;
-    }
-
-    .feat-card {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
-
-    .feat-card:hover {
-      border-color: rgba(217,119,6,0.4);
-      transform: translateY(-2px);
-    }
-
-    .feat-icon {
-      font-size: 1.8rem;
-      margin-bottom: 14px;
-      display: block;
-    }
-
-    .feat-title {
-      font-size: 1rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .feat-desc {
-      color: var(--text2);
-      font-size: 0.88rem;
-      line-height: 1.6;
-    }
-
-    /* ── Install section ──────────────────────────────────────────────────── */
-    .install-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    @media (max-width: 700px) {
-      .install-grid { grid-template-columns: 1fr; }
-    }
-
-    .install-steps {
-      counter-reset: step;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .install-step {
-      display: flex;
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    .step-num {
-      counter-increment: step;
-      min-width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: rgba(217,119,6,0.15);
-      border: 1px solid rgba(217,119,6,0.4);
-      color: var(--brand);
-      font-weight: 700;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .step-content h4 {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-    }
-
-    .step-content p {
-      color: var(--text2);
-      font-size: 0.87rem;
-    }
-
-    /* ── Code blocks ──────────────────────────────────────────────────────── */
-    .code-block {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin: 12px 0;
-    }
-
-    .code-header {
-      background: #2a2a35;
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .code-lang {
-      font-size: 0.75rem;
-      color: var(--text2);
-      font-family: monospace;
-    }
-
-    .copy-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text2);
-      padding: 3px 10px;
-      border-radius: 6px;
-      font-size: 0.73rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .copy-btn:hover {
-      color: var(--text);
-      border-color: rgba(255,255,255,0.2);
-    }
-
-    pre {
-      padding: 18px 20px;
-      overflow-x: auto;
-      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-      font-size: 0.88rem;
-      line-height: 1.8;
-    }
-
-    code {
-      color: #e8e8f0;
-    }
-
-    .hl-green { color: #6ee7b7; }
-    .hl-blue { color: #93c5fd; }
-    .hl-yellow { color: #fcd34d; }
-    .hl-purple { color: #c4b5fd; }
-    .hl-gray { color: #6b7280; }
-    .hl-orange { color: var(--brand); }
-
-    /* Inline code */
-    p code, li code {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      padding: 2px 7px;
-      border-radius: 5px;
-      font-size: 0.85em;
-      color: var(--brand);
-      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-    }
-
-    /* ── Tutorials ────────────────────────────────────────────────────────── */
-    .tutorials-bg {
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tutorial-list {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .tutorial-item {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-
-    .tutorial-header {
-      padding: 18px 22px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.2s;
-    }
-
-    .tutorial-header:hover {
-      background: rgba(255,255,255,0.03);
-    }
-
-    .tutorial-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
-      background: rgba(217,119,6,0.15);
-      color: var(--brand);
-      font-size: 0.8rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .tutorial-title {
-      font-weight: 600;
-      font-size: 0.97rem;
-      flex: 1;
-    }
-
-    .tutorial-tag {
-      font-size: 0.72rem;
-      padding: 3px 9px;
-      border-radius: 99px;
-      font-weight: 600;
-    }
-
-    .tag-beginner { background: rgba(52,211,153,0.1); color: #34d399; }
-    .tag-intermediate { background: rgba(251,191,36,0.1); color: #fbbf24; }
-    .tag-advanced { background: rgba(239,68,68,0.1); color: #f87171; }
-
-    .tutorial-arrow {
-      color: var(--text2);
-      transition: transform 0.25s;
-    }
-
-    .tutorial-item.open .tutorial-arrow {
-      transform: rotate(90deg);
-    }
-
-    .tutorial-body {
-      display: none;
-      padding: 0 22px 22px;
-      border-top: 1px solid var(--border);
-    }
-
-    .tutorial-item.open .tutorial-body {
-      display: block;
-    }
-
-    .tutorial-body p {
-      color: var(--text2);
-      font-size: 0.9rem;
-      margin: 14px 0 10px;
-    }
-
-    .tutorial-body ul, .tutorial-body ol {
-      color: var(--text2);
-      font-size: 0.9rem;
-      padding-left: 20px;
-    }
-
-    .tutorial-body li {
-      margin-bottom: 5px;
-    }
-
-    /* ── Tutorial internals ───────────────────────────────────────────────── */
-    .tut-section-title {
-      font-size: 0.8rem;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--brand);
-      margin: 20px 0 10px;
-    }
-
-    .tut-intro {
-      background: rgba(255,255,255,0.04);
-      border-left: 3px solid var(--brand);
-      padding: 12px 16px;
-      border-radius: 0 8px 8px 0;
-      margin: 14px 0;
-      color: var(--text2);
-      font-size: 0.9rem;
-    }
-
-    .callout {
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 0.87rem;
-      margin: 12px 0;
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-    }
-
-    .callout-tip {
-      background: rgba(52,211,153,0.08);
-      border: 1px solid rgba(52,211,153,0.2);
-      color: #6ee7b7;
-    }
-
-    .callout-warn {
-      background: rgba(251,191,36,0.08);
-      border: 1px solid rgba(251,191,36,0.2);
-      color: #fcd34d;
-    }
-
-    .callout-info {
-      background: rgba(147,197,253,0.08);
-      border: 1px solid rgba(147,197,253,0.2);
-      color: #93c5fd;
-    }
-
-    .callout-icon { flex-shrink: 0; font-size: 1rem; }
-    .callout-text { line-height: 1.6; }
-
-    .steps-list {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin: 12px 0;
-    }
-
-    .steps-list li {
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      color: var(--text2) !important;
-      font-size: 0.9rem !important;
-      margin-bottom: 0 !important;
-    }
-
-    .step-dot {
-      min-width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background: rgba(217,119,6,0.2);
-      border: 1px solid rgba(217,119,6,0.5);
-      color: var(--brand);
-      font-size: 0.72rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .diff-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin: 12px 0;
-    }
-
-    @media (max-width: 640px) {
-      .diff-grid { grid-template-columns: 1fr; }
-    }
-
-    .diff-label {
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      padding: 6px 12px;
-      text-transform: uppercase;
-    }
-
-    .diff-before .diff-label { color: #f87171; background: rgba(239,68,68,0.1); }
-    .diff-after  .diff-label { color: #34d399; background: rgba(52,211,153,0.1); }
-
-    .diff-before pre { border-left: 2px solid rgba(239,68,68,0.4); }
-    .diff-after  pre { border-left: 2px solid rgba(52,211,153,0.4); }
-
-    .checklist {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      margin: 10px 0;
-    }
-
-    .checklist li {
-      display: flex;
-      gap: 8px;
-      font-size: 0.88rem !important;
-      color: var(--text2) !important;
-      margin-bottom: 0 !important;
-    }
-
-    .checklist li::before {
-      content: '✓';
-      color: #34d399;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .file-tree {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-      font-size: 0.85rem;
-      line-height: 1.9;
-      margin: 10px 0;
-      color: var(--text2);
-    }
-
-    .ft-dir  { color: #93c5fd; }
-    .ft-file { color: #e8e8f0; }
-    .ft-new  { color: #34d399; }
-    .ft-mod  { color: var(--brand); }
-
-    /* ── Commands table ───────────────────────────────────────────────────── */
-    .cmd-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 14px;
-    }
-
-    .cmd-card {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-    }
-
-    .cmd-name {
-      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-      font-size: 0.88rem;
-      color: var(--brand);
-      background: rgba(217,119,6,0.1);
-      padding: 4px 10px;
-      border-radius: 6px;
-      display: inline-block;
-      margin-bottom: 10px;
-    }
-
-    .cmd-desc {
-      color: var(--text2);
-      font-size: 0.86rem;
-    }
-
-    /* ── Tips ─────────────────────────────────────────────────────────────── */
-    .tips-bg {
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .tips-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 18px;
-    }
-
-    .tip-card {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px;
-    }
-
-    .tip-card.highlight {
-      border-color: rgba(217,119,6,0.35);
-      background: rgba(217,119,6,0.05);
-    }
-
-    .tip-icon {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    .tip-title {
-      font-weight: 700;
-      margin-bottom: 8px;
-      font-size: 0.95rem;
-    }
-
-    .tip-desc {
-      color: var(--text2);
-      font-size: 0.87rem;
-    }
-
-    /* ── Pricing ──────────────────────────────────────────────────────────── */
-    .pricing-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 18px;
-    }
-
-    .price-card {
-      background: var(--bg3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 28px 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .price-card.popular {
-      border-color: var(--brand);
-      background: rgba(217,119,6,0.06);
-      position: relative;
-    }
-
-    .popular-badge {
-      position: absolute;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--brand);
-      color: #000;
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 12px;
-      border-radius: 99px;
-      white-space: nowrap;
-    }
-
-    .price-name {
-      font-weight: 700;
-      font-size: 1rem;
-    }
-
-    .price-amount {
-      font-size: 2rem;
-      font-weight: 800;
-      line-height: 1;
-    }
-
-    .price-amount span {
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: var(--text2);
-    }
-
-    .price-desc {
-      color: var(--text2);
-      font-size: 0.83rem;
-      line-height: 1.5;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .price-features {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
-
-    .price-features li {
-      font-size: 0.85rem;
-      color: var(--text2);
-      display: flex;
-      gap: 8px;
-      align-items: flex-start;
-    }
-
-    .price-features li::before {
-      content: '✓';
-      color: #34d399;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .price-features li.no::before {
-      content: '✕';
-      color: #6b7280;
-    }
-
-    /* ── Footer ───────────────────────────────────────────────────────────── */
-    footer {
-      background: var(--bg2);
-      border-top: 1px solid var(--border);
-      padding: 40px 24px;
-      text-align: center;
-      color: var(--text2);
-      font-size: 0.85rem;
-    }
-
-    footer a {
-      color: var(--brand);
-      text-decoration: none;
-    }
-
-    /* ── Scrollbar ────────────────────────────────────────────────────────── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #444; }
-
-    /* ── Divider ──────────────────────────────────────────────────────────── */
-    .divider {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 0;
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>导航 — 常用网址大全</title>
+<style>
+:root{
+  --bg:#0d0d12;--bg2:#13131a;--bg3:#1a1a24;--bg4:#22222e;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e2e2f0;--text2:#8888a8;
+  --purple:#a78bfa;--blue:#60a5fa;--green:#34d399;--orange:#fb923c;
+  --pink:#f472b6;--yellow:#fbbf24;--cyan:#22d3ee;--red:#f87171;
+  --teal:#2dd4bf;--lime:#a3e635;
+  --radius:12px;--nav-h:58px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+
+/* ── Nav ── */
+nav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:rgba(13,13,18,0.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;gap:14px;z-index:200}
+.nav-logo{font-weight:800;font-size:1.1rem;white-space:nowrap;background:linear-gradient(90deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+.nav-search{flex:1;max-width:500px;position:relative}
+.nav-search input{width:100%;padding:8px 14px 8px 36px;background:var(--bg3);border:1px solid var(--border2);border-radius:99px;color:var(--text);font-size:0.9rem;outline:none;transition:border-color .2s}
+.nav-search input:focus{border-color:rgba(167,139,250,.5)}
+.nav-search input::placeholder{color:var(--text2)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text2);pointer-events:none}
+.nav-count{font-size:0.8rem;color:var(--text2);white-space:nowrap;margin-left:auto}
+
+/* ── Layout ── */
+.layout{display:flex;padding-top:var(--nav-h);min-height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{width:200px;flex-shrink:0;padding:14px 10px;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h));overflow-y:auto;border-right:1px solid var(--border)}
+.sidebar::-webkit-scrollbar{width:3px}
+.sidebar::-webkit-scrollbar-thumb{background:#2a2a38;border-radius:2px}
+.sidebar-label{font-size:0.67rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text2);padding:0 10px;margin:14px 0 5px}
+.sidebar-label:first-child{margin-top:0}
+.cat-btn{display:flex;align-items:center;gap:8px;width:100%;padding:7px 10px;border:none;border-radius:8px;background:transparent;color:var(--text2);font-size:0.86rem;cursor:pointer;transition:all .15s;text-align:left}
+.cat-btn:hover{background:var(--bg3);color:var(--text)}
+.cat-btn.active{background:rgba(167,139,250,.12);color:var(--purple)}
+.cat-btn .cnt{margin-left:auto;font-size:0.69rem;background:var(--bg4);padding:1px 6px;border-radius:99px;color:var(--text2)}
+.cat-btn.active .cnt{background:rgba(167,139,250,.2);color:var(--purple)}
+
+/* ── Main ── */
+.main{flex:1;padding:24px 22px 80px;min-width:0}
+
+/* ── Hero ── */
+.hero{background:linear-gradient(135deg,rgba(167,139,250,.07),rgba(34,211,238,.05));border:1px solid rgba(167,139,250,.14);border-radius:16px;padding:22px 28px;margin-bottom:28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.hero-text h1{font-size:1.5rem;font-weight:800;background:linear-gradient(90deg,var(--purple),var(--blue),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-text p{color:var(--text2);font-size:0.88rem;margin-top:5px}
+.hero-stats{display:flex;gap:28px;margin-left:auto}
+.stat-num{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--purple),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.stat-label{font-size:0.68rem;color:var(--text2);margin-top:2px;text-align:center}
+
+/* ── Section ── */
+.section-hd{display:flex;align-items:center;gap:10px;margin:6px 0 13px}
+.section-hd h2{font-size:0.97rem;font-weight:700}
+.section-count{font-size:0.72rem;color:var(--text2);background:var(--bg3);padding:2px 9px;border-radius:99px}
+.section-anchor{display:block;padding-top:8px;margin-bottom:36px}
+
+/* ── Grid ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:11px}
+
+/* ── Card ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-decoration:none;color:var(--text);display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;transition:all .18s}
+.card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s;pointer-events:none;border-radius:var(--radius)}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.4)}
+.card:hover::before{opacity:1}
+
+/* per-category hover colors */
+.card[data-c="mine"]:hover{border-color:rgba(167,139,250,.5)}
+.card[data-c="mine"]::before{background:radial-gradient(ellipse at 0 0,rgba(167,139,250,.09),transparent 65%)}
+.card[data-c="search"]:hover{border-color:rgba(34,211,238,.4)}
+.card[data-c="search"]::before{background:radial-gradient(ellipse at 0 0,rgba(34,211,238,.07),transparent 65%)}
+.card[data-c="social"]:hover{border-color:rgba(96,165,250,.4)}
+.card[data-c="social"]::before{background:radial-gradient(ellipse at 0 0,rgba(96,165,250,.07),transparent 65%)}
+.card[data-c="video"]:hover{border-color:rgba(251,191,36,.4)}
+.card[data-c="video"]::before{background:radial-gradient(ellipse at 0 0,rgba(251,191,36,.07),transparent 65%)}
+.card[data-c="music"]:hover{border-color:rgba(52,211,153,.4)}
+.card[data-c="music"]::before{background:radial-gradient(ellipse at 0 0,rgba(52,211,153,.07),transparent 65%)}
+.card[data-c="ai"]:hover{border-color:rgba(244,114,182,.4)}
+.card[data-c="ai"]::before{background:radial-gradient(ellipse at 0 0,rgba(244,114,182,.07),transparent 65%)}
+.card[data-c="dev"]:hover{border-color:rgba(251,146,60,.4)}
+.card[data-c="dev"]::before{background:radial-gradient(ellipse at 0 0,rgba(251,146,60,.07),transparent 65%)}
+.card[data-c="design"]:hover{border-color:rgba(163,230,53,.4)}
+.card[data-c="design"]::before{background:radial-gradient(ellipse at 0 0,rgba(163,230,53,.07),transparent 65%)}
+.card[data-c="work"]:hover{border-color:rgba(45,212,191,.4)}
+.card[data-c="work"]::before{background:radial-gradient(ellipse at 0 0,rgba(45,212,191,.07),transparent 65%)}
+.card[data-c="shop"]:hover{border-color:rgba(248,113,113,.4)}
+.card[data-c="shop"]::before{background:radial-gradient(ellipse at 0 0,rgba(248,113,113,.07),transparent 65%)}
+.card[data-c="news"]:hover{border-color:rgba(96,165,250,.4)}
+.card[data-c="news"]::before{background:radial-gradient(ellipse at 0 0,rgba(96,165,250,.07),transparent 65%)}
+.card[data-c="learn"]:hover{border-color:rgba(251,146,60,.4)}
+.card[data-c="learn"]::before{background:radial-gradient(ellipse at 0 0,rgba(251,146,60,.07),transparent 65%)}
+.card[data-c="finance"]:hover{border-color:rgba(251,191,36,.4)}
+.card[data-c="finance"]::before{background:radial-gradient(ellipse at 0 0,rgba(251,191,36,.07),transparent 65%)}
+
+.card-top{display:flex;align-items:flex-start;gap:10px}
+.card-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.15rem;flex-shrink:0;background:var(--bg3)}
+.card-meta{flex:1;min-width:0}
+.card-name{font-weight:700;font-size:0.9rem;line-height:1.3;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.card-url{font-size:0.7rem;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-desc{font-size:0.79rem;color:var(--text2);line-height:1.55;flex:1}
+.card-tags{display:flex;flex-wrap:wrap;gap:4px}
+.tag{font-size:0.67rem;padding:2px 7px;border-radius:6px;background:var(--bg4);color:var(--text2)}
+
+/* mine card special */
+.card.mine-card{border-color:rgba(167,139,250,.2);background:linear-gradient(135deg,rgba(167,139,250,.05),var(--bg2))}
+.card.mine-card .card-icon{background:rgba(167,139,250,.15)}
+
+/* Badges */
+.badge{font-size:0.64rem;font-weight:700;padding:2px 6px;border-radius:99px;letter-spacing:.2px;white-space:nowrap}
+.badge-cn{background:rgba(34,211,238,.1);color:#22d3ee;border:1px solid rgba(34,211,238,.22)}
+.badge-free{background:rgba(52,211,153,.12);color:#34d399;border:1px solid rgba(52,211,153,.25)}
+.badge-hot{background:rgba(244,114,182,.1);color:#f472b6;border:1px solid rgba(244,114,182,.22)}
+.badge-mine{background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.3)}
+
+/* Empty */
+.empty{text-align:center;padding:80px 20px;color:var(--text2);display:none}
+.empty-icon{font-size:3rem;margin-bottom:12px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#2a2a38;border-radius:3px}
+
+@media(max-width:720px){
+  .sidebar{display:none}
+  .hero-stats{display:none}
+  .cards-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
+  .main{padding:14px 12px 60px}
+}
+</style>
 </head>
 <body>
 
-<!-- ── Nav ─────────────────────────────────────────────────────────────────── -->
 <nav>
-  <a class="nav-logo" href="#">
-    <div class="logo-icon">◆</div>
-    Claude Code 指南
-  </a>
-  <ul class="nav-links">
-    <li><a href="#features">功能</a></li>
-    <li><a href="#install">安装</a></li>
-    <li><a href="#tutorials">教程</a></li>
-    <li><a href="#commands">命令</a></li>
-    <li><a href="#tips">技巧</a></li>
-    <li><a href="#pricing">价格</a></li>
-    <li><a href="https://claude.ai" target="_blank" class="nav-cta">开始使用</a></li>
-  </ul>
+  <a class="nav-logo" href="#">✦ 我的导航</a>
+  <div class="nav-search">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="searchInput" placeholder="搜索网站名称、描述、标签…" autocomplete="off"/>
+  </div>
+  <div class="nav-count" id="navCount"></div>
 </nav>
 
-<main>
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-label">全部</div>
+    <button class="cat-btn active" data-c="all" onclick="filterCat('all',this)">
+      <span>🗂</span>全部网站<span class="cnt" id="cnt-all"></span>
+    </button>
 
-<!-- ── Hero ─────────────────────────────────────────────────────────────────── -->
-<div class="hero">
-  <div class="container">
-    <div class="hero-badge">◆ Anthropic 官方出品 · 2026</div>
-    <h1>在终端里调用<br /><span>AI 编程搭档</span></h1>
-    <p class="hero-sub">
-      Claude Code 是直接运行在你终端里的 AI 编程助手，理解整个代码库上下文，帮你编写、调试、重构代码，甚至管理 Git 工作流。
-    </p>
-    <div class="hero-actions">
-      <a href="#install" class="btn btn-primary">▶ 快速安装</a>
-      <a href="#tutorials" class="btn btn-secondary">查看教程</a>
+    <div class="sidebar-label">我的</div>
+    <button class="cat-btn" data-c="mine" onclick="filterCat('mine',this)">
+      <span>⭐</span>我的工具<span class="cnt" id="cnt-mine"></span>
+    </button>
+
+    <div class="sidebar-label">搜索 &amp; 社交</div>
+    <button class="cat-btn" data-c="search" onclick="filterCat('search',this)">
+      <span>🔍</span>搜索引擎<span class="cnt" id="cnt-search"></span>
+    </button>
+    <button class="cat-btn" data-c="social" onclick="filterCat('social',this)">
+      <span>💬</span>社交媒体<span class="cnt" id="cnt-social"></span>
+    </button>
+
+    <div class="sidebar-label">娱乐</div>
+    <button class="cat-btn" data-c="video" onclick="filterCat('video',this)">
+      <span>🎬</span>视频娱乐<span class="cnt" id="cnt-video"></span>
+    </button>
+    <button class="cat-btn" data-c="music" onclick="filterCat('music',this)">
+      <span>🎵</span>音乐<span class="cnt" id="cnt-music"></span>
+    </button>
+
+    <div class="sidebar-label">AI &amp; 技术</div>
+    <button class="cat-btn" data-c="ai" onclick="filterCat('ai',this)">
+      <span>🤖</span>AI 工具<span class="cnt" id="cnt-ai"></span>
+    </button>
+    <button class="cat-btn" data-c="dev" onclick="filterCat('dev',this)">
+      <span>💻</span>开发工具<span class="cnt" id="cnt-dev"></span>
+    </button>
+    <button class="cat-btn" data-c="design" onclick="filterCat('design',this)">
+      <span>🎨</span>设计创作<span class="cnt" id="cnt-design"></span>
+    </button>
+
+    <div class="sidebar-label">效率 &amp; 生活</div>
+    <button class="cat-btn" data-c="work" onclick="filterCat('work',this)">
+      <span>🗃</span>效率办公<span class="cnt" id="cnt-work"></span>
+    </button>
+    <button class="cat-btn" data-c="shop" onclick="filterCat('shop',this)">
+      <span>🛒</span>购物电商<span class="cnt" id="cnt-shop"></span>
+    </button>
+    <button class="cat-btn" data-c="finance" onclick="filterCat('finance',this)">
+      <span>💰</span>金融理财<span class="cnt" id="cnt-finance"></span>
+    </button>
+    <button class="cat-btn" data-c="news" onclick="filterCat('news',this)">
+      <span>📰</span>新闻资讯<span class="cnt" id="cnt-news"></span>
+    </button>
+    <button class="cat-btn" data-c="learn" onclick="filterCat('learn',this)">
+      <span>📚</span>学习教育<span class="cnt" id="cnt-learn"></span>
+    </button>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="hero">
+      <div class="hero-text">
+        <h1>我的网址导航</h1>
+        <p>精选常用网站 · 分类整理 · 一键直达</p>
+      </div>
+      <div class="hero-stats">
+        <div><div class="stat-num" id="totalCount">0</div><div class="stat-label">收录网站</div></div>
+        <div><div class="stat-num" id="catCount">0</div><div class="stat-label">分类</div></div>
+      </div>
     </div>
 
-    <div class="hero-terminal">
-      <div class="terminal-bar">
-        <div class="dot dot-r"></div>
-        <div class="dot dot-y"></div>
-        <div class="dot dot-g"></div>
-        <span class="terminal-title">~/my-project — zsh</span>
-      </div>
-      <div class="terminal-body">
-        <div><span class="t-prompt">❯</span> <span class="t-cmd">claude</span></div>
-        <div class="t-comment"># Claude Code 启动，读取项目上下文...</div>
-        <div>&nbsp;</div>
-        <div><span class="t-claude">Claude:</span> 你好！我已加载你的项目。有什么可以帮你？</div>
-        <div>&nbsp;</div>
-        <div><span class="t-prompt">❯</span> <span class="t-cmd">给登录接口加上 JWT 鉴权，包括测试</span></div>
-        <div>&nbsp;</div>
-        <div><span class="t-output">● 读取 src/auth/login.ts...</span></div>
-        <div><span class="t-output">● 读取 tests/auth.test.ts...</span></div>
-        <div><span class="t-output">● 修改 src/auth/middleware.ts</span></div>
-        <div><span class="t-output">● 新建 src/auth/jwt.ts</span></div>
-        <div><span class="t-output">● 更新 tests/auth.test.ts</span></div>
-        <div>&nbsp;</div>
-        <div><span class="t-claude">Claude:</span> 完成！已添加 JWT 鉴权中间件和 4 个测试用例。</div>
-      </div>
+    <div class="empty" id="noResult">
+      <div class="empty-icon">🔭</div>
+      <p>没有找到匹配的网站，换个关键词试试</p>
     </div>
-  </div>
+
+    <div id="container"></div>
+  </main>
 </div>
-
-<!-- ── Features ──────────────────────────────────────────────────────────────── -->
-<div class="features-bg" id="features">
-  <section>
-    <div class="container">
-      <div class="section-label">核心能力</div>
-      <h2 class="section-title">不只是代码补全</h2>
-      <p class="section-desc">Claude Code 理解你的整个代码库，能完成完整的工程任务，而不是只给你一行代码。</p>
-
-      <div class="features-grid">
-        <div class="feat-card">
-          <span class="feat-icon">📂</span>
-          <div class="feat-title">理解完整代码库</div>
-          <div class="feat-desc">自动读取项目文件、依赖关系、架构结构，在整个代码库的上下文下回答问题和修改代码。</div>
-        </div>
-        <div class="feat-card">
-          <span class="feat-icon">✏️</span>
-          <div class="feat-title">自主读写文件</div>
-          <div class="feat-desc">直接创建、修改、删除文件，进行精确的字符串替换编辑，不会破坏周围代码。</div>
-        </div>
-        <div class="feat-card">
-          <span class="feat-icon">🖥️</span>
-          <div class="feat-title">执行终端命令</div>
-          <div class="feat-desc">运行测试、构建、安装依赖、执行脚本，看到输出后继续智能处理。</div>
-        </div>
-        <div class="feat-card">
-          <span class="feat-icon">🔀</span>
-          <div class="feat-title">Git 工作流管理</div>
-          <div class="feat-desc">分析变更、起草 commit message、创建 PR、查看 issue，完整 Git 工作流支持。</div>
-        </div>
-        <div class="feat-card">
-          <span class="feat-icon">🔍</span>
-          <div class="feat-title">智能代码搜索</div>
-          <div class="feat-desc">用 Glob/Grep 在项目中精确搜索文件和内容，快速定位任意函数、类、变量。</div>
-        </div>
-        <div class="feat-card">
-          <span class="feat-icon">🌐</span>
-          <div class="feat-title">Web 搜索 & 文档查询</div>
-          <div class="feat-desc">实时搜索最新文档、技术方案、包版本，结合网络知识解决问题。</div>
-        </div>
-        <div class="feat-card">
-          <span class="feat-icon">🧠</span>
-          <div class="feat-title">持久记忆</div>
-          <div class="feat-desc">跨会话记住项目偏好、技术选型、个人习惯，下次打开继续有效。</div>
-        </div>
-        <div class="feat-card">
-          <span class="feat-icon">🔌</span>
-          <div class="feat-title">MCP 扩展协议</div>
-          <div class="feat-desc">通过 Model Context Protocol 连接数据库、Slack、GitHub 等外部工具，无限扩展能力。</div>
-        </div>
-        <div class="feat-card">
-          <span class="feat-icon">🛡️</span>
-          <div class="feat-title">安全第一</div>
-          <div class="feat-desc">危险操作（push、删文件、修改 CI）会主动确认，不会悄悄执行破坏性命令。</div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ── Install ────────────────────────────────────────────────────────────────── -->
-<section id="install">
-  <div class="container">
-    <div class="section-label">快速开始</div>
-    <h2 class="section-title">三步完成安装</h2>
-    <p class="section-desc">需要 Node.js 18+ 和一个 Claude 账号（Pro 计划起）。</p>
-
-    <div class="install-grid">
-      <div class="install-steps">
-        <div class="install-step">
-          <div class="step-num">1</div>
-          <div class="step-content">
-            <h4>安装 Claude Code</h4>
-            <p>通过 npm 全局安装 CLI 工具</p>
-            <div class="code-block" style="margin-top:10px">
-              <pre><code><span class="hl-green">$</span> npm install -g @anthropic-ai/claude-code</code></pre>
-            </div>
-          </div>
-        </div>
-        <div class="install-step">
-          <div class="step-num">2</div>
-          <div class="step-content">
-            <h4>进入项目目录</h4>
-            <p>在任意项目根目录启动 Claude Code</p>
-            <div class="code-block" style="margin-top:10px">
-              <pre><code><span class="hl-green">$</span> cd my-project
-<span class="hl-green">$</span> claude</code></pre>
-            </div>
-          </div>
-        </div>
-        <div class="install-step">
-          <div class="step-num">3</div>
-          <div class="step-content">
-            <h4>完成认证</h4>
-            <p>首次运行会跳转浏览器登录 Claude 账号，需要 Pro 计划或 API Key</p>
-          </div>
-        </div>
-        <div class="install-step">
-          <div class="step-num">4</div>
-          <div class="step-content">
-            <h4>开始对话</h4>
-            <p>直接用自然语言描述你要做的事，Claude 会自动读取项目上下文</p>
-          </div>
-        </div>
-      </div>
-
-      <div>
-        <div class="code-block">
-          <div class="code-header">
-            <span class="code-lang">bash · 使用 API Key 启动</span>
-            <button class="copy-btn" onclick="copyCode(this)">复制</button>
-          </div>
-          <pre><code><span class="hl-gray"># 方式一：环境变量</span>
-<span class="hl-green">export</span> ANTHROPIC_API_KEY=<span class="hl-yellow">"sk-ant-..."</span>
-claude
-
-<span class="hl-gray"># 方式二：直接传参</span>
-claude --api-key sk-ant-...
-
-<span class="hl-gray"># 方式三：登录 Claude.ai 账号（推荐）</span>
-claude  <span class="hl-gray"># 首次运行自动引导登录</span></code></pre>
-        </div>
-
-        <div class="code-block" style="margin-top:14px">
-          <div class="code-header">
-            <span class="code-lang">bash · 常用启动选项</span>
-            <button class="copy-btn" onclick="copyCode(this)">复制</button>
-          </div>
-          <pre><code><span class="hl-gray"># 单次执行（非交互模式）</span>
-claude -p <span class="hl-yellow">"解释 src/main.ts 的作用"</span>
-
-<span class="hl-gray"># 指定工作目录</span>
-claude --cwd /path/to/project
-
-<span class="hl-gray"># 查看帮助</span>
-claude --help</code></pre>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<hr class="divider" />
-
-<!-- ── Tutorials ───────────────────────────────────────────────────────────────── -->
-<div class="tutorials-bg" id="tutorials">
-  <section>
-    <div class="container">
-      <div class="section-label">实战教程</div>
-      <h2 class="section-title">从入门到精通</h2>
-      <p class="section-desc">点击展开每个教程，包含完整对话示例、代码片段和注意事项。</p>
-
-      <div class="tutorial-list">
-
-        <!-- T1 ─ 探索陌生代码库 -->
-        <div class="tutorial-item open">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">1</div>
-            <span class="tutorial-title">快速读懂陌生代码库</span>
-            <span class="tutorial-tag tag-beginner">入门</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro">接手一个从未见过的项目时，不要瞎猜，让 Claude Code 帮你在 5 分钟内建立全局认知——架构、模块划分、数据流向全部梳理清楚。</div>
-
-            <div class="tut-section-title">第一步：获取全局视图</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>这个项目是做什么的？主要技术栈是什么？项目结构怎么组织的？
-
-<span class="hl-purple">Claude：</span>
-● 读取 package.json, README.md...
-● 扫描 src/ 目录结构...
-
-这是一个 <span class="hl-green">电商后台 REST API</span>，基于：
-  - Node.js 20 + TypeScript + Express 4
-  - 数据库：PostgreSQL（Prisma ORM）
-  - 缓存：Redis（ioredis）
-  - 认证：JWT + Refresh Token
-
-<span class="hl-blue">目录结构：</span>
-  src/
-  ├── routes/      API 路由定义
-  ├── controllers/ 请求处理逻辑
-  ├── services/    业务逻辑层
-  ├── models/      Prisma 数据模型
-  ├── middlewares/ 鉴权、错误处理等
-  └── utils/       通用工具函数
-
-启动命令：npm run dev（端口 3000）</code></pre>
-            </div>
-
-            <div class="tut-section-title">第二步：深入具体业务流程</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>用户下单的完整流程是怎样的？从 API 请求到数据库写入，帮我梳理每一步
-
-<span class="hl-purple">Claude：</span>
-● 读取 src/routes/orders.ts...
-● 读取 src/controllers/orderController.ts...
-● 读取 src/services/orderService.ts...
-
-<span class="hl-blue">下单流程（POST /api/orders）：</span>
-
-1. <span class="hl-green">路由层</span>  src/routes/orders.ts:18
-   → 鉴权中间件 verifyToken()
-   → 请求体校验 validateOrder()
-
-2. <span class="hl-green">控制器</span>  src/controllers/orderController.ts:42
-   → 解构 userId, items, addressId
-   → 调用 orderService.create()
-
-3. <span class="hl-green">服务层</span>  src/services/orderService.ts:67
-   → 锁定库存（Redis 分布式锁）
-   → 计算总价（含优惠券）
-   → 写入 Order + OrderItem 表（事务）
-   → 发布 order.created 事件
-
-4. <span class="hl-green">事件处理</span>  src/events/orderEvents.ts:23
-   → 发送确认邮件
-   → 通知仓库系统</code></pre>
-            </div>
-
-            <div class="tut-section-title">第三步：定位潜在问题</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>这个项目有哪些明显的技术债或潜在风险？
-
-<span class="hl-purple">Claude：</span>扫描代码后发现以下问题：
-
-⚠ <span class="hl-yellow">高优先级</span>
-  - src/services/paymentService.ts:134 — API Key 硬编码在源码中
-  - src/routes/admin.ts — 缺少权限校验，任意登录用户可访问
-
-⚡ <span class="hl-orange">性能问题</span>
-  - orderController.ts:89 — N+1 查询问题，循环内调用数据库
-  - 没有使用数据库连接池，高并发下可能耗尽连接
-
-📝 <span class="hl-blue">代码质量</span>
-  - utils.ts 超过 900 行，建议按功能拆分
-  - 缺少统一错误处理，各处 catch 逻辑不一致</code></pre>
-            </div>
-
-            <div class="callout callout-tip">
-              <span class="callout-icon">💡</span>
-              <span class="callout-text">问完全局视图后，再针对你最关心的模块深挖。Claude 会精确定位到文件名和行号，方便你直接跳转阅读。</span>
-            </div>
-
-            <div class="tut-section-title">常用探索问题模板</div>
-            <ul class="checklist">
-              <li>「这个项目的整体架构是怎样的？」</li>
-              <li>「X 功能的入口在哪里？帮我梳理完整调用链」</li>
-              <li>「哪些地方有安全风险或明显的性能问题？」</li>
-              <li>「如何在本地运行和调试这个项目？」</li>
-              <li>「这个项目的测试覆盖情况如何？」</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- T2 ─ 修复 Bug -->
-        <div class="tutorial-item">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">2</div>
-            <span class="tutorial-title">调试与修复 Bug</span>
-            <span class="tutorial-tag tag-beginner">入门</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro">把完整的报错信息、日志直接粘给 Claude，它会读取相关文件、定位根因、给出修复代码，并在修复后运行测试验证。</div>
-
-            <div class="tut-section-title">场景一：运行时类型错误</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例 · TypeError</span></div>
-              <pre><code><span class="hl-orange">你：</span>测试报错了，帮我看看：
-
-TypeError: Cannot read properties of undefined (reading 'id')
-    at UserService.getProfile (src/services/user.ts:58:30)
-    at async UserController.profile (src/controllers/user.ts:24:20)
-
-<span class="hl-purple">Claude：</span>
-● 读取 src/services/user.ts...
-
-问题定位：第 58 行直接访问了 user.id，但 findUnique() 在
-用户不存在时返回 null，而不是抛异常。
-
-<span class="hl-blue">修复前（第 55-60 行）：</span>
-  const user = await prisma.user.findUnique({ where: { id } });
-  return { id: user.id, name: user.name };  // ← 未做 null 检查
-
-<span class="hl-green">修复后：</span>
-  const user = await prisma.user.findUnique({ where: { id } });
-  if (!user) throw new AppError('用户不存在', 404);
-  return { id: user.id, name: user.name };
-
-同时更新 user.test.ts，补充「用户不存在时返回 404」测试用例。
-执行修改？
-
-<span class="hl-orange">你：</span>好的
-
-<span class="hl-purple">Claude：</span>
-● 修改 src/services/user.ts ✓
-● 更新 tests/user.test.ts ✓
-● 运行 npm test...
-
-  ✓ user service > getProfile > 正常用户 (12ms)
-  ✓ user service > getProfile > 用户不存在返回404 (8ms)
-
-  全部通过 ✓</code></pre>
-            </div>
-
-            <div class="tut-section-title">场景二：异步竞态问题</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例 · 并发 Bug</span></div>
-              <pre><code><span class="hl-orange">你：</span>高并发压测时，库存会超卖，但单次测试完全正常。
-这是库存扣减的代码：
-
-async function deductStock(productId: string, qty: number) {
-  const product = await Product.findById(productId);
-  if (product.stock &lt; qty) throw new Error('库存不足');
-  await Product.update({ stock: product.stock - qty });
-}
-
-<span class="hl-purple">Claude：</span>
-这是经典的 <span class="hl-yellow">TOCTOU（检查时间与使用时间不一致）</span>竞态问题。
-
-并发场景：两个请求同时读到 stock=1，都通过了检查，
-都执行了扣减，结果 stock 变成 -1。
-
-<span class="hl-green">方案一：数据库原子更新（推荐）</span>
-  await Product.update(
-    { stock: { decrement: qty } },
-    { where: { id: productId, stock: { gte: qty } } }
-  );
-  // 利用数据库行锁，只有 stock >= qty 时才更新
-  // 检查影响行数：0 表示库存不足
-
-<span class="hl-blue">方案二：Redis 分布式锁</span>
-  const lock = await redisLock.acquire(`stock:${productId}`);
-  try {
-    // ... 串行执行检查+扣减
-  } finally {
-    await lock.release();
-  }
-
-方案一性能更好，帮你实现？</code></pre>
-            </div>
-
-            <div class="tut-section-title">场景三：找不到 Bug 时</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例 · 无明显报错</span></div>
-              <pre><code><span class="hl-orange">你：</span>用户登录成功，但下次请求又变成未登录状态，Cookie 看起来是对的，
-不知道哪里有问题
-
-<span class="hl-purple">Claude：</span>
-● 读取 src/middlewares/auth.ts...
-● 读取 src/utils/cookie.ts...
-● 读取 src/config/index.ts...
-
-发现问题：
-
-1. cookie 设置时 domain 是 "api.example.com"
-2. 但前端请求来自 "www.example.com"
-
-Cookie 的 domain 不匹配，浏览器不会发送它。
-
-修复：将 cookie domain 改为 ".example.com"（注意前面的点，
-表示匹配所有子域名），或者去掉 domain 限制。
-
-另外注意 SameSite 设置：
-  - 前后端同域 → SameSite: Strict
-  - 前后端跨子域 → SameSite: Lax
-  - 前后端完全跨域 → SameSite: None; Secure</code></pre>
-            </div>
-
-            <div class="callout callout-warn">
-              <span class="callout-icon">⚠️</span>
-              <span class="callout-text">粘贴错误信息时，带上完整的堆栈追踪。只告诉 Claude「报错了」而不贴错误信息，会显著降低诊断准确率。</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- T3 ─ 添加新功能 -->
-        <div class="tutorial-item">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">3</div>
-            <span class="tutorial-title">添加新功能（端到端完整示例）</span>
-            <span class="tutorial-tag tag-intermediate">进阶</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro">以「给商品列表接口加分页 + 筛选功能」为例，展示 Claude Code 如何从读懂现有代码到完整实现一个新功能的全流程。</div>
-
-            <div class="tut-section-title">需求描述</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>给 GET /api/products 接口加上：
-1. 分页：page（默认1）、pageSize（默认20，最大100）
-2. 筛选：category、minPrice、maxPrice、inStock
-3. 排序：sortBy（price/createdAt）、order（asc/desc）
-4. 返回格式：{ data, total, page, pageSize, totalPages }
-不引入新依赖，同步写测试。
-
-<span class="hl-purple">Claude：</span>
-● 读取 src/routes/products.ts...
-● 读取 src/controllers/productController.ts...
-● 读取 src/services/productService.ts...
-● 读取 tests/products.test.ts...
-
-理解现有代码结构后，我将修改以下文件：
-
-  src/controllers/productController.ts — 解析查询参数
-  src/services/productService.ts      — 构造 Prisma 查询
-  tests/products.test.ts              — 新增测试用例
-
-开始执行...</code></pre>
-            </div>
-
-            <div class="tut-section-title">Claude 生成的实际代码</div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">TypeScript · productService.ts（关键片段）</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code><span class="hl-blue">interface</span> ProductQuery {
-  page: <span class="hl-purple">number</span>;
-  pageSize: <span class="hl-purple">number</span>;
-  category?: <span class="hl-purple">string</span>;
-  minPrice?: <span class="hl-purple">number</span>;
-  maxPrice?: <span class="hl-purple">number</span>;
-  inStock?: <span class="hl-purple">boolean</span>;
-  sortBy?: <span class="hl-yellow">'price'</span> | <span class="hl-yellow">'createdAt'</span>;
-  order?: <span class="hl-yellow">'asc'</span> | <span class="hl-yellow">'desc'</span>;
-}
-
-<span class="hl-blue">async function</span> <span class="hl-green">listProducts</span>(q: ProductQuery) {
-  <span class="hl-blue">const</span> where: Prisma.ProductWhereInput = {};
-  <span class="hl-blue">if</span> (q.category) where.category = q.category;
-  <span class="hl-blue">if</span> (q.inStock !== <span class="hl-purple">undefined</span>) where.stock = q.inStock ? { gt: <span class="hl-yellow">0</span> } : <span class="hl-yellow">0</span>;
-  <span class="hl-blue">if</span> (q.minPrice || q.maxPrice) {
-    where.price = {};
-    <span class="hl-blue">if</span> (q.minPrice) where.price.gte = q.minPrice;
-    <span class="hl-blue">if</span> (q.maxPrice) where.price.lte = q.maxPrice;
-  }
-
-  <span class="hl-blue">const</span> skip = (q.page - <span class="hl-yellow">1</span>) * q.pageSize;
-  <span class="hl-blue">const</span> [data, total] = <span class="hl-blue">await</span> prisma.$transaction([
-    prisma.product.findMany({
-      where, skip, take: q.pageSize,
-      orderBy: { [q.sortBy ?? <span class="hl-yellow">'createdAt'</span>]: q.order ?? <span class="hl-yellow">'desc'</span> },
-    }),
-    prisma.product.count({ where }),
-  ]);
-
-  <span class="hl-blue">return</span> {
-    data, total, page: q.page,
-    pageSize: q.pageSize,
-    totalPages: Math.ceil(total / q.pageSize),
-  };
-}</code></pre>
-            </div>
-
-            <div class="tut-section-title">自动生成的测试用例</div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">TypeScript · products.test.ts（片段）</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code>describe(<span class="hl-yellow">'GET /api/products'</span>, () => {
-  it(<span class="hl-yellow">'默认返回第1页，每页20条'</span>, <span class="hl-blue">async</span> () => {
-    <span class="hl-blue">const</span> res = <span class="hl-blue">await</span> request(app).get(<span class="hl-yellow">'/api/products'</span>);
-    expect(res.body.page).toBe(<span class="hl-yellow">1</span>);
-    expect(res.body.pageSize).toBe(<span class="hl-yellow">20</span>);
-    expect(res.body.data).toHaveLength(<span class="hl-yellow">20</span>);
-  });
-
-  it(<span class="hl-yellow">'按分类筛选'</span>, <span class="hl-blue">async</span> () => {
-    <span class="hl-blue">const</span> res = <span class="hl-blue">await</span> request(app)
-      .get(<span class="hl-yellow">'/api/products?category=electronics'</span>);
-    expect(res.body.data.every(p => p.category === <span class="hl-yellow">'electronics'</span>)).toBe(<span class="hl-yellow">true</span>);
-  });
-
-  it(<span class="hl-yellow">'pageSize 超过100时限制为100'</span>, <span class="hl-blue">async</span> () => {
-    <span class="hl-blue">const</span> res = <span class="hl-blue">await</span> request(app).get(<span class="hl-yellow">'/api/products?pageSize=200'</span>);
-    expect(res.body.pageSize).toBe(<span class="hl-yellow">100</span>);
-  });
-
-  it(<span class="hl-yellow">'价格范围筛选'</span>, <span class="hl-blue">async</span> () => {
-    <span class="hl-blue">const</span> res = <span class="hl-blue">await</span> request(app)
-      .get(<span class="hl-yellow">'/api/products?minPrice=100&amp;maxPrice=500'</span>);
-    res.body.data.forEach(p => {
-      expect(p.price).toBeGreaterThanOrEqual(<span class="hl-yellow">100</span>);
-      expect(p.price).toBeLessThanOrEqual(<span class="hl-yellow">500</span>);
-    });
-  });
-});</code></pre>
-            </div>
-
-            <div class="callout callout-tip">
-              <span class="callout-icon">💡</span>
-              <span class="callout-text">需求描述越具体，Claude 输出质量越高。明确说明参数名、默认值、限制、返回格式，可以节省大量来回确认的时间。</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- T4 ─ Git 工作流 -->
-        <div class="tutorial-item">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">4</div>
-            <span class="tutorial-title">Git 工作流：Commit、PR、Code Review</span>
-            <span class="tutorial-tag tag-intermediate">进阶</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro">Claude Code 深度集成 Git 和 GitHub CLI，可以帮你分析变更、写 commit message、创建 PR 并完成代码审查，形成完整工程工作流。</div>
-
-            <div class="tut-section-title">用 /commit 自动提交</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">完整 commit 工作流</span></div>
-              <pre><code><span class="hl-gray"># 完成功能开发后，在 Claude Code 中输入：</span>
-/commit
-
-<span class="hl-purple">Claude：</span>
-● git status...
-  修改：src/services/productService.ts
-  修改：src/controllers/productController.ts
-  修改：tests/products.test.ts
-
-● git diff 分析变更内容...
-
-起草的 commit message：
-
-  <span class="hl-green">feat(products): 添加分页、筛选和排序功能</span>
-
-  - 支持 page/pageSize 参数，pageSize 上限 100
-  - 新增 category/minPrice/maxPrice/inStock 筛选
-  - 支持按 price/createdAt 排序（asc/desc）
-  - 返回 total、totalPages 元数据
-  - 补充 12 个测试用例，全部通过
-
-确认提交？
-
-<span class="hl-orange">你：</span>确认
-
-<span class="hl-purple">Claude：</span>git commit 成功 ✓  (a3f9c12)</code></pre>
-            </div>
-
-            <div class="tut-section-title">创建 Pull Request</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">创建 PR 并自动填写说明</span></div>
-              <pre><code><span class="hl-orange">你：</span>帮我创建 PR，base 分支是 main，目标是让这个功能合入
-
-<span class="hl-purple">Claude：</span>
-● 分析 git log（共 3 个 commit）...
-● 检查远端分支状态...
-
-推送当前分支到 origin...
-  git push -u origin feat/product-pagination ✓
-
-创建 PR：
-  标题：feat: 商品列表接口支持分页、筛选和排序
-
-  正文草稿：
-  ## 变更说明
-  为 GET /api/products 接口添加以下功能：
-  - 分页：page / pageSize（默认 1 / 20，上限 100）
-  - 筛选：category / minPrice / maxPrice / inStock
-  - 排序：sortBy（price|createdAt）+ order（asc|desc）
-
-  ## 接口变更
-  新增查询参数，响应格式新增 total / totalPages 字段，
-  完全向后兼容（现有调用不受影响）。
-
-  ## 测试
-  - 新增 12 个单元测试，覆盖所有参数组合
-  - 全部通过 ✓
-
-确认创建？
-
-<span class="hl-orange">你：</span>确认
-
-<span class="hl-purple">Claude：</span>PR 已创建 → https://github.com/xxx/xxx/pull/42 ✓</code></pre>
-            </div>
-
-            <div class="tut-section-title">Code Review 辅助</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">让 Claude review 当前变更</span></div>
-              <pre><code><span class="hl-orange">你：</span>/review
-
-<span class="hl-purple">Claude：</span>
-● 分析 git diff...
-
-<span class="hl-yellow">⚠ 发现 2 个问题：</span>
-
-1. <span class="hl-yellow">安全</span> — productController.ts:34
-   sortBy 参数直接拼入 orderBy，可能有 SQL 注入风险。
-   建议：用白名单校验
-   <span class="hl-green">const ALLOWED_SORT = ['price', 'createdAt'] as const;</span>
-   <span class="hl-green">if (!ALLOWED_SORT.includes(sortBy)) throw new Error(...);</span>
-
-2. <span class="hl-blue">性能</span> — productService.ts:51
-   count 查询没有利用索引，数据量大时会全表扫描。
-   建议：在 category + price 上建联合索引。
-
-<span class="hl-green">✓ 其余代码质量良好</span></code></pre>
-            </div>
-
-            <div class="callout callout-warn">
-              <span class="callout-icon">⚠️</span>
-              <span class="callout-text">Claude 不会主动执行 git push 或 force push，需要你明确要求。这是安全设计——推送到远端是不可逆的共享操作。</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- T5 ─ 重构 -->
-        <div class="tutorial-item">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">5</div>
-            <span class="tutorial-title">代码重构与技术债清理</span>
-            <span class="tutorial-tag tag-intermediate">进阶</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro">重构是高风险操作，最怕改着改着就改坏了。Claude Code 每次重构前都会先读懂代码、制定安全方案，并在完成后运行测试确认没有破坏任何东西。</div>
-
-            <div class="tut-section-title">场景一：拆分过大的文件</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>src/utils.ts 已经 900 行了，按功能拆分，
-但现有的 import 路径（import { ... } from '../utils'）不能改
-
-<span class="hl-purple">Claude：</span>
-● 分析 src/utils.ts 各函数用途和依赖关系...
-● 扫描项目中所有 import '../utils' 的地方...（共 23 处）
-
-建议拆分方案：
-
-  src/utils/
-  ├── date.ts      formatDate, parseDate, diffDays (180行)
-  ├── string.ts    capitalize, slugify, truncate   (210行)
-  ├── number.ts    formatCurrency, round, clamp    (120行)
-  ├── request.ts   buildQuery, parseHeaders        (160行)
-  └── index.ts     重导出所有函数（保持原路径兼容）
-
-index.ts 内容：
-  export * from './date';
-  export * from './string';
-  export * from './number';
-  export * from './request';
-
-这样所有 import { formatDate } from '../utils' 无需任何修改。
-执行？</code></pre>
-            </div>
-
-            <div class="tut-section-title">场景二：消除重复代码</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">重构前后对比</span></div>
-              <div class="diff-grid">
-                <div class="diff-before code-block" style="margin:0">
-                  <div class="diff-label">重构前（每个 controller 各写一遍）</div>
-                  <pre><code><span class="hl-gray">// userController.ts</span>
-try {
-  const users = await UserService.list();
-  res.json({ success: true, data: users });
-} catch (err) {
-  console.error(err);
-  res.status(500).json({ success: false,
-    message: err.message });
-}
-
-<span class="hl-gray">// productController.ts</span>
-try {
-  const products = await ProductService.list();
-  res.json({ success: true, data: products });
-} catch (err) {
-  console.error(err);
-  res.status(500).json({ success: false,
-    message: err.message });
-}</code></pre>
-                </div>
-                <div class="diff-after code-block" style="margin:0">
-                  <div class="diff-label">重构后（统一封装）</div>
-                  <pre><code><span class="hl-gray">// middlewares/asyncHandler.ts</span>
-<span class="hl-blue">export const</span> asyncHandler =
-  (fn: RequestHandler) =>
-  (req, res, next) => {
-    Promise.resolve(fn(req, res, next))
-      .catch(next);
-  };
-
-<span class="hl-gray">// userController.ts（重构后）</span>
-<span class="hl-blue">export const</span> listUsers = asyncHandler(
-  <span class="hl-blue">async</span> (req, res) => {
-    <span class="hl-blue">const</span> users = <span class="hl-blue">await</span> UserService.list();
-    res.json({ success: <span class="hl-yellow">true</span>, data: users });
-  }
-);</code></pre>
-                </div>
-              </div>
-            </div>
-
-            <div class="tut-section-title">场景三：将回调改为 async/await</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>src/legacy/ 下有很多老的 callback 风格代码，
-帮我改成 async/await，但不要改函数签名
-
-<span class="hl-purple">Claude：</span>
-● 扫描 src/legacy/ 目录，找到 8 个文件使用 callback 模式...
-
-处理 src/legacy/fileHelper.ts：
-  发现 readFile, writeFile, parseCSV 3 个函数
-
-注意：第 45 行的 EventEmitter 回调不适合改为 async/await，
-保留不动。其余 6 处全部可以安全改写。
-
-改完后运行现有测试验证行为不变...
-  ✓ 全部 34 个测试通过</code></pre>
-            </div>
-
-            <div class="callout callout-tip">
-              <span class="callout-icon">💡</span>
-              <span class="callout-text">重构时记得加上约束条件，例如「保持 API 不变」「不引入新依赖」「改完后运行测试」。Claude 会主动遵守这些约束。</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- T6 ─ 测试 -->
-        <div class="tutorial-item">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">6</div>
-            <span class="tutorial-title">编写测试：单元测试 & 集成测试</span>
-            <span class="tutorial-tag tag-intermediate">进阶</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro">描述你想测什么，Claude 会读懂被测代码逻辑，帮你覆盖正常路径、边界情况和错误路径，生成真正有价值的测试用例。</div>
-
-            <div class="tut-section-title">为现有函数补充测试</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>src/services/couponService.ts 的 applyCoupon 函数
-还没有测试，帮我写完整的测试，覆盖所有边界情况
-
-<span class="hl-purple">Claude：</span>
-● 读取 src/services/couponService.ts...
-
-分析出 applyCoupon 的逻辑分支：
-  ✓ 正常使用优惠券（固定金额 / 百分比折扣）
-  ✓ 优惠券已过期
-  ✓ 优惠券已使用次数耗尽
-  ✓ 订单金额未达到最低消费
-  ✓ 优惠券不存在
-  ✓ 同一用户重复使用
-  ✓ 优惠券折扣超过订单金额（不能负数）
-  ✓ 并发使用同一张优惠券（需测试幂等性）
-
-生成 8 个测试用例...</code></pre>
-            </div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">TypeScript · coupon.test.ts（生成结果）</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code>describe(<span class="hl-yellow">'CouponService.applyCoupon'</span>, () => {
-  <span class="hl-blue">let</span> coupon: Coupon;
-
-  beforeEach(<span class="hl-blue">async</span> () => {
-    coupon = <span class="hl-blue">await</span> createTestCoupon({
-      code: <span class="hl-yellow">'SAVE20'</span>,
-      type: <span class="hl-yellow">'percent'</span>,
-      value: <span class="hl-yellow">20</span>,           <span class="hl-gray">// 八折</span>
-      minAmount: <span class="hl-yellow">100</span>,      <span class="hl-gray">// 满100可用</span>
-      maxUses: <span class="hl-yellow">10</span>,
-      expiresAt: dayjs().add(<span class="hl-yellow">7</span>, <span class="hl-yellow">'day'</span>).toDate(),
-    });
-  });
-
-  it(<span class="hl-yellow">'正常使用百分比折扣券'</span>, <span class="hl-blue">async</span> () => {
-    <span class="hl-blue">const</span> result = <span class="hl-blue">await</span> applyCoupon(<span class="hl-yellow">'SAVE20'</span>, <span class="hl-yellow">200</span>, userId);
-    expect(result.discount).toBe(<span class="hl-yellow">40</span>);    <span class="hl-gray">// 200 * 20%</span>
-    expect(result.finalAmount).toBe(<span class="hl-yellow">160</span>);
-  });
-
-  it(<span class="hl-yellow">'优惠券已过期时抛出错误'</span>, <span class="hl-blue">async</span> () => {
-    <span class="hl-blue">await</span> updateCoupon(coupon.id, {
-      expiresAt: dayjs().subtract(<span class="hl-yellow">1</span>, <span class="hl-yellow">'day'</span>).toDate()
-    });
-    <span class="hl-blue">await</span> expect(applyCoupon(<span class="hl-yellow">'SAVE20'</span>, <span class="hl-yellow">200</span>, userId))
-      .rejects.toThrow(<span class="hl-yellow">'优惠券已过期'</span>);
-  });
-
-  it(<span class="hl-yellow">'未满最低消费时拒绝使用'</span>, <span class="hl-blue">async</span> () => {
-    <span class="hl-blue">await</span> expect(applyCoupon(<span class="hl-yellow">'SAVE20'</span>, <span class="hl-yellow">80</span>, userId))
-      .rejects.toThrow(<span class="hl-yellow">'订单金额未达到最低消费 ¥100'</span>);
-  });
-
-  it(<span class="hl-yellow">'折扣不超过订单金额（最终金额不为负）'</span>, <span class="hl-blue">async</span> () => {
-    <span class="hl-blue">await</span> updateCoupon(coupon.id, { type: <span class="hl-yellow">'fixed'</span>, value: <span class="hl-yellow">500</span> });
-    <span class="hl-blue">const</span> result = <span class="hl-blue">await</span> applyCoupon(<span class="hl-yellow">'SAVE20'</span>, <span class="hl-yellow">100</span>, userId);
-    expect(result.finalAmount).toBe(<span class="hl-yellow">0</span>);  <span class="hl-gray">// 不能是负数</span>
-  });
-});</code></pre>
-            </div>
-
-            <div class="tut-section-title">检查测试覆盖率并补全</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>运行覆盖率检查后，orderService 只有 45% 覆盖率，
-帮我把关键路径补全到 80% 以上
-
-<span class="hl-purple">Claude：</span>
-● 运行 npm run test:coverage...
-● 分析覆盖率报告...
-
-未覆盖的关键路径：
-  src/services/orderService.ts
-  - 第 89-102 行：订单取消逻辑（0% 覆盖）
-  - 第 134-156 行：退款处理（0% 覆盖）
-  - 第 178 行：并发下单冲突处理（0% 覆盖）
-
-为这 3 个场景新增测试...
-完成后覆盖率：82.4% ✓</code></pre>
-            </div>
-
-            <div class="callout callout-info">
-              <span class="callout-icon">ℹ️</span>
-              <span class="callout-text">不要只追求覆盖率数字。让 Claude 重点覆盖业务核心路径、错误处理和边界情况，比机械地提高行覆盖率更有价值。</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- T7 ─ CLAUDE.md -->
-        <div class="tutorial-item">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">7</div>
-            <span class="tutorial-title">CLAUDE.md：给 Claude 写项目说明书</span>
-            <span class="tutorial-tag tag-advanced">高级</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro"><code>CLAUDE.md</code> 是放在项目根目录的说明文件，每次启动 Claude Code 都会自动读取。把项目背景、技术规范、禁止事项写进去，省去每次重复解释的麻烦。</div>
-
-            <div class="tut-section-title">快速生成模板</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>/init
-
-<span class="hl-purple">Claude：</span>
-● 分析项目结构、package.json、现有代码...
-已生成 CLAUDE.md，包含：项目简介、技术栈、目录结构、
-开发命令、代码规范。请检查并补充你的特殊要求。</code></pre>
-            </div>
-
-            <div class="tut-section-title">完整 CLAUDE.md 示例</div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">CLAUDE.md · 推荐写法</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code><span class="hl-gray"># 项目说明</span>
-这是「XX 电商平台」的后端 API 服务，Node.js + TypeScript。
-对接移动端 App 和 PC 管理后台，日均请求量约 50 万。
-
-<span class="hl-gray">## 技术栈</span>
-- 运行时：Node.js 20 LTS
-- 框架：Express 4（不迁移到其他框架）
-- 数据库：PostgreSQL 15，ORM 用 Prisma
-- 缓存：Redis 7，客户端用 ioredis
-- 测试：Vitest + Supertest，运行命令：npm test
-- CI：GitHub Actions（.github/workflows/ci.yml）
-
-<span class="hl-gray">## 目录结构</span>
-src/
-├── routes/      路由（只定义路径和中间件顺序）
-├── controllers/ 解析请求，调用 service
-├── services/    业务逻辑（不直接操作数据库）
-├── repositories/数据库操作（唯一可以用 Prisma 的层）
-├── middlewares/ 认证、限流、错误处理
-└── utils/       纯函数工具
-
-<span class="hl-gray">## 重要约束（必须遵守）</span>
-- 禁止在 controllers/ 直接使用 Prisma，必须通过 repositories/
-- 所有新 API 必须有对应的 Vitest 测试，覆盖正常+错误路径
-- 不引入新 npm 依赖，需要时先问我
-- 不修改数据库 schema，迁移文件由专人管理
-- 密钥和配置全部从环境变量读取，不硬编码
-
-<span class="hl-gray">## 常用命令</span>
-- 本地开发：npm run dev（热重载）
-- 运行测试：npm test
-- 类型检查：npm run typecheck
-- 代码格式化：npm run lint:fix
-
-<span class="hl-gray">## 注意事项</span>
-- 生产环境用 PM2 集群模式，代码必须无状态
-- 所有时间存储 UTC，输出时按用户时区转换
-- 金额全部用整数（分为单位），不用浮点数</code></pre>
-            </div>
-
-            <div class="tut-section-title">让 Claude 自动更新记忆</div>
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">对话示例</span></div>
-              <pre><code><span class="hl-orange">你：</span>记住：我们最近把测试框架从 Jest 迁移到了 Vitest，
-以后生成测试代码都用 Vitest 的语法
-
-<span class="hl-purple">Claude：</span>已记录。
-更新 CLAUDE.md → 测试部分：jest → vitest
-以后生成的测试将使用 import { describe, it, expect } from 'vitest'。</code></pre>
-            </div>
-
-            <div class="callout callout-tip">
-              <span class="callout-icon">💡</span>
-              <span class="callout-text">CLAUDE.md 可以提交到 Git，让团队所有成员共享同一套 Claude 使用规范，保证 AI 生成代码风格的一致性。</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- T8 ─ MCP -->
-        <div class="tutorial-item">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">8</div>
-            <span class="tutorial-title">MCP：让 Claude 直连数据库和外部工具</span>
-            <span class="tutorial-tag tag-advanced">高级</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro">Model Context Protocol（MCP）是 Claude 的扩展协议，通过配置 MCP Server，Claude 可以直接查询数据库、读取文件系统、调用第三方 API，大幅扩展能力边界。</div>
-
-            <div class="tut-section-title">配置文件位置</div>
-            <div class="file-tree">
-<span class="ft-dir">~/.claude/</span>
-├── <span class="ft-file">settings.json</span>      &lt;— 全局 MCP 配置（所有项目生效）
-└── <span class="ft-dir">projects/</span>
-
-<span class="ft-dir">./</span>（项目根目录）
-└── <span class="ft-file">.claude/settings.json</span>  &lt;— 项目级 MCP 配置（仅此项目生效）
-            </div>
-
-            <div class="tut-section-title">连接 PostgreSQL 数据库</div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">~/.claude/settings.json</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code>{
-  <span class="hl-blue">"mcpServers"</span>: {
-    <span class="hl-blue">"postgres"</span>: {
-      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
-      <span class="hl-blue">"args"</span>: [<span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-postgres"</span>],
-      <span class="hl-blue">"env"</span>: {
-        <span class="hl-blue">"DATABASE_URL"</span>: <span class="hl-yellow">"postgresql://user:pass@localhost:5432/mydb"</span>
-      }
-    }
-  }
-}</code></pre>
-            </div>
-
-            <div class="code-block">
-              <div class="code-header"><span class="code-lang">连接后可以直接这样问</span></div>
-              <pre><code><span class="hl-orange">你：</span>查一下最近 7 天新注册但还没有下单的用户有多少？
-
-<span class="hl-purple">Claude：</span>
-● 查询数据库...
-
-SELECT COUNT(*) FROM users u
-WHERE u.created_at >= NOW() - INTERVAL '7 days'
-  AND NOT EXISTS (
-    SELECT 1 FROM orders o WHERE o.user_id = u.id
-  );
-
-结果：1,247 名用户（占新注册用户的 38.2%）
-
-<span class="hl-orange">你：</span>帮我找出这些用户中，浏览过商品但没加购物车的，
-这是需要重点运营的目标用户群
-
-<span class="hl-purple">Claude：</span>
-● 分析 user_behavior 表结构...
-● 构建查询...</code></pre>
-            </div>
-
-            <div class="tut-section-title">常用 MCP Server 列表</div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">完整多工具 MCP 配置示例</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code>{
-  <span class="hl-blue">"mcpServers"</span>: {
-    <span class="hl-gray">// PostgreSQL 数据库</span>
-    <span class="hl-blue">"postgres"</span>: {
-      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
-      <span class="hl-blue">"args"</span>: [<span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-postgres"</span>],
-      <span class="hl-blue">"env"</span>: { <span class="hl-blue">"DATABASE_URL"</span>: <span class="hl-yellow">"postgresql://..."</span> }
-    },
-
-    <span class="hl-gray">// GitHub：读 issue、PR、代码</span>
-    <span class="hl-blue">"github"</span>: {
-      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
-      <span class="hl-blue">"args"</span>: [<span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-github"</span>],
-      <span class="hl-blue">"env"</span>: { <span class="hl-blue">"GITHUB_TOKEN"</span>: <span class="hl-yellow">"ghp_..."</span> }
-    },
-
-    <span class="hl-gray">// 本地文件系统（指定目录）</span>
-    <span class="hl-blue">"filesystem"</span>: {
-      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
-      <span class="hl-blue">"args"</span>: [
-        <span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-filesystem"</span>,
-        <span class="hl-yellow">"/Users/me/documents"</span>  <span class="hl-gray">// 允许访问的目录</span>
-      ]
-    },
-
-    <span class="hl-gray">// Slack（读消息、发消息）</span>
-    <span class="hl-blue">"slack"</span>: {
-      <span class="hl-blue">"command"</span>: <span class="hl-yellow">"npx"</span>,
-      <span class="hl-blue">"args"</span>: [<span class="hl-yellow">"-y"</span>, <span class="hl-yellow">"@modelcontextprotocol/server-slack"</span>],
-      <span class="hl-blue">"env"</span>: { <span class="hl-blue">"SLACK_BOT_TOKEN"</span>: <span class="hl-yellow">"xoxb-..."</span> }
-    }
-  }
-}</code></pre>
-            </div>
-
-            <div class="callout callout-warn">
-              <span class="callout-icon">⚠️</span>
-              <span class="callout-text">MCP 连接生产数据库时请谨慎，建议使用只读账号，或连接只读副本。Claude 会在执行写操作前向你确认，但多一层保护更安全。</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- T9 ─ 自动化脚本 -->
-        <div class="tutorial-item">
-          <div class="tutorial-header" onclick="toggleTutorial(this)">
-            <div class="tutorial-num">9</div>
-            <span class="tutorial-title">非交互模式：集成到脚本和 CI/CD</span>
-            <span class="tutorial-tag tag-advanced">高级</span>
-            <span class="tutorial-arrow">▶</span>
-          </div>
-          <div class="tutorial-body">
-            <div class="tut-intro">用 <code>claude -p "..."</code> 可以让 Claude 以非交互模式运行，直接返回结果，方便集成到 shell 脚本、CI 流水线、Git Hooks 中。</div>
-
-            <div class="tut-section-title">命令行单次执行</div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">bash · 非交互模式基本用法</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code><span class="hl-gray"># 解释单个文件</span>
-claude -p <span class="hl-yellow">"解释 src/utils/jwt.ts 的作用和安全风险"</span>
-
-<span class="hl-gray"># 生成 commit message（基于 git diff）</span>
-git diff HEAD | claude -p <span class="hl-yellow">"根据这个 diff 生成符合 Conventional Commits 规范的 commit message"</span>
-
-<span class="hl-gray"># 输出 JSON 格式（便于脚本处理）</span>
-claude -p <span class="hl-yellow">"分析 package.json 中有哪些过时的依赖，以 JSON 格式返回"</span> \
-  --output-format json</code></pre>
-            </div>
-
-            <div class="tut-section-title">Git Pre-commit Hook：自动 Review</div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">.git/hooks/pre-commit</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code><span class="hl-green">#!/bin/bash</span>
-<span class="hl-gray"># 提交前自动检查安全问题</span>
-
-DIFF=$(git diff --staged)
-<span class="hl-blue">if</span> [ -z <span class="hl-yellow">"$DIFF"</span> ]; then
-  <span class="hl-blue">exit 0</span>
-fi
-
-echo <span class="hl-yellow">"🔍 Claude Code 正在检查提交..."</span>
-
-RESULT=$(echo <span class="hl-yellow">"$DIFF"</span> | claude -p <span class="hl-yellow">"
-检查这个 diff 是否有以下问题：
-1. 硬编码的密钥、密码、Token
-2. console.log 调试代码残留
-3. TODO/FIXME 注释未处理
-4. 明显的安全漏洞（SQL 注入、XSS 等）
-
-如果发现问题，输出具体位置和说明。
-如果没有问题，只输出：CLEAN
-"</span>)
-
-<span class="hl-blue">if</span> [ <span class="hl-yellow">"$RESULT"</span> != <span class="hl-yellow">"CLEAN"</span> ]; then
-  echo <span class="hl-yellow">"⚠️  发现问题，请修复后再提交："</span>
-  echo <span class="hl-yellow">"$RESULT"</span>
-  <span class="hl-blue">exit 1</span>
-fi
-
-echo <span class="hl-yellow">"✅ 检查通过"</span></code></pre>
-            </div>
-
-            <div class="tut-section-title">GitHub Actions 集成</div>
-            <div class="code-block">
-              <div class="code-header">
-                <span class="code-lang">.github/workflows/claude-review.yml</span>
-                <button class="copy-btn" onclick="copyCode(this)">复制</button>
-              </div>
-              <pre><code><span class="hl-blue">name:</span> Claude Code Review
-<span class="hl-blue">on:</span>
-  <span class="hl-blue">pull_request:</span>
-    <span class="hl-blue">types:</span> [opened, synchronize]
-
-<span class="hl-blue">jobs:</span>
-  <span class="hl-blue">review:</span>
-    <span class="hl-blue">runs-on:</span> ubuntu-latest
-    <span class="hl-blue">steps:</span>
-      - <span class="hl-blue">uses:</span> actions/checkout@v4
-        <span class="hl-blue">with:</span>
-          <span class="hl-blue">fetch-depth:</span> 0
-
-      - <span class="hl-blue">name:</span> Install Claude Code
-        <span class="hl-blue">run:</span> npm install -g @anthropic-ai/claude-code
-
-      - <span class="hl-blue">name:</span> AI Code Review
-        <span class="hl-blue">env:</span>
-          <span class="hl-blue">ANTHROPIC_API_KEY:</span> ${{ secrets.ANTHROPIC_API_KEY }}
-        <span class="hl-blue">run:</span> |
-          git diff origin/main...HEAD | claude -p "
-            对这个 PR 的代码变更进行 review，关注：
-            1. 潜在的 bug 和边界情况
-            2. 安全漏洞
-            3. 性能问题
-            4. 代码风格和可维护性
-            输出 Markdown 格式
-          " > review.md
-          cat review.md
-
-      - <span class="hl-blue">name:</span> Post Review Comment
-        <span class="hl-blue">uses:</span> actions/github-script@v7
-        <span class="hl-blue">with:</span>
-          <span class="hl-blue">script:</span> |
-            const fs = require('fs');
-            const body = fs.readFileSync('review.md', 'utf8');
-            github.rest.issues.createComment({
-              ...context.repo,
-              issue_number: context.issue.number,
-              body: `## 🤖 Claude Code Review\n\n${body}`
-            });</code></pre>
-            </div>
-
-            <div class="callout callout-info">
-              <span class="callout-icon">ℹ️</span>
-              <span class="callout-text">在 CI 中使用 API Key 时，需要在 GitHub Secrets 中配置 <code>ANTHROPIC_API_KEY</code>，并注意 API 调用费用（建议只在关键分支的 PR 触发）。</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ── Commands ────────────────────────────────────────────────────────────────── -->
-<section id="commands">
-  <div class="container">
-    <div class="section-label">命令速查</div>
-    <h2 class="section-title">常用斜杠命令</h2>
-    <p class="section-desc">在对话中输入 <code>/</code> 开头的命令，触发内置功能。</p>
-
-    <div class="cmd-grid">
-      <div class="cmd-card">
-        <div class="cmd-name">/commit</div>
-        <div class="cmd-desc">分析 git 变更，自动起草 commit message 并提交</div>
-      </div>
-      <div class="cmd-card">
-        <div class="cmd-name">/help</div>
-        <div class="cmd-desc">查看所有可用命令和快捷键列表</div>
-      </div>
-      <div class="cmd-card">
-        <div class="cmd-name">/clear</div>
-        <div class="cmd-desc">清空当前对话上下文，开始新的对话</div>
-      </div>
-      <div class="cmd-card">
-        <div class="cmd-name">/compact</div>
-        <div class="cmd-desc">压缩对话历史，节省 context 窗口空间</div>
-      </div>
-      <div class="cmd-card">
-        <div class="cmd-name">/review</div>
-        <div class="cmd-desc">对当前 git diff 进行代码 review，给出改进建议</div>
-      </div>
-      <div class="cmd-card">
-        <div class="cmd-name">/memory</div>
-        <div class="cmd-desc">查看 Claude 对当前项目的持久记忆内容</div>
-      </div>
-      <div class="cmd-card">
-        <div class="cmd-name">/init</div>
-        <div class="cmd-desc">为当前项目生成 CLAUDE.md 配置文件模板</div>
-      </div>
-      <div class="cmd-card">
-        <div class="cmd-name">/fast</div>
-        <div class="cmd-desc">切换快速模式（更快响应，适合简单任务）</div>
-      </div>
-    </div>
-
-    <div style="margin-top: 40px">
-      <div class="section-label" style="margin-bottom:16px">键盘快捷键</div>
-      <div class="cmd-grid">
-        <div class="cmd-card">
-          <div class="cmd-name">Esc</div>
-          <div class="cmd-desc">中断当前 Claude 正在执行的操作</div>
-        </div>
-        <div class="cmd-card">
-          <div class="cmd-name">↑ / ↓</div>
-          <div class="cmd-desc">浏览历史对话输入记录</div>
-        </div>
-        <div class="cmd-card">
-          <div class="cmd-name">Ctrl + C</div>
-          <div class="cmd-desc">退出 Claude Code</div>
-        </div>
-        <div class="cmd-card">
-          <div class="cmd-name">Shift + Tab</div>
-          <div class="cmd-desc">切换自动接受工具调用模式</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── Tips ───────────────────────────────────────────────────────────────────── -->
-<div class="tips-bg" id="tips">
-  <section>
-    <div class="container">
-      <div class="section-label">使用技巧</div>
-      <h2 class="section-title">高效使用 10 条建议</h2>
-      <p class="section-desc">掌握这些技巧，让 Claude Code 发挥出最大价值。</p>
-
-      <div class="tips-grid">
-        <div class="tip-card highlight">
-          <span class="tip-icon">🎯</span>
-          <div class="tip-title">描述目标，而非步骤</div>
-          <div class="tip-desc">说"给用户接口加分页"，不要说"修改第 45 行加 limit 参数"。让 Claude 自主决定怎么做。</div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">📋</span>
-          <div class="tip-title">粘贴完整错误信息</div>
-          <div class="tip-desc">把完整的错误堆栈、日志直接粘进对话，包含的上下文越多，定位越准确。</div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">🧪</span>
-          <div class="tip-title">要求一并更新测试</div>
-          <div class="tip-desc">每次要求新功能时加上"同步更新测试"，确保改动有测试覆盖。</div>
-        </div>
-        <div class="tip-card highlight">
-          <span class="tip-icon">💾</span>
-          <div class="tip-title">用 CLAUDE.md 写项目规范</div>
-          <div class="tip-desc">把代码风格、禁止事项、常用命令写进 CLAUDE.md，每次启动都自动生效。</div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">🔄</span>
-          <div class="tip-title">迭代，不要一次性</div>
-          <div class="tip-desc">先做基础版本，确认没问题再加细节。避免一条指令包含太多要求。</div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">🚫</span>
-          <div class="tip-title">明确说禁止事项</div>
-          <div class="tip-desc">"不要引入新依赖"、"保持 API 兼容性"、"不修改 README"——限制越清晰越好。</div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">🗂️</span>
-          <div class="tip-title">大任务先规划</div>
-          <div class="tip-desc">复杂任务先说"帮我列一下实施步骤"，确认方向再执行，避免返工。</div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">🌐</span>
-          <div class="tip-title">充分利用 Web 搜索</div>
-          <div class="tip-desc">遇到你不确定的包版本、API 文档，直接叫 Claude 去搜最新资料。</div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">🧠</span>
-          <div class="tip-title">用"记住"写入长期记忆</div>
-          <div class="tip-desc">说"记住：我们用 pnpm 不用 npm"，下次对话 Claude 会记得。</div>
-        </div>
-        <div class="tip-card">
-          <span class="tip-icon">⚡</span>
-          <div class="tip-title">用 -p 做快速单次查询</div>
-          <div class="tip-desc"><code>claude -p "解释这个函数"</code> 快速得到答案，不用进入交互模式。</div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ── Pricing ────────────────────────────────────────────────────────────────── -->
-<section id="pricing">
-  <div class="container">
-    <div class="section-label">价格方案</div>
-    <h2 class="section-title">选择适合你的计划</h2>
-    <p class="section-desc">个人开发者从 Pro 开始即可，重度编码用户 Max 计划远比 API 按量付费划算。</p>
-
-    <div class="pricing-grid">
-      <div class="price-card">
-        <div class="price-name">Free</div>
-        <div class="price-amount">$0 <span>/ 月</span></div>
-        <div class="price-desc">体验 Claude 基础能力，不含 Claude Code 访问权限</div>
-        <ul class="price-features">
-          <li>基础 Sonnet 模型访问</li>
-          <li>网页 / iOS / Android</li>
-          <li class="no">Claude Code 终端</li>
-          <li class="no">项目与记忆</li>
-        </ul>
-      </div>
-
-      <div class="price-card popular">
-        <div class="popular-badge">个人开发者首选</div>
-        <div class="price-name">Pro</div>
-        <div class="price-amount">$20 <span>/ 月</span></div>
-        <div class="price-desc">包含完整 Claude Code 访问，适合日常开发工作</div>
-        <ul class="price-features">
-          <li>Claude Code 终端访问</li>
-          <li>Sonnet + Opus 模型</li>
-          <li>无限项目与记忆</li>
-          <li>Web 搜索 & MCP 连接</li>
-          <li>Google Workspace 集成</li>
-          <li class="no">优先响应队列</li>
-        </ul>
-      </div>
-
-      <div class="price-card">
-        <div class="price-name">Max 5×</div>
-        <div class="price-amount">$100 <span>/ 月</span></div>
-        <div class="price-desc">Pro 的 5 倍用量，适合重度 Claude Code 用户</div>
-        <ul class="price-features">
-          <li>Pro 全部功能</li>
-          <li>5× 用量配额</li>
-          <li>Extended Thinking</li>
-          <li>优先响应队列</li>
-        </ul>
-      </div>
-
-      <div class="price-card">
-        <div class="price-name">Max 20×</div>
-        <div class="price-amount">$200 <span>/ 月</span></div>
-        <div class="price-desc">Pro 的 20 倍用量，全天候密集编码，比 API 便宜约 18 倍</div>
-        <ul class="price-features">
-          <li>Max 5× 全部功能</li>
-          <li>20× 用量配额</li>
-          <li>零等待优先通道</li>
-          <li>最大 context 窗口</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="code-block" style="margin-top: 40px; max-width: 700px; margin-left: auto; margin-right: auto">
-      <div class="code-header"><span class="code-lang">API 按量计费（集成自己产品时使用）</span></div>
-      <pre><code>Opus 4.6    $5  / 百万输入 token · $25  / 百万输出 token
-Sonnet 4.6  $3  / 百万输入 token · $15  / 百万输出 token
-Haiku 4.5   $1  / 百万输入 token · $5   / 百万输出 token
-
-<span class="hl-green">省钱方式：</span>
-  Prompt Cache 命中 → 输入费用 ÷ 10（降低 90%）
-  Batch API          → 所有费用 × 0.5（打 5 折）</code></pre>
-    </div>
-  </div>
-</section>
-
-<!-- ── Footer ─────────────────────────────────────────────────────────────────── -->
-<footer>
-  <div class="container">
-    <p>Claude Code 由 <a href="https://anthropic.com" target="_blank">Anthropic</a> 出品 · 本页面信息基于 2026 年 3 月数据</p>
-    <p style="margin-top:8px">官方文档：<a href="https://docs.anthropic.com/claude-code" target="_blank">docs.anthropic.com/claude-code</a> · 反馈：<a href="https://github.com/anthropics/claude-code/issues" target="_blank">GitHub Issues</a></p>
-  </div>
-</footer>
-
-</main>
 
 <script>
-  // Toggle tutorials
-  function toggleTutorial(header) {
-    const item = header.parentElement;
-    item.classList.toggle('open');
-  }
+const SITES = [
+  // ── 我的工具 ──────────────────────────────────────────────
+  {c:'mine',icon:'🤖',name:'AI 导航',url:'pages/ai-nav.html',local:true,desc:'精选全球主流 AI 工具、大模型平台与开发资源，9大分类，100+ 工具收录。',tags:['AI','导航','大模型'],badges:['mine']},
+  {c:'mine',icon:'🌤',name:'天气查询',url:'pages/weather.html',local:true,desc:'实时全球天气数据，支持任意城市查询，未来 7 天预报，自动定时刷新。',tags:['天气','实时','全球'],badges:['mine']},
+  {c:'mine',icon:'🦀',name:'Claude Code 指南',url:'pages/claude.html',local:true,desc:'Claude Code 完全使用指南，含安装、配置、进阶技巧与 MCP 扩展。',tags:['Claude','指南','AI编程'],badges:['mine']},
+  {c:'mine',icon:'🐾',name:'OpenClaw 平台',url:'pages/openclaw.html',local:true,desc:'开源 AI 智能体平台完全指南，涵盖架构设计与部署实践。',tags:['Agent','开源','平台'],badges:['mine']},
 
-  // Copy code
-  function copyCode(btn) {
-    const pre = btn.closest('.code-block').querySelector('pre');
-    const text = pre.innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      const orig = btn.textContent;
-      btn.textContent = '已复制！';
-      btn.style.color = '#34d399';
-      setTimeout(() => {
-        btn.textContent = orig;
-        btn.style.color = '';
-      }, 1800);
+  // ── 搜索引擎 ──────────────────────────────────────────────
+  {c:'search',icon:'🔵',name:'Google',url:'https://www.google.com',desc:'全球最大搜索引擎，搜索质量业界标杆，覆盖全网内容。',tags:['国际','全球'],badges:['hot']},
+  {c:'search',icon:'🔴',name:'百度',url:'https://www.baidu.com',desc:'国内最大中文搜索引擎，中文内容覆盖最全，用户量最大。',tags:['国内','中文'],badges:['cn','hot']},
+  {c:'search',icon:'🟡',name:'Bing',url:'https://www.bing.com',desc:'微软旗下，集成 AI 搜索，图片搜索体验出色，国内可访问。',tags:['微软','AI'],badges:[]},
+  {c:'search',icon:'🦆',name:'DuckDuckGo',url:'https://duckduckgo.com',desc:'隐私优先搜索引擎，不追踪用户行为，海外用户常用。',tags:['隐私','国际'],badges:[]},
+  {c:'search',icon:'🟠',name:'搜狗搜索',url:'https://www.sogou.com',desc:'腾讯旗下搜索，微信内容搜索优势明显，中文搜索体验好。',tags:['国内','腾讯'],badges:['cn']},
+  {c:'search',icon:'⚫',name:'360搜索',url:'https://www.so.com',desc:'360旗下搜索引擎，国内主流，安全过滤能力强。',tags:['国内','安全'],badges:['cn']},
+  {c:'search',icon:'🔵',name:'Perplexity',url:'https://www.perplexity.ai',desc:'AI 驱动的搜索引擎，每条回答附实时来源引用，深度研究利器。',tags:['AI','引用','研究'],badges:['hot']},
+
+  // ── 社交媒体 ──────────────────────────────────────────────
+  {c:'social',icon:'🔵',name:'微信',url:'https://weixin.qq.com',desc:'腾讯旗下国内最大即时通讯与社交平台，月活超 13 亿。',tags:['国内','即时通讯'],badges:['cn','hot']},
+  {c:'social',icon:'🔴',name:'微博',url:'https://weibo.com',desc:'国内最大中文微博平台，热点事件讨论中心，明星粉丝聚集地。',tags:['国内','热点'],badges:['cn']},
+  {c:'social',icon:'⚫',name:'知乎',url:'https://www.zhihu.com',desc:'国内最大知识问答社区，汇聚各领域专业人士，内容质量较高。',tags:['国内','问答'],badges:['cn']},
+  {c:'social',icon:'🔵',name:'Facebook',url:'https://www.facebook.com',desc:'全球最大社交网络，月活 30 亿，连接全球用户。',tags:['国际','社交'],badges:['hot']},
+  {c:'social',icon:'🟣',name:'Instagram',url:'https://www.instagram.com',desc:'图片与短视频社交平台，年轻用户聚集，网红经济核心阵地。',tags:['图片','短视频'],badges:['hot']},
+  {c:'social',icon:'⚫',name:'X (Twitter)',url:'https://x.com',desc:'全球实时信息平台，科技圈、媒体人首选，马斯克收购后改名 X。',tags:['国际','实时','科技'],badges:['hot']},
+  {c:'social',icon:'🔵',name:'LinkedIn',url:'https://www.linkedin.com',desc:'全球最大职业社交网络，求职、招聘、行业交流必备平台。',tags:['职场','求职','国际'],badges:[]},
+  {c:'social',icon:'🟠',name:'Reddit',url:'https://www.reddit.com',desc:'全球最大论坛聚合社区，数万个垂直版块，英文内容最丰富。',tags:['论坛','国际','社区'],badges:[]},
+  {c:'social',icon:'🎵',name:'抖音',url:'https://www.douyin.com',desc:'字节跳动旗下短视频平台，日活超 7 亿，内容算法推荐精准。',tags:['短视频','国内'],badges:['cn','hot']},
+  {c:'social',icon:'🟠',name:'小红书',url:'https://www.xiaohongshu.com',desc:'生活方式分享社区，女性用户为主，种草文化发源地。',tags:['国内','生活','女性'],badges:['cn','hot']},
+
+  // ── 视频娱乐 ──────────────────────────────────────────────
+  {c:'video',icon:'🔴',name:'YouTube',url:'https://www.youtube.com',desc:'全球最大视频平台，每分钟上传 500 小时视频，内容覆盖全类型。',tags:['国际','视频','免费'],badges:['hot']},
+  {c:'video',icon:'🔴',name:'哔哩哔哩',url:'https://www.bilibili.com',desc:'国内最大综合视频平台，二次元起家，现已涵盖知识、生活、游戏等全品类。',tags:['国内','B站','弹幕'],badges:['cn','hot']},
+  {c:'video',icon:'🟢',name:'爱奇艺',url:'https://www.iqiyi.com',desc:'国内头部长视频平台，独播影视综艺丰富，会员内容质量高。',tags:['国内','影视','会员'],badges:['cn']},
+  {c:'video',icon:'🟡',name:'优酷',url:'https://www.youku.com',desc:'阿里旗下长视频平台，影视综艺版权丰富，与土豆合并后用户规模大。',tags:['国内','阿里','影视'],badges:['cn']},
+  {c:'video',icon:'🔵',name:'腾讯视频',url:'https://v.qq.com',desc:'腾讯旗下视频平台，影视剧版权强，与微信深度集成。',tags:['国内','腾讯','影视'],badges:['cn']},
+  {c:'video',icon:'🟠',name:'Netflix',url:'https://www.netflix.com',desc:'全球最大流媒体平台，原创内容品质卓越，订阅制商业模式开创者。',tags:['国际','流媒体','原创'],badges:['hot']},
+  {c:'video',icon:'🔷',name:'Disney+',url:'https://www.disneyplus.com',desc:'迪士尼旗下流媒体，漫威、星球大战、皮克斯内容独家。',tags:['迪士尼','漫威','国际'],badges:[]},
+  {c:'video',icon:'🟣',name:'Twitch',url:'https://www.twitch.tv',desc:'全球最大游戏直播平台，电竞赛事、游戏直播聚集地。',tags:['直播','游戏','国际'],badges:[]},
+
+  // ── 音乐 ──────────────────────────────────────────────────
+  {c:'music',icon:'🟢',name:'网易云音乐',url:'https://music.163.com',desc:'国内最受欢迎的音乐平台，歌单社区文化独特，评论区质量高。',tags:['国内','歌单','社区'],badges:['cn','hot']},
+  {c:'music',icon:'🟢',name:'QQ音乐',url:'https://y.qq.com',desc:'腾讯旗下，华语歌曲版权覆盖广，与微信无缝联动。',tags:['国内','腾讯','华语'],badges:['cn']},
+  {c:'music',icon:'🟠',name:'酷我音乐',url:'https://www.kuwo.cn',desc:'老牌音乐平台，音质版本丰富，高品质音频体验好。',tags:['国内','音质'],badges:['cn']},
+  {c:'music',icon:'🟢',name:'Spotify',url:'https://www.spotify.com',desc:'全球最大音乐流媒体，智能推荐算法出色，播客内容丰富。',tags:['国际','智能推荐','播客'],badges:['hot']},
+  {c:'music',icon:'🔴',name:'Apple Music',url:'https://music.apple.com',desc:'苹果出品，无损音质，与 iOS/Mac 深度集成，空间音频体验佳。',tags:['苹果','无损','空间音频'],badges:[]},
+  {c:'music',icon:'🔴',name:'YouTube Music',url:'https://music.youtube.com',desc:'谷歌旗下音乐平台，内容与 YouTube 视频打通，曲库超大。',tags:['谷歌','视频','国际'],badges:[]},
+
+  // ── AI 工具 ────────────────────────────────────────────────
+  {c:'ai',icon:'🟢',name:'ChatGPT',url:'https://chat.openai.com',desc:'OpenAI 旗舰产品，全球用户量最大的 AI 助手，支持 GPT-4o 等模型。',tags:['OpenAI','对话','GPT'],badges:['hot']},
+  {c:'ai',icon:'🟠',name:'Claude',url:'https://claude.ai',desc:'Anthropic 出品，安全对齐、200K 长上下文，代码与推理能力出众。',tags:['Anthropic','代码','推理'],badges:['hot']},
+  {c:'ai',icon:'🔵',name:'Gemini',url:'https://gemini.google.com',desc:'Google DeepMind 出品，原生多模态，深度集成 Google 全家桶。',tags:['Google','多模态'],badges:[]},
+  {c:'ai',icon:'🐬',name:'DeepSeek',url:'https://chat.deepseek.com',desc:'国产顶尖开源大模型，数学代码能力卓越，推理模型 R1 媲美 o1，完全免费。',tags:['国内','开源','推理'],badges:['cn','hot','free']},
+  {c:'ai',icon:'💙',name:'Kimi',url:'https://kimi.moonshot.cn',desc:'月之暗面，支持 200 万 token 超长上下文，擅长长文档分析。',tags:['国内','长文本','文档'],badges:['cn']},
+  {c:'ai',icon:'🟡',name:'豆包',url:'https://doubao.com',desc:'字节出品，速度快价格低，国内日活最高，多模态能力完善。',tags:['国内','字节','多模态'],badges:['cn','hot']},
+  {c:'ai',icon:'🌸',name:'通义千问',url:'https://tongyi.aliyun.com',desc:'阿里云 Qwen 系列，超长上下文，工具调用强，国内访问稳定。',tags:['国内','阿里','长文本'],badges:['cn']},
+  {c:'ai',icon:'🎨',name:'Midjourney',url:'https://midjourney.com',desc:'业界图像生成审美标杆，V6 质量惊艳，适合创意设计与艺术创作。',tags:['图像生成','艺术'],badges:['hot']},
+  {c:'ai',icon:'🌊',name:'Suno',url:'https://suno.com',desc:'一句话生成完整歌曲，含人声+编曲+歌词，音乐风格覆盖全面。',tags:['音乐生成','AI作曲'],badges:['hot']},
+
+  // ── 开发工具 ───────────────────────────────────────────────
+  {c:'dev',icon:'⚫',name:'GitHub',url:'https://github.com',desc:'全球最大代码托管平台，开源社区中心，CI/CD、Issues、PR 工作流完善。',tags:['代码托管','开源','CI/CD'],badges:['hot']},
+  {c:'dev',icon:'🟠',name:'GitLab',url:'https://gitlab.com',desc:'功能完整的 DevOps 平台，支持自托管，内置 CI/CD Pipeline，企业常用。',tags:['DevOps','自托管','CI/CD'],badges:[]},
+  {c:'dev',icon:'🔵',name:'Stack Overflow',url:'https://stackoverflow.com',desc:'全球最大程序员问答社区，几乎所有编程问题都能找到答案。',tags:['问答','社区','编程'],badges:['hot']},
+  {c:'dev',icon:'🤗',name:'Hugging Face',url:'https://huggingface.co',desc:'全球最大开源 AI 社区，数十万模型/数据集，Spaces 免费部署演示。',tags:['AI','开源','模型库'],badges:['hot']},
+  {c:'dev',icon:'🟠',name:'npm',url:'https://www.npmjs.com',desc:'JavaScript 最大包管理器，200 万+ 开源包，前端开发必备。',tags:['JS','包管理','前端'],badges:[]},
+  {c:'dev',icon:'🔵',name:'MDN Web Docs',url:'https://developer.mozilla.org',desc:'Mozilla 出品，最权威的 Web 技术文档，HTML/CSS/JS 开发者圣经。',tags:['文档','Web','标准'],badges:[]},
+  {c:'dev',icon:'🟣',name:'CodePen',url:'https://codepen.io',desc:'在线前端代码编辑器，HTML/CSS/JS 实时预览，社区作品丰富，学习灵感来源。',tags:['在线编辑','前端','演示'],badges:[]},
+  {c:'dev',icon:'🔷',name:'Vercel',url:'https://vercel.com',desc:'前端部署首选平台，Next.js 亲爸，Git 提交自动部署，全球 CDN。',tags:['部署','Next.js','CDN'],badges:['hot']},
+  {c:'dev',icon:'🟠',name:'Cloudflare',url:'https://www.cloudflare.com',desc:'全球最大 CDN/安全服务商，Workers 边缘计算，免费套餐强大。',tags:['CDN','安全','边缘计算'],badges:[]},
+  {c:'dev',icon:'🐋',name:'Docker Hub',url:'https://hub.docker.com',desc:'最大容器镜像仓库，数百万公共镜像，容器化部署必经之地。',tags:['Docker','容器','镜像'],badges:[]},
+  {c:'dev',icon:'⚡',name:'Vite',url:'https://vitejs.dev',desc:'下一代前端构建工具，开发服务器极速启动，官方文档详尽易读。',tags:['构建工具','前端','文档'],badges:[]},
+
+  // ── 设计创作 ───────────────────────────────────────────────
+  {c:'design',icon:'🎭',name:'Figma',url:'https://www.figma.com',desc:'云端 UI/UX 设计协作工具，实时多人协作，组件库系统完善，设计师首选。',tags:['UI','协作','原型'],badges:['hot']},
+  {c:'design',icon:'🎨',name:'Canva',url:'https://www.canva.com',desc:'在线设计平台，海量模板，非设计师也能做出好看的图文内容。',tags:['模板','易用','图文'],badges:['hot']},
+  {c:'design',icon:'🔵',name:'Dribbble',url:'https://dribbble.com',desc:'设计师作品展示社区，高质量 UI 设计灵感来源，全球设计师聚集。',tags:['灵感','UI','社区'],badges:[]},
+  {c:'design',icon:'🟢',name:'Behance',url:'https://www.behance.net',desc:'Adobe 旗下创意作品集平台，品牌设计、插画、摄影，甲方找设计师必逛。',tags:['作品集','Adobe','创意'],badges:[]},
+  {c:'design',icon:'🟡',name:'iconfont',url:'https://www.iconfont.cn',desc:'阿里巴巴出品，国内最大图标库，海量免费可商用图标，开发设计必备。',tags:['图标','国内','阿里'],badges:['cn','free']},
+  {c:'design',icon:'🎬',name:'Adobe',url:'https://www.adobe.com',desc:'设计软件行业标准，PS/Ai/AE/PR 全家桶，创意行业不可或缺。',tags:['PS','AE','专业'],badges:[]},
+  {c:'design',icon:'🖼',name:'Unsplash',url:'https://unsplash.com',desc:'高质量免费摄影图库，数百万张精美照片免费商用，设计选图利器。',tags:['图库','免费','摄影'],badges:['free']},
+  {c:'design',icon:'🟣',name:'Spline',url:'https://spline.design',desc:'3D 设计工具，在浏览器内建模动画，导出到 Web，交互 3D 设计新趋势。',tags:['3D','Web','交互'],badges:['hot']},
+
+  // ── 效率办公 ───────────────────────────────────────────────
+  {c:'work',icon:'📝',name:'Notion',url:'https://www.notion.so',desc:'全能型笔记与项目管理工具，数据库、Wiki、任务管理于一体，团队协作首选。',tags:['笔记','项目管理','Wiki'],badges:['hot']},
+  {c:'work',icon:'🟢',name:'飞书',url:'https://www.feishu.cn',desc:'字节出品，文档、即时通讯、视频会议、OKR 管理，一站式企业协作平台。',tags:['国内','协作','企业'],badges:['cn','hot']},
+  {c:'work',icon:'🔵',name:'腾讯文档',url:'https://docs.qq.com',desc:'腾讯旗下在线文档，与微信/QQ 打通，多人实时协作编辑，国内使用广泛。',tags:['国内','文档','腾讯'],badges:['cn']},
+  {c:'work',icon:'🟠',name:'语雀',url:'https://www.yuque.com',desc:'阿里旗下专业知识库，团队内部文档管理，Markdown 支持出色，UI 简洁。',tags:['国内','知识库','阿里'],badges:['cn']},
+  {c:'work',icon:'🔵',name:'Trello',url:'https://trello.com',desc:'看板式任务管理，简单直观，拖拽操作，小团队项目管理必备。',tags:['看板','任务','团队'],badges:[]},
+  {c:'work',icon:'⚫',name:'Obsidian',url:'https://obsidian.md',desc:'本地优先 Markdown 笔记，双向链接与知识图谱，隐私保护强，插件生态丰富。',tags:['笔记','本地','Markdown'],badges:['hot']},
+  {c:'work',icon:'🗓',name:'滴答清单',url:'https://dida365.com',desc:'国内优秀任务管理工具，日历、番茄钟、习惯追踪，全平台同步流畅。',tags:['国内','任务','日历'],badges:['cn']},
+  {c:'work',icon:'🔷',name:'Zoom',url:'https://zoom.us',desc:'全球最流行视频会议工具，企业会议标配，稳定性出色，全平台覆盖。',tags:['视频会议','国际','企业'],badges:[]},
+
+  // ── 购物电商 ───────────────────────────────────────────────
+  {c:'shop',icon:'🔴',name:'淘宝',url:'https://www.taobao.com',desc:'国内最大 C2C 电商平台，商品品类齐全，价格竞争力强，物流体系成熟。',tags:['国内','C2C','阿里'],badges:['cn','hot']},
+  {c:'shop',icon:'🔴',name:'天猫',url:'https://www.tmall.com',desc:'阿里旗下 B2C 品牌正品平台，双十一发源地，旗舰店聚集，品质保障。',tags:['国内','品牌','B2C'],badges:['cn']},
+  {c:'shop',icon:'🔵',name:'京东',url:'https://www.jd.com',desc:'国内最大自营电商，正品保障，自营物流当日达，3C 数码类目强势。',tags:['国内','自营','3C'],badges:['cn','hot']},
+  {c:'shop',icon:'🟠',name:'拼多多',url:'https://www.pinduoduo.com',desc:'社交拼购电商，价格极低，下沉市场覆盖广，百亿补贴品牌商品实惠。',tags:['国内','拼购','低价'],badges:['cn']},
+  {c:'shop',icon:'🟡',name:'亚马逊',url:'https://www.amazon.com',desc:'全球最大电商平台，Prime 会员快速配送，海淘首选，商品覆盖全类目。',tags:['国际','海淘','Prime'],badges:['hot']},
+  {c:'shop',icon:'⚫',name:'eBay',url:'https://www.ebay.com',desc:'全球老牌拍卖电商，二手商品和稀缺收藏品聚集地，全球买家卖家活跃。',tags:['国际','二手','拍卖'],badges:[]},
+  {c:'shop',icon:'🟠',name:'闲鱼',url:'https://www.xianyu.com',desc:'阿里旗下二手交易平台，国内最大闲置物品集散地，卖闲置省心便捷。',tags:['国内','二手','闲置'],badges:['cn']},
+
+  // ── 金融理财 ───────────────────────────────────────────────
+  {c:'finance',icon:'🔴',name:'支付宝',url:'https://www.alipay.com',desc:'国内最大移动支付平台，理财、医疗、出行等生活服务一站搞定。',tags:['国内','支付','理财'],badges:['cn','hot']},
+  {c:'finance',icon:'🔵',name:'招商银行',url:'https://www.cmbchina.com',desc:'国内最佳零售银行，掌上生活 App 体验好，信用卡权益丰富。',tags:['国内','银行','信用卡'],badges:['cn']},
+  {c:'finance',icon:'🟡',name:'东方财富',url:'https://www.eastmoney.com',desc:'国内最大互联网金融平台，股票行情、基金、债券、财经资讯全覆盖。',tags:['国内','股票','基金'],badges:['cn']},
+  {c:'finance',icon:'🟠',name:'老虎证券',url:'https://www.itiger.com',desc:'港美股交易平台，美股零佣金，新手友好，美股港股 A 股全覆盖。',tags:['美股','港股','零佣金'],badges:['cn']},
+  {c:'finance',icon:'⚫',name:'Coinbase',url:'https://www.coinbase.com',desc:'全球最合规的加密货币交易所，美国上市公司，新手入门加密货币首选。',tags:['加密货币','合规','国际'],badges:[]},
+
+  // ── 新闻资讯 ───────────────────────────────────────────────
+  {c:'news',icon:'🔴',name:'新浪新闻',url:'https://news.sina.com.cn',desc:'国内主流综合新闻平台，热点事件报道及时，覆盖财经、体育、娱乐等全领域。',tags:['国内','综合','热点'],badges:['cn']},
+  {c:'news',icon:'🔵',name:'腾讯新闻',url:'https://news.qq.com',desc:'腾讯旗下新闻平台，内容聚合广泛，与微信联动推送，用户基数庞大。',tags:['国内','腾讯','聚合'],badges:['cn']},
+  {c:'news',icon:'⚫',name:'36氪',url:'https://36kr.com',desc:'国内领先科技创业媒体，科技前沿、创投资讯、独家报道，投资人必读。',tags:['国内','科技','创投'],badges:['cn']},
+  {c:'news',icon:'🟡',name:'少数派',url:'https://sspai.com',desc:'专注数字生活的优质内容平台，效率工具评测、软件技巧，品质高受众精准。',tags:['国内','效率','工具'],badges:['cn']},
+  {c:'news',icon:'🔵',name:'BBC',url:'https://www.bbc.com',desc:'英国国家广播公司，国际权威媒体，客观中立报道，全球影响力巨大。',tags:['国际','权威','英文'],badges:[]},
+  {c:'news',icon:'🟤',name:'The Verge',url:'https://www.theverge.com',desc:'全球顶级科技媒体，产品评测与科技行业报道专业深度，设计精美。',tags:['科技','产品评测','国际'],badges:[]},
+  {c:'news',icon:'🟣',name:'Hacker News',url:'https://news.ycombinator.com',desc:'Y Combinator 运营，黑客与创业者社区，科技讨论质量极高，工程师必逛。',tags:['科技','社区','创业'],badges:['hot']},
+
+  // ── 学习教育 ───────────────────────────────────────────────
+  {c:'learn',icon:'🎓',name:'中国大学MOOC',url:'https://www.icourse163.org',desc:'教育部主导，国内高校名牌课程免费在线学习，学历认证课程丰富。',tags:['国内','大学课程','免费'],badges:['cn','free']},
+  {c:'learn',icon:'🟡',name:'网易公开课',url:'https://open.163.com',desc:'网易旗下，引进 TED、可汗学院、哈佛公开课等优质内容，中文字幕。',tags:['国内','公开课','字幕'],badges:['cn']},
+  {c:'learn',icon:'🔵',name:'Coursera',url:'https://www.coursera.org',desc:'全球领先 MOOC 平台，与 200+ 顶尖大学合作，提供学历证书，内容权威。',tags:['国际','大学合作','证书'],badges:[]},
+  {c:'learn',icon:'🟠',name:'Udemy',url:'https://www.udemy.com',desc:'实战技能培训平台，IT 编程、设计、商业课程海量，经常打折性价比高。',tags:['国际','技能','实战'],badges:[]},
+  {c:'learn',icon:'🎥',name:'YouTube 教程',url:'https://www.youtube.com/education',desc:'YouTube 教育频道聚合，数学、编程、语言学习等高质量教学视频免费观看。',tags:['国际','视频','免费'],badges:['free']},
+  {c:'learn',icon:'📊',name:'Khan Academy',url:'https://www.khanacademy.org',desc:'可汗学院，覆盖 K12 全学科，免费高质量教育资源，已服务全球亿级用户。',tags:['国际','K12','免费'],badges:['free']},
+  {c:'learn',icon:'📚',name:'Wikipedia',url:'https://www.wikipedia.org',desc:'全球最大开放百科全书，数百万词条，300+ 语言版本，知识查询必备。',tags:['百科','开放','多语言'],badges:['free']},
+  {c:'learn',icon:'🐍',name:'LeetCode',url:'https://leetcode.cn',desc:'算法题库与面试刷题平台，国内外大厂面试必刷，中文版体验好。',tags:['算法','面试','刷题'],badges:['cn']},
+  {c:'learn',icon:'⏰',name:'极客时间',url:'https://time.geekbang.org',desc:'国内头部 IT 技术付费学习平台，大厂专家授课，体系化专栏与视频课程。',tags:['国内','IT','付费'],badges:['cn']},
+  {c:'learn',icon:'🎓',name:'慕课网',url:'https://www.imooc.com',desc:'国内最大 IT 在线教育平台，免费与付费课程结合，实战项目多，社区活跃。',tags:['国内','编程','实战'],badges:['cn']},
+  {c:'learn',icon:'🆓',name:'freeCodeCamp',url:'https://www.freecodecamp.org',desc:'免费学习编程，提供 Web 开发、数据分析等方向认证证书，全球千万学员。',tags:['免费','认证','Web开发'],badges:['free']},
+  {c:'learn',icon:'🏛',name:'edX',url:'https://www.edx.org',desc:'MIT、哈佛等顶校在线课程平台，部分课程可获官方证书，内容权威。',tags:['大学','证书','国际'],badges:[]},
+  {c:'learn',icon:'🌐',name:'W3Schools',url:'https://www.w3schools.com',desc:'Web 开发基础教程网站，HTML/CSS/JS/SQL 入门必备，在线编辑器实时练习。',tags:['Web','基础','在线练习'],badges:['free']},
+  {c:'learn',icon:'🤓',name:'GeeksforGeeks',url:'https://www.geeksforgeeks.org',desc:'编程算法知识库，数据结构、系统设计、面试题解析详尽，学生程序员必逛。',tags:['算法','数据结构','面试'],badges:['free']},
+  {c:'learn',icon:'👨‍💻',name:'Dev.to',url:'https://dev.to',desc:'开发者博客社区，技术文章质量高，氛围友好，适合分享与学习编程经验。',tags:['社区','博客','开发者'],badges:['free']},
+  {c:'learn',icon:'🗺',name:'Roadmap.sh',url:'https://roadmap.sh',desc:'技术学习路线图，覆盖前端/后端/DevOps/AI 等方向，可视化引导学习路径。',tags:['路线图','规划','可视化'],badges:['free']},
+  {c:'learn',icon:'🐄',name:'牛客网',url:'https://www.nowcoder.com',desc:'国内求职刷题备考平台，算法题、笔试真题、面经汇总，校招必备神器。',tags:['国内','求职','笔试'],badges:['cn']},
+  {c:'learn',icon:'💎',name:'掘金',url:'https://juejin.cn',desc:'国内活跃的技术开发者社区，前端/后端/移动端文章质量高，掘金小册深度好。',tags:['国内','技术','社区'],badges:['cn']},
+  {c:'learn',icon:'🤔',name:'思否',url:'https://segmentfault.com',desc:'国内编程技术问答社区，Stack Overflow 风格，中文回答质量较高。',tags:['国内','问答','编程'],badges:['cn']},
+  {c:'learn',icon:'📝',name:'CSDN',url:'https://www.csdn.net',desc:'国内最大技术博客与社区，博客文章海量，技术文档、下载资源丰富。',tags:['国内','博客','技术'],badges:['cn']},
+
+  // ── 搜索引擎（补充）──────────────────────────────────────
+  {c:'search',icon:'🌳',name:'Ecosia',url:'https://www.ecosia.org',desc:'用搜索收益种树的绿色搜索引擎，每次搜索贡献植树公益，基于 Bing 索引。',tags:['环保','公益','国际'],badges:[]},
+  {c:'search',icon:'🔴',name:'Yandex',url:'https://yandex.com',desc:'俄罗斯最大搜索引擎，东欧地区市场主导，图像搜索与地图服务出色。',tags:['俄罗斯','国际'],badges:[]},
+  {c:'search',icon:'🐬',name:'神马搜索',url:'https://m.sm.cn',desc:'阿里旗下移动端搜索，UC 浏览器默认引擎，移动用户覆盖广。',tags:['国内','移动','阿里'],badges:['cn']},
+
+  // ── 社交媒体（补充）──────────────────────────────────────
+  {c:'social',icon:'🎮',name:'Discord',url:'https://discord.com',desc:'游戏玩家与技术社区首选，频道管理灵活，语音/视频通话流畅，AI 社区活跃。',tags:['游戏','社区','语音'],badges:['hot']},
+  {c:'social',icon:'✈️',name:'Telegram',url:'https://telegram.org',desc:'隐私加密即时通讯，频道与群组生态丰富，Bot 开发生态完善，全球用户 9 亿+。',tags:['隐私','加密','Bot'],badges:['hot']},
+  {c:'social',icon:'📌',name:'Pinterest',url:'https://www.pinterest.com',desc:'图片灵感收藏平台，设计师、摄影师、装修爱好者聚集，视觉内容发现利器。',tags:['灵感','图片','设计'],badges:[]},
+  {c:'social',icon:'🐧',name:'QQ',url:'https://im.qq.com',desc:'腾讯旗下老牌即时通讯，QQ 群生态丰富，游戏联动强，学生群体用户多。',tags:['国内','腾讯','游戏'],badges:['cn']},
+  {c:'social',icon:'🔶',name:'百度贴吧',url:'https://tieba.baidu.com',desc:'国内最大兴趣社区，以话题为核心的论坛，各类垂直圈子聚集地。',tags:['国内','论坛','兴趣'],badges:['cn']},
+  {c:'social',icon:'💼',name:'脉脉',url:'https://maimai.cn',desc:'国内职场社交平台，实名与匿名双模式，职场爆料、招聘、行业动态一体。',tags:['国内','职场','招聘'],badges:['cn']},
+  {c:'social',icon:'🌀',name:'快手',url:'https://www.kuaishou.com',desc:'国内头部短视频平台，下沉市场覆盖广，直播电商强劲，老铁文化独特。',tags:['国内','短视频','直播'],badges:['cn','hot']},
+  {c:'social',icon:'👻',name:'Snapchat',url:'https://www.snapchat.com',desc:'阅后即焚社交，AR 滤镜创新先驱，年轻用户喜爱，Stories 功能被广泛模仿。',tags:['国际','AR','年轻'],badges:[]},
+  {c:'social',icon:'🟢',name:'LINE',url:'https://line.me',desc:'日本及东亚主流即时通讯，贴图文化丰富，支付、外卖等生活服务集成。',tags:['日本','东亚','生活服务'],badges:[]},
+
+  // ── 视频娱乐（补充）──────────────────────────────────────
+  {c:'video',icon:'🟠',name:'芒果TV',url:'https://www.mgtv.com',desc:'湖南卫视旗下，综艺版权丰富，快乐大本营、天天向上等头部综艺独播。',tags:['国内','综艺','湖南卫视'],badges:['cn']},
+  {c:'video',icon:'🍉',name:'西瓜视频',url:'https://www.ixigua.com',desc:'字节旗下中长视频平台，纪录片与知识类内容丰富，创作者收益分成高。',tags:['国内','字节','中长视频'],badges:['cn']},
+  {c:'video',icon:'🐟',name:'斗鱼',url:'https://www.douyu.com',desc:'国内头部游戏直播平台，电竞赛事直播强，主播生态成熟，弹幕互动热烈。',tags:['国内','游戏直播','电竞'],badges:['cn']},
+  {c:'video',icon:'🐯',name:'虎牙',url:'https://www.huya.com',desc:'腾讯系游戏直播平台，英雄联盟、王者荣耀官方赛事直播，用户规模大。',tags:['国内','腾讯','游戏直播'],badges:['cn']},
+  {c:'video',icon:'🎞',name:'Vimeo',url:'https://vimeo.com',desc:'高质量视频托管平台，无广告、画质优秀，创意人士与企业视频托管首选。',tags:['国际','高质量','创意'],badges:[]},
+
+  // ── 音乐（补充）──────────────────────────────────────────
+  {c:'music',icon:'🐶',name:'酷狗音乐',url:'https://www.kugou.com',desc:'国内最大音乐平台之一，曲库海量，KTV 唱歌功能受欢迎，下沉用户多。',tags:['国内','曲库','KTV'],badges:['cn']},
+  {c:'music',icon:'🎙',name:'喜马拉雅',url:'https://www.ximalaya.com',desc:'国内最大音频平台，有声书、播客、相声、知识付费，通勤伴侣首选。',tags:['国内','有声书','播客'],badges:['cn','hot']},
+  {c:'music',icon:'☁️',name:'SoundCloud',url:'https://soundcloud.com',desc:'全球独立音乐人发布平台，发现小众原创音乐，电子音乐社区极为活跃。',tags:['国际','独立音乐','电子'],badges:[]},
+  {c:'music',icon:'🌸',name:'荔枝FM',url:'https://www.lizhi.fm',desc:'国内播客录制与发布平台，声音内容创业者聚集，直播功能活跃。',tags:['国内','播客','直播'],badges:['cn']},
+  {c:'music',icon:'🌊',name:'Tidal',url:'https://tidal.com',desc:'高保真无损音乐流媒体，MQA 格式支持，艺术家版税最高，发烧友之选。',tags:['国际','无损','高保真'],badges:[]},
+
+  // ── AI 工具（补充）────────────────────────────────────────
+  {c:'ai',icon:'🟤',name:'Copilot',url:'https://copilot.microsoft.com',desc:'微软 AI 助手，集成 GPT-4o，深度嵌入 Windows / Office 365，免费使用。',tags:['微软','Office','GPT'],badges:[]},
+  {c:'ai',icon:'⚫',name:'Grok',url:'https://grok.com',desc:'xAI 出品，实时接入 X（推特）数据，风格直接大胆，推理模型能力强劲。',tags:['xAI','实时','推理'],badges:['hot']},
+  {c:'ai',icon:'🌿',name:'Poe',url:'https://poe.com',desc:'Quora 出品 AI 聚合平台，一账号同时访问 GPT-4o、Claude、Gemini 等多模型。',tags:['聚合','多模型'],badges:[]},
+  {c:'ai',icon:'🎬',name:'Runway',url:'https://runwayml.com',desc:'视频生成老牌强者，Gen-3 Alpha 质量出众，专业级 AI 视频编辑工具套件。',tags:['视频生成','Gen-3','专业'],badges:['hot']},
+  {c:'ai',icon:'🔵',name:'Stability AI',url:'https://stability.ai',desc:'Stable Diffusion 开源图像模型发布方，本地可运行，ComfyUI 生态庞大。',tags:['图像生成','开源','本地'],badges:[]},
+  {c:'ai',icon:'✍️',name:'Jasper',url:'https://www.jasper.ai',desc:'企业级 AI 写作助手，营销文案、博客、广告语生成，内容营销团队首选。',tags:['写作','营销','企业'],badges:[]},
+  {c:'ai',icon:'🔮',name:'Character.AI',url:'https://character.ai',desc:'角色扮演 AI 平台，数百万 AI 角色，月活超 2 亿，娱乐与创作场景丰富。',tags:['角色','娱乐','陪伴'],badges:['hot']},
+  {c:'ai',icon:'🧠',name:'Cohere',url:'https://cohere.com',desc:'企业级 NLP API，RAG 检索增强、向量嵌入，私有化部署数据安全可控。',tags:['企业','RAG','嵌入'],badges:[]},
+
+  // ── 开发工具（补充）──────────────────────────────────────
+  {c:'dev',icon:'🔵',name:'Bitbucket',url:'https://bitbucket.org',desc:'Atlassian 旗下代码托管，与 Jira/Confluence 深度集成，企业私有仓库常用。',tags:['代码托管','Atlassian','CI/CD'],badges:[]},
+  {c:'dev',icon:'🟠',name:'AWS',url:'https://aws.amazon.com',desc:'全球最大云计算平台，200+ 服务覆盖计算/存储/AI，企业云上架构首选。',tags:['云计算','企业','存储'],badges:[]},
+  {c:'dev',icon:'🔵',name:'Google Cloud',url:'https://cloud.google.com',desc:'谷歌云平台，BigQuery 数据分析、Kubernetes 容器、AI/ML 能力业界领先。',tags:['云计算','BigQuery','K8s'],badges:[]},
+  {c:'dev',icon:'🔷',name:'Microsoft Azure',url:'https://azure.microsoft.com',desc:'微软云服务，与 Office 365/Active Directory 深度集成，企业市场占有率高。',tags:['云计算','微软','企业'],badges:[]},
+  {c:'dev',icon:'🌊',name:'DigitalOcean',url:'https://www.digitalocean.com',desc:'开发者友好的云服务商，一键创建 Droplet，文档详尽，个人项目性价比高。',tags:['云服务器','VPS','开发者'],badges:[]},
+  {c:'dev',icon:'🟢',name:'Supabase',url:'https://supabase.com',desc:'开源 Firebase 替代，PostgreSQL + Auth + Storage + Realtime，开发者最爱。',tags:['数据库','开源','全栈'],badges:['hot']},
+  {c:'dev',icon:'🚂',name:'Railway',url:'https://railway.app',desc:'极简应用部署平台，GitHub 一键连接自动部署，支持数据库，个人项目首选。',tags:['部署','简单','数据库'],badges:['hot']},
+  {c:'dev',icon:'📮',name:'Postman',url:'https://www.postman.com',desc:'API 测试与开发协作工具，接口调试、文档生成、自动化测试，开发必装。',tags:['API','测试','文档'],badges:[]},
+  {c:'dev',icon:'🔣',name:'Regex101',url:'https://regex101.com',desc:'在线正则表达式调试工具，实时高亮匹配，支持多语言引擎，附详细解释。',tags:['正则','调试','在线'],badges:['free']},
+  {c:'dev',icon:'📱',name:'Can I Use',url:'https://caniuse.com',desc:'浏览器特性兼容性查询，CSS/JS/HTML 各特性支持率一目了然，前端必备。',tags:['兼容性','CSS','前端'],badges:['free']},
+  {c:'dev',icon:'🟠',name:'阿里云',url:'https://www.aliyun.com',desc:'国内最大云服务商，ECS/OSS/RDS 全家桶，国内部署首选，生态成熟完善。',tags:['国内','云计算','阿里'],badges:['cn']},
+  {c:'dev',icon:'🔵',name:'腾讯云',url:'https://cloud.tencent.com',desc:'腾讯旗下云服务，与微信/小程序生态深度打通，国内服务器节点覆盖广。',tags:['国内','腾讯','小程序'],badges:['cn']},
+  {c:'dev',icon:'📦',name:'CodeSandbox',url:'https://codesandbox.io',desc:'在线代码沙盒，支持 React/Vue/Node 等主流框架，分享代码片段即时预览。',tags:['在线IDE','沙盒','分享'],badges:[]},
+  {c:'dev',icon:'🌐',name:'Netlify',url:'https://www.netlify.com',desc:'前端静态网站托管，Git 自动部署、Serverless Functions、表单处理，免费套餐慷慨。',tags:['部署','静态网站','Serverless'],badges:[]},
+
+  // ── 设计创作（补充）──────────────────────────────────────
+  {c:'design',icon:'🖼',name:'Framer',url:'https://www.framer.com',desc:'交互原型设计工具，支持发布为真实网站，动效设计与 CMS 能力出色。',tags:['原型','动效','发布'],badges:['hot']},
+  {c:'design',icon:'🎨',name:'Coolors',url:'https://coolors.co',desc:'在线配色方案生成器，一键生成协调色盘，支持导出多格式，设计师神器。',tags:['配色','生成器','设计'],badges:['free']},
+  {c:'design',icon:'🔤',name:'Google Fonts',url:'https://fonts.google.com',desc:'谷歌免费字体库，1000+ 开源字体，Web 字体直接嵌入，商用免费。',tags:['字体','免费','Web'],badges:['free']},
+  {c:'design',icon:'⭐',name:'Font Awesome',url:'https://fontawesome.com',desc:'最流行的图标字体库，数千个高质量图标，Web 项目图标化标配方案。',tags:['图标','字体','Web'],badges:[]},
+  {c:'design',icon:'📷',name:'Pexels',url:'https://www.pexels.com',desc:'高质量免费图片与视频素材库，完全免费商用，摄影师投稿，内容优质丰富。',tags:['图库','视频','免费'],badges:['free']},
+  {c:'design',icon:'✂️',name:'Remove.bg',url:'https://www.remove.bg',desc:'一键 AI 自动抠图，背景移除效果精准，支持批量处理，免费版每月有额度。',tags:['抠图','AI','背景'],badges:[]},
+  {c:'design',icon:'🗜',name:'TinyPNG',url:'https://tinypng.com',desc:'在线图片无损压缩，PNG/JPEG/WebP 格式支持，大幅减小文件体积不损画质。',tags:['压缩','PNG','优化'],badges:['free']},
+
+  // ── 效率办公（补充）──────────────────────────────────────
+  {c:'work',icon:'💬',name:'Slack',url:'https://slack.com',desc:'企业即时通讯首选，频道管理清晰，与 GitHub/Jira 等 2000+ 工具集成。',tags:['企业','即时通讯','集成'],badges:['hot']},
+  {c:'work',icon:'🔷',name:'Microsoft Teams',url:'https://teams.microsoft.com',desc:'微软企业协作平台，视频会议、聊天、文档协作一体，Office 365 深度集成。',tags:['微软','视频会议','Office'],badges:[]},
+  {c:'work',icon:'🔵',name:'Jira',url:'https://www.atlassian.com/software/jira',desc:'敏捷开发项目管理标配，Bug 追踪、Sprint 规划、Scrum 看板，企业广泛使用。',tags:['项目管理','敏捷','Scrum'],badges:[]},
+  {c:'work',icon:'📖',name:'Confluence',url:'https://www.atlassian.com/software/confluence',desc:'Atlassian 出品的团队知识管理 Wiki，与 Jira 无缝集成，企业文档沉淀利器。',tags:['Wiki','文档','知识管理'],badges:[]},
+  {c:'work',icon:'📋',name:'Asana',url:'https://asana.com',desc:'直观的项目任务管理，甘特图、时间线、看板视图多样，跨部门协作清晰。',tags:['任务管理','甘特图','团队'],badges:[]},
+  {c:'work',icon:'📅',name:'Monday.com',url:'https://monday.com',desc:'彩色看板工作管理平台，流程自动化强，适合市场/运营/产品等非技术团队。',tags:['看板','自动化','运营'],badges:[]},
+  {c:'work',icon:'🧠',name:'Miro',url:'https://miro.com',desc:'在线白板协作，思维导图、流程图、头脑风暴，远程协作团队必备工具。',tags:['白板','思维导图','远程'],badges:['hot']},
+  {c:'work',icon:'⚡',name:'Linear',url:'https://linear.app',desc:'现代化产品研发管理工具，界面极简优雅，快捷键驱动，工程师团队热爱。',tags:['研发管理','极简','快捷键'],badges:['hot']},
+
+  // ── 购物电商（补充）──────────────────────────────────────
+  {c:'shop',icon:'🟣',name:'唯品会',url:'https://www.vip.com',desc:'品牌特卖折扣平台，正品保障，奢品/运动/美妆大牌限时折扣，女性用户多。',tags:['国内','特卖','品牌'],badges:['cn']},
+  {c:'shop',icon:'🔵',name:'苏宁易购',url:'https://www.suning.com',desc:'国内家电 3C 零售平台，线上线下融合，以旧换新服务完善，售后保障好。',tags:['国内','家电','3C'],badges:['cn']},
+  {c:'shop',icon:'📚',name:'当当',url:'https://www.dangdang.com',desc:'国内最大图书电商，正版书籍价格优惠，图书品类最全，阅读爱好者首选。',tags:['国内','图书','正版'],badges:['cn']},
+  {c:'shop',icon:'👟',name:'得物',url:'https://www.dewu.com',desc:'潮流球鞋鉴定交易平台，正品鉴定机制，AJ/耐克/椰子等潮鞋交易活跃。',tags:['国内','球鞋','鉴定'],badges:['cn','hot']},
+  {c:'shop',icon:'👗',name:'SHEIN',url:'https://www.shein.com',desc:'快时尚跨境电商，价格极低，款式更新极快，出海成功品牌，全球发货。',tags:['快时尚','跨境','全球'],badges:['hot']},
+  {c:'shop',icon:'🔄',name:'转转',url:'https://www.zhuanzhuan.com',desc:'专注二手数码电子交易，官方验货担保，回收服务完善，手机以旧换新。',tags:['国内','二手','数码'],badges:['cn']},
+  {c:'shop',icon:'🏭',name:'1688',url:'https://www.1688.com',desc:'阿里旗下 B2B 批发采购平台，工厂直供，价格最低，适合企业批量采购。',tags:['国内','批发','B2B'],badges:['cn']},
+
+  // ── 金融理财（补充）──────────────────────────────────────
+  {c:'finance',icon:'⛄',name:'雪球',url:'https://xueqiu.com',desc:'国内投资者社区，股票/基金讨论，大V组合跟投，财经资讯实时更新。',tags:['国内','投资','股票'],badges:['cn']},
+  {c:'finance',icon:'🌸',name:'同花顺',url:'https://www.10jqka.com.cn',desc:'国内主流股票行情软件，实时行情、技术分析、选股工具全面，散户常用。',tags:['国内','股票','行情'],badges:['cn']},
+  {c:'finance',icon:'🐄',name:'富途牛牛',url:'https://www.futunn.com',desc:'港美股及 A 股交易平台，实时行情、社区讨论、新股打新，界面专业流畅。',tags:['港股','美股','A股'],badges:['cn']},
+  {c:'finance',icon:'🟡',name:'Binance',url:'https://www.binance.com',desc:'全球最大加密货币交易所，现货/合约/理财全覆盖，流动性最强，24h 交易量第一。',tags:['加密货币','交易所','国际'],badges:['hot']},
+  {c:'finance',icon:'🟢',name:'Robinhood',url:'https://robinhood.com',desc:'美国零佣金股票交易 App，散户投资革命者，界面极简，美股新手入门首选。',tags:['美股','零佣金','新手'],badges:[]},
+
+  // ── 新闻资讯（补充）──────────────────────────────────────
+  {c:'news',icon:'🌊',name:'澎湃新闻',url:'https://www.thepaper.cn',desc:'国内深度新闻报道平台，时政与调查新闻质量高，原创内容有深度。',tags:['国内','深度','时政'],badges:['cn']},
+  {c:'news',icon:'🐺',name:'虎嗅',url:'https://www.huxiu.com',desc:'科技商业深度分析媒体，产业研究、独立观点，科技从业者必读资讯平台。',tags:['国内','科技','商业'],badges:['cn']},
+  {c:'news',icon:'🔩',name:'钛媒体',url:'https://www.tmtpost.com',desc:'科技创投垂直媒体，独家报道、深度评论、创业故事，投资人与创业者聚集。',tags:['国内','创投','科技'],badges:['cn']},
+  {c:'news',icon:'🚀',name:'TechCrunch',url:'https://techcrunch.com',desc:'全球顶级科技创业媒体，创业融资、产品发布、独家报道，硅谷风向标。',tags:['国际','创业','融资'],badges:['hot']},
+  {c:'news',icon:'📡',name:'Wired',url:'https://www.wired.com',desc:'科技文化深度杂志，长篇特稿，探讨技术对社会的深远影响，文章质量极高。',tags:['国际','深度','文化'],badges:[]},
+  {c:'news',icon:'📰',name:'Reuters',url:'https://www.reuters.com',desc:'路透社，全球权威财经与国际新闻，客观中立，是众多媒体的消息来源。',tags:['国际','财经','权威'],badges:[]},
+  {c:'news',icon:'🛡',name:'The Guardian',url:'https://www.theguardian.com',desc:'英国卫报，独立新闻报道，无付费墙，调查性新闻与社会议题深度报道著称。',tags:['国际','独立','深度'],badges:[]},
+  {c:'news',icon:'🔬',name:'Ars Technica',url:'https://arstechnica.com',desc:'面向极客的深度科技报道，技术细节准确，评测深入，评论区技术讨论高质量。',tags:['国际','极客','深度'],badges:[]},
+];
+
+const CAT_META = {
+  mine:   {label:'我的工具',    color:'var(--purple)',   icon:'⭐'},
+  search: {label:'搜索引擎',    color:'var(--cyan)',     icon:'🔍'},
+  social: {label:'社交媒体',    color:'var(--blue)',     icon:'💬'},
+  video:  {label:'视频娱乐',    color:'var(--yellow)',   icon:'🎬'},
+  music:  {label:'音乐',        color:'var(--green)',    icon:'🎵'},
+  ai:     {label:'AI 工具',     color:'var(--pink)',     icon:'🤖'},
+  dev:    {label:'开发工具',    color:'var(--orange)',   icon:'💻'},
+  design: {label:'设计创作',    color:'var(--lime)',     icon:'🎨'},
+  work:   {label:'效率办公',    color:'var(--teal)',     icon:'🗃'},
+  shop:   {label:'购物电商',    color:'var(--red)',      icon:'🛒'},
+  finance:{label:'金融理财',    color:'var(--yellow)',   icon:'💰'},
+  news:   {label:'新闻资讯',    color:'var(--blue)',     icon:'📰'},
+  learn:  {label:'学习教育',    color:'var(--orange)',   icon:'📚'},
+};
+
+const CAT_ORDER = ['mine','search','social','video','music','ai','dev','design','work','shop','finance','news','learn'];
+const BADGE_LABEL = {cn:'国内',free:'免费',hot:'🔥热门',mine:'自制'};
+
+let currentCat = 'all';
+let searchQ = '';
+
+function badgeHTML(b){
+  return `<span class="badge badge-${b}">${BADGE_LABEL[b]||b}</span>`;
+}
+
+function renderCards(){
+  const container = document.getElementById('container');
+  const noResult  = document.getElementById('noResult');
+  const q = searchQ.toLowerCase();
+
+  const filtered = SITES.filter(s => {
+    const matchCat = currentCat === 'all' || s.c === currentCat;
+    const matchQ   = !q ||
+      s.name.toLowerCase().includes(q) ||
+      s.desc.toLowerCase().includes(q) ||
+      (s.tags||[]).some(t => t.toLowerCase().includes(q)) ||
+      (CAT_META[s.c]?.label||'').includes(q);
+    return matchCat && matchQ;
+  });
+
+  document.getElementById('navCount').textContent = filtered.length + ' 个网站';
+
+  if(!filtered.length){
+    container.innerHTML = '';
+    noResult.style.display = 'block';
+    return;
+  }
+  noResult.style.display = 'none';
+
+  const groups = {};
+  if(currentCat === 'all'){
+    CAT_ORDER.forEach(c => {
+      const items = filtered.filter(s => s.c === c);
+      if(items.length) groups[c] = items;
     });
+  } else {
+    groups[currentCat] = filtered;
   }
 
-  // Active nav on scroll — 用 scroll 事件 + rAF 节流，避免 IntersectionObserver 卡顿
-  const NAV_IDS = ['features', 'install', 'tutorials', 'commands', 'tips', 'pricing'];
-  const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
-
-  let ticking = false;
-  function updateActiveNav() {
-    const scrollY = window.scrollY + 80;
-    let current = '';
-    for (const id of NAV_IDS) {
-      const el = document.getElementById(id);
-      if (el && el.offsetTop <= scrollY) current = id;
+  let html = '';
+  for(const [cat, items] of Object.entries(groups)){
+    const m = CAT_META[cat];
+    html += `<div class="section-anchor">
+      <div class="section-hd">
+        <h2 style="color:${m.color}">${m.icon} ${m.label}</h2>
+        <span class="section-count">${items.length}</span>
+      </div>
+      <div class="cards-grid">`;
+    for(const s of items){
+      const badges = (s.badges||[]).map(badgeHTML).join('');
+      const tags   = (s.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('');
+      const href   = s.local ? s.url : s.url;
+      const target = s.local ? '' : ' target="_blank" rel="noopener"';
+      const mineClass = cat === 'mine' ? ' mine-card' : '';
+      html += `<a class="card${mineClass}" data-c="${cat}" href="${href}"${target}>
+        <div class="card-top">
+          <div class="card-icon">${s.icon}</div>
+          <div class="card-meta">
+            <div class="card-name">${s.name} ${badges}</div>
+            <div class="card-url">${s.local ? s.url : s.url.replace(/^https?:\/\//,'')}</div>
+          </div>
+        </div>
+        <div class="card-desc">${s.desc}</div>
+        <div class="card-tags">${tags}</div>
+      </a>`;
     }
-    navLinks.forEach(a => {
-      const isActive = a.getAttribute('href') === '#' + current;
-      a.style.color = isActive ? 'var(--text)' : '';
-    });
-    ticking = false;
+    html += '</div></div>';
   }
+  container.innerHTML = html;
+}
 
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(updateActiveNav);
-      ticking = true;
-    }
-  }, { passive: true });
+function updateCounts(){
+  document.getElementById('totalCount').textContent = SITES.length;
+  document.getElementById('catCount').textContent = CAT_ORDER.length;
+  document.getElementById('cnt-all').textContent = SITES.length;
+  CAT_ORDER.forEach(c => {
+    const el = document.getElementById('cnt-'+c);
+    if(el) el.textContent = SITES.filter(s=>s.c===c).length;
+  });
+}
+
+function filterCat(cat, btn){
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards();
+}
+
+let timer;
+document.getElementById('searchInput').addEventListener('input', e => {
+  clearTimeout(timer);
+  timer = setTimeout(() => {
+    searchQ = e.target.value.trim();
+    renderCards();
+  }, 150);
+});
+
+updateCounts();
+renderCards();
 </script>
 </body>
 </html>

@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OpenClaw — 开源 AI 智能体平台完全指南</title>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a23;
+      --surface2: #1e2330;
+      --border: #2a3045;
+      --accent: #f97316;
+      --accent2: #fb923c;
+      --accent-dim: rgba(249,115,22,0.12);
+      --text: #e8eaf0;
+      --text-muted: #8892a4;
+      --text-dim: #5c6478;
+      --green: #22c55e;
+      --blue: #3b82f6;
+      --purple: #a855f7;
+      --red: #ef4444;
+      --yellow: #eab308;
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(13,15,20,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 clamp(1rem,5vw,3rem);
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-weight: 700; font-size: 1.1rem; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo span { font-size: 1.4rem; }
+    .nav-links {
+      display: flex; gap: 0; list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-muted); text-decoration: none;
+      font-size: .85rem; padding: 6px 14px; border-radius: 6px;
+      transition: color .2s, background .2s;
+    }
+    .nav-links a:hover { color: var(--text); background: var(--surface2); }
+    .nav-cta {
+      background: var(--accent); color: #fff !important;
+      font-weight: 600; padding: 6px 16px !important;
+    }
+    .nav-cta:hover { background: var(--accent2) !important; background: unset; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center;
+      padding: 80px clamp(1rem,6vw,4rem) 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(249,115,22,.15) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 80% 80%, rgba(59,130,246,.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent-dim); border: 1px solid rgba(249,115,22,.3);
+      color: var(--accent); border-radius: 99px;
+      font-size: .8rem; font-weight: 600; padding: 4px 14px;
+      margin-bottom: 1.5rem; letter-spacing: .04em;
+    }
+    .hero h1 {
+      font-size: clamp(2.4rem, 8vw, 5rem);
+      font-weight: 800; line-height: 1.1;
+      margin-bottom: 1rem; letter-spacing: -.02em;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero-sub {
+      font-size: clamp(1rem,2.5vw,1.25rem);
+      color: var(--text-muted); max-width: 640px;
+      margin-bottom: 2.5rem;
+    }
+    .hero-actions {
+      display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px; border-radius: var(--radius-sm);
+      font-size: .95rem; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: all .2s;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--accent); color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { background: var(--surface2); border-color: var(--accent); }
+    .hero-stats {
+      margin-top: 4rem; display: flex; gap: 3rem; flex-wrap: wrap; justify-content: center;
+    }
+    .stat { text-align: center; }
+    .stat-num { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+    .stat-label { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── Sections ── */
+    section { padding: 5rem clamp(1rem,6vw,4rem); }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: .75rem; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: .8rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem,4vw,2.8rem);
+      font-weight: 800; line-height: 1.2; letter-spacing: -.02em;
+      margin-bottom: 1rem;
+    }
+    .section-desc {
+      color: var(--text-muted); font-size: 1rem;
+      max-width: 680px; margin-bottom: 3rem;
+    }
+
+    /* ── Timeline ── */
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 8px; top: 0; bottom: 0;
+      width: 2px; background: var(--border);
+    }
+    .tl-item {
+      position: relative; margin-bottom: 2rem;
+      padding-left: 1.5rem;
+    }
+    .tl-dot {
+      position: absolute; left: -1.75rem; top: 5px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--surface2); border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .tl-dot::after {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent);
+    }
+    .tl-date {
+      font-size: .78rem; font-weight: 600; color: var(--accent);
+      text-transform: uppercase; letter-spacing: .08em; margin-bottom: .3rem;
+    }
+    .tl-title { font-size: 1rem; font-weight: 700; margin-bottom: .3rem; }
+    .tl-body { color: var(--text-muted); font-size: .9rem; }
+
+    /* ── Feature grid ── */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .feat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      transition: border-color .2s, transform .2s;
+    }
+    .feat-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .feat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--accent-dim); display: flex; align-items: center;
+      justify-content: center; font-size: 1.3rem; margin-bottom: 1rem;
+    }
+    .feat-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
+    .feat-card p { color: var(--text-muted); font-size: .88rem; }
+
+    /* ── How it works ── */
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: 1rem;
+    }
+    .step-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem; position: relative;
+      transition: border-color .2s;
+    }
+    .step-card:hover { border-color: var(--accent); }
+    .step-num {
+      position: absolute; top: -14px; left: 20px;
+      background: var(--accent); color: #fff;
+      font-size: .75rem; font-weight: 800;
+      padding: 2px 10px; border-radius: 99px; letter-spacing: .06em;
+    }
+    .step-card h3 { font-size: .95rem; font-weight: 700; margin-bottom: .5rem; }
+    .step-card p { color: var(--text-muted); font-size: .85rem; }
+
+    /* ── Install ── */
+    .install-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .install-tabs {
+      display: flex; border-bottom: 1px solid var(--border);
+    }
+    .install-tab {
+      padding: 12px 20px; font-size: .85rem; font-weight: 600;
+      cursor: pointer; color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: color .2s, border-color .2s;
+      background: none; border-top: none; border-left: none; border-right: none;
+    }
+    .install-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .install-content { display: none; }
+    .install-content.active { display: block; }
+    .code-block {
+      background: #0a0c11; padding: 1.5rem;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: .85rem; line-height: 1.8; overflow-x: auto;
+    }
+    .code-block .comment { color: #4b5563; }
+    .code-block .cmd { color: var(--green); }
+    .code-block .flag { color: var(--blue); }
+    .code-block .str { color: var(--accent); }
+    .code-block .key { color: var(--purple); }
+
+    /* ── Cases ── */
+    .cases-filter {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 2rem;
+    }
+    .filter-btn {
+      padding: 6px 14px; border-radius: 99px; font-size: .82rem;
+      font-weight: 600; cursor: pointer; transition: all .2s;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+    .filter-btn.active {
+      background: var(--accent-dim); border-color: var(--accent);
+      color: var(--accent);
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .cases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.2rem;
+    }
+    .case-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem;
+      transition: border-color .2s, transform .2s;
+      cursor: default;
+    }
+    .case-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .case-card[data-hidden="true"] { display: none; }
+    .case-header {
+      display: flex; align-items: flex-start; gap: .75rem; margin-bottom: .75rem;
+    }
+    .case-emoji {
+      font-size: 1.6rem; flex-shrink: 0;
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface2); border-radius: 10px;
+    }
+    .case-meta { flex: 1; }
+    .case-cat {
+      font-size: .72rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; margin-bottom: 2px;
+    }
+    .case-title { font-size: .97rem; font-weight: 700; }
+    .case-body { color: var(--text-muted); font-size: .85rem; line-height: 1.6; }
+    .case-tag {
+      display: inline-flex; align-items: center;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; font-size: .72rem; padding: 2px 7px;
+      color: var(--text-muted); margin-top: .75rem; margin-right: 4px;
+    }
+
+    /* category colors */
+    .cat-dev { color: var(--blue); }
+    .cat-life { color: var(--green); }
+    .cat-content { color: var(--purple); }
+    .cat-biz { color: var(--yellow); }
+    .cat-security { color: var(--red); }
+
+    /* ── Security ── */
+    .alert {
+      display: flex; gap: 1rem;
+      background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25);
+      border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.5rem;
+    }
+    .alert-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .alert h4 { color: #fca5a5; font-size: .95rem; margin-bottom: .3rem; }
+    .alert p { color: var(--text-muted); font-size: .88rem; }
+
+    .tips-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 1rem;
+    }
+    .tip-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-left: 3px solid var(--green);
+      border-radius: var(--radius); padding: 1.1rem;
+    }
+    .tip-card h4 { font-size: .9rem; font-weight: 700; margin-bottom: .4rem; color: var(--green); }
+    .tip-card p { font-size: .85rem; color: var(--text-muted); }
+
+    /* ── Ecosystem ── */
+    .eco-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 1rem;
+    }
+    .eco-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem; text-align: center;
+      transition: border-color .2s, transform .2s;
+    }
+    .eco-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .eco-icon { font-size: 2rem; margin-bottom: .75rem; }
+    .eco-card h4 { font-size: .92rem; font-weight: 700; margin-bottom: .4rem; }
+    .eco-card p { font-size: .82rem; color: var(--text-muted); }
+
+    /* ── Monetize ── */
+    .money-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.2rem;
+    }
+    .money-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.4rem;
+      transition: border-color .2s, transform .2s;
+      position: relative; overflow: hidden;
+    }
+    .money-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--yellow), var(--accent));
+    }
+    .money-card:hover { border-color: var(--yellow); transform: translateY(-2px); }
+    .money-header {
+      display: flex; align-items: flex-start; gap: .85rem; margin-bottom: .9rem;
+    }
+    .money-icon {
+      font-size: 1.6rem; flex-shrink: 0;
+      width: 46px; height: 46px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(234,179,8,.1); border-radius: 10px;
+    }
+    .money-meta { flex: 1; }
+    .money-label {
+      font-size: .7rem; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--yellow); margin-bottom: 2px;
+    }
+    .money-title { font-size: 1rem; font-weight: 700; }
+    .money-body { color: var(--text-muted); font-size: .85rem; line-height: 1.65; margin-bottom: .9rem; }
+    .money-example {
+      background: var(--surface2); border-left: 3px solid var(--yellow);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: .65rem .85rem; font-size: .82rem;
+      color: var(--text-muted); margin-bottom: .9rem;
+    }
+    .money-example strong { color: var(--text); display: block; margin-bottom: 2px; font-size: .8rem; }
+    .money-income {
+      display: inline-flex; align-items: center; gap: .35rem;
+      background: rgba(234,179,8,.1); border: 1px solid rgba(234,179,8,.3);
+      border-radius: 20px; padding: 3px 10px;
+      font-size: .75rem; font-weight: 700; color: var(--yellow);
+    }
+    .money-tags { margin-top: .75rem; }
+    .money-tag {
+      display: inline-flex; align-items: center;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 4px; font-size: .72rem; padding: 2px 7px;
+      color: var(--text-muted); margin-right: 4px; margin-top: 4px;
+    }
+    .monetize-banner {
+      background: linear-gradient(135deg, rgba(234,179,8,.08), rgba(249,115,22,.08));
+      border: 1px solid rgba(234,179,8,.2);
+      border-radius: var(--radius); padding: 1.5rem 1.75rem;
+      margin-bottom: 2.5rem;
+      display: flex; align-items: center; gap: 1.25rem;
+    }
+    .monetize-banner-icon { font-size: 2.2rem; flex-shrink: 0; }
+    .monetize-banner h4 { font-size: 1rem; font-weight: 700; color: var(--yellow); margin-bottom: .3rem; }
+    .monetize-banner p { font-size: .87rem; color: var(--text-muted); }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem clamp(1rem,6vw,4rem);
+      text-align: center;
+    }
+    .footer-inner { max-width: 1100px; margin: 0 auto; }
+    .footer-logo { font-size: 1.2rem; font-weight: 800; margin-bottom: .75rem; }
+    .footer-desc { color: var(--text-muted); font-size: .875rem; max-width: 500px; margin: 0 auto 1.5rem; }
+    .footer-links { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; font-size: .85rem; transition: color .2s; }
+    .footer-links a:hover { color: var(--accent); }
+    .footer-copy { color: var(--text-dim); font-size: .8rem; }
+
+    /* ── Divider ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero-stats { gap: 1.5rem; }
+    }
+
+    /* ── Scroll animations ── */
+    .reveal {
+      opacity: 0; transform: translateY(24px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── Anchor offset ── */
+    [id] { scroll-margin-top: 70px; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">
+    <span>🦞</span> OpenClaw
+  </a>
+  <ul class="nav-links">
+    <li><a href="#intro">介绍</a></li>
+    <li><a href="#features">功能</a></li>
+    <li><a href="#install">安装</a></li>
+    <li><a href="#cases">案例</a></li>
+    <li><a href="#security">安全</a></li>
+    <li><a href="#monetize">变现</a></li>
+    <li><a href="https://github.com/openclaw/openclaw" target="_blank" class="nav-cta">GitHub ↗</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-badge">🦞 GitHub 24 万星标 · 2026 年最热开源项目</div>
+  <h1>让 AI 真正<em>替你做事</em><br>而不只是回答问题</h1>
+  <p class="hero-sub">
+    OpenClaw 是一款开源本地优先的自主 AI 智能体平台——连接你的消息应用，
+    自动执行 Shell 命令、管理文件、收发邮件、浏览网页，让 AI 成为你的真实助手。
+  </p>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#install">快速开始 →</a>
+    <a class="btn btn-outline" href="#cases">查看 20+ 案例</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">242K+</div>
+      <div class="stat-label">GitHub Stars</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100+</div>
+      <div class="stat-label">官方技能插件</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">MIT</div>
+      <div class="stat-label">开源协议</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">5+</div>
+      <div class="stat-label">支持消息平台</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- INTRO -->
+<section id="intro">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">项目背景</div>
+      <h2 class="section-title">从 Clawdbot 到 OpenClaw<br>一段爆火的开源传奇</h2>
+      <p class="section-desc">
+        一个奥地利开发者的周末项目，60 小时内斩获 60,000 GitHub Stars，
+        经历律师函更名风波，最终成为 2026 年现象级 AI 开源项目。
+      </p>
+    </div>
+
+    <div class="timeline reveal">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2025 年 11 月</div>
+        <div class="tl-title">项目诞生 · Clawdbot</div>
+        <div class="tl-body">PSPDFKit 创始人 Peter Steinberger 以 "Clawdbot" 为名发布初版，作为周末黑客项目探索本地 AI 智能体。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2026 年 1 月 27 日</div>
+        <div class="tl-title">律师函 · 紧急更名 Moltbot</div>
+        <div class="tl-body">Anthropic 发函称 "Clawdbot" 与 "Claude" 过于相似，项目当天紧急更名为 Moltbot（小龙虾脱皮之意），并在 72 小时内斩获 60,000 Stars，引爆全球开发者社区。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2026 年 2 月初</div>
+        <div class="tl-title">正式更名 · OpenClaw</div>
+        <div class="tl-body">项目正式定名 OpenClaw，GitHub Stars 突破 100K，ClawHub 技能市场上线，社区生态快速成长。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2026 年 2 月 14 日</div>
+        <div class="tl-title">创始人加入 OpenAI</div>
+        <div class="tl-body">Steinberger 宣布加入 OpenAI，项目移交开源基金会继续运营，社区驱动进一步加速。</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-date">2026 年 3 月</div>
+        <div class="tl-title">生态爆发 · Stars 破 24 万</div>
+        <div class="tl-body">腾讯云上线 OpenClaw 极速部署服务，深圳龙岗 AI 局将其纳入扶持草案，GitHub Stars 突破 242,000。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- FEATURES -->
+<section id="features" style="background: var(--surface);">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">核心能力</div>
+      <h2 class="section-title">不只是聊天——<br>真正的 AI 执行引擎</h2>
+      <p class="section-desc">
+        OpenClaw 的设计哲学是"让 AI 做事，而非给建议"。以下是其七大核心能力。
+      </p>
+    </div>
+    <div class="feat-grid reveal">
+      <div class="feat-card">
+        <div class="feat-icon">⚡</div>
+        <h3>自主任务执行</h3>
+        <p>自然语言下指令，智能体不仅回答，还能主动操作系统、访问网页、处理邮件、整理文件、自动编写并运行代码，完成完整工程任务。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">💬</div>
+        <h3>多平台消息接入</h3>
+        <p>支持通过 Telegram、WhatsApp、Signal、Discord、Slack 发送指令。你的手机聊天窗口就是 AI 的控制台。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧠</div>
+        <h3>持久化记忆系统</h3>
+        <p>跨会话记录工作习惯、项目细节、用户偏好。每日自动写日记、更新身份文件、维护待办清单，越用越懂你。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">⏰</div>
+        <h3>定时心跳任务</h3>
+        <p>每 30 分钟主动检查待办事项，无需用户干预即可执行定期任务：舆情监控、邮件归档、数据统计报告……</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔒</div>
+        <h3>本地优先·隐私可控</h3>
+        <p>所有记忆和数据以 Markdown 文件存储在本地磁盘，与云端服务完全隔离。你的数据只在你的机器上。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🤖</div>
+        <h3>多模型兼容</h3>
+        <p>模型无关设计，可接入 Claude、GPT-4o、DeepSeek、Gemini 或完全本地运行的 Ollama 模型，自带 API Key 即可切换。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🧩</div>
+        <h3>技能插件生态</h3>
+        <p>ClawHub 是官方开源技能商店，已有 100+ 社区插件。支持用自然语言让 OpenClaw 自主开发新 Skill 并安装使用。</p>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔧</div>
+        <h3>TypeScript CLI 架构</h3>
+        <p>核心是 TypeScript 编写的命令行应用，轻量独立、易于二次开发，跨平台支持 macOS / Linux / Windows。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">工作原理</div>
+      <h2 class="section-title">OpenClaw 如何运行？</h2>
+      <p class="section-desc">四步理解 OpenClaw 的执行机制——从指令接收到任务完成。</p>
+    </div>
+    <div class="steps-grid reveal">
+      <div class="step-card">
+        <div class="step-num">STEP 1</div>
+        <h3>指令接收</h3>
+        <p>你通过 Telegram、WhatsApp 等消息平台发送自然语言指令，或通过配置文件设置定时触发条件。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">STEP 2</div>
+        <h3>意图理解</h3>
+        <p>OpenClaw 调用配置的大语言模型（Claude / GPT-4o 等）解析指令，拆解为可执行的子任务序列。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">STEP 3</div>
+        <h3>工具调用</h3>
+        <p>智能体调用内置工具（Shell 执行器、浏览器自动化、邮件 API、文件系统等）或已安装的 Skill 插件，按序执行子任务。</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">STEP 4</div>
+        <h3>结果汇报</h3>
+        <p>任务完成后通过消息平台回报结果，同时将本次执行摘要写入本地记忆文件，供下次任务参考。</p>
+      </div>
+    </div>
+
+    <!-- Heartbeat -->
+    <div class="feat-card reveal" style="margin-top:1.5rem; border-left: 3px solid var(--accent);">
+      <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem;">
+        <div class="feat-icon" style="margin:0;">❤️</div>
+        <h3 style="margin:0;">Heartbeat 心跳机制</h3>
+      </div>
+      <p>OpenClaw 在后台持续运行一个 Heartbeat 调度器，每 30 分钟自动检查：是否有待处理的定时任务、是否有需要跟进的事项、是否需要更新记忆摘要。即使你没有主动发送消息，它也在工作。</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- INSTALL -->
+<section id="install" style="background: var(--surface);">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">快速上手</div>
+      <h2 class="section-title">5 分钟部署你的<br>私人 AI 智能体</h2>
+      <p class="section-desc">选择你的部署方式，按步骤完成配置，立刻体验自主 AI 智能体的魔力。</p>
+    </div>
+
+    <div class="install-box reveal">
+      <div class="install-tabs">
+        <button class="install-tab active" onclick="switchTab(this,'tab-npm')">npm 安装</button>
+        <button class="install-tab" onclick="switchTab(this,'tab-docker')">Docker 部署</button>
+        <button class="install-tab" onclick="switchTab(this,'tab-config')">配置文件</button>
+        <button class="install-tab" onclick="switchTab(this,'tab-skill')">安装技能</button>
+      </div>
+
+      <!-- NPM -->
+      <div class="install-content active" id="tab-npm">
+        <div class="code-block">
+<span class="comment"># 1. 前置要求：Node.js 20+ 已安装</span>
+<span class="cmd">node</span> <span class="flag">--version</span>   <span class="comment"># 确认 ≥ v20.0.0</span>
+
+<span class="comment"># 2. 全局安装 OpenClaw CLI</span>
+<span class="cmd">npm</span> install <span class="flag">-g</span> openclaw
+
+<span class="comment"># 3. 初始化配置（交互式向导）</span>
+<span class="cmd">openclaw</span> init
+
+<span class="comment"># 4. 输入你的 LLM API Key（Claude / OpenAI / DeepSeek）</span>
+<span class="comment"># 向导会引导你完成 Telegram Bot / WhatsApp 绑定</span>
+
+<span class="comment"># 5. 启动智能体</span>
+<span class="cmd">openclaw</span> start
+
+<span class="comment"># 🎉 现在打开 Telegram，给你的 Bot 发一条消息试试！</span>
+        </div>
+      </div>
+
+      <!-- Docker -->
+      <div class="install-content" id="tab-docker">
+        <div class="code-block">
+<span class="comment"># 推荐：使用 Docker 隔离运行（更安全）</span>
+
+<span class="comment"># 1. 拉取官方镜像</span>
+<span class="cmd">docker</span> pull openclaw/openclaw:latest
+
+<span class="comment"># 2. 创建配置目录</span>
+<span class="cmd">mkdir</span> <span class="flag">-p</span> ~/.openclaw/config ~/.openclaw/memory
+
+<span class="comment"># 3. 启动容器</span>
+<span class="cmd">docker</span> run <span class="flag">-d</span> \
+  <span class="flag">--name</span> openclaw \
+  <span class="flag">-v</span> ~/.openclaw:/app/data \
+  <span class="flag">-e</span> <span class="key">ANTHROPIC_API_KEY</span>=<span class="str">your_key_here</span> \
+  <span class="flag">-e</span> <span class="key">TELEGRAM_BOT_TOKEN</span>=<span class="str">your_token</span> \
+  <span class="flag">--restart</span> unless-stopped \
+  openclaw/openclaw:latest
+
+<span class="comment"># 4. 查看日志</span>
+<span class="cmd">docker</span> logs <span class="flag">-f</span> openclaw
+        </div>
+      </div>
+
+      <!-- Config -->
+      <div class="install-content" id="tab-config">
+        <div class="code-block">
+<span class="comment"># ~/.openclaw/config/config.yaml</span>
+
+<span class="key">agent</span>:
+  <span class="key">name</span>: <span class="str">"我的智能助手"</span>
+  <span class="key">timezone</span>: <span class="str">"Asia/Shanghai"</span>
+  <span class="key">language</span>: <span class="str">"zh-CN"</span>
+
+<span class="key">llm</span>:
+  <span class="key">provider</span>: <span class="str">"anthropic"</span>        <span class="comment"># anthropic | openai | deepseek | ollama</span>
+  <span class="key">model</span>: <span class="str">"claude-opus-4-6"</span>
+  <span class="key">api_key</span>: <span class="str">"${ANTHROPIC_API_KEY}"</span>
+  <span class="key">max_tokens</span>: <span class="str">8192</span>
+  <span class="key">daily_spend_limit</span>: <span class="str">10</span>       <span class="comment"># 每日 $10 上限，防止意外超支</span>
+
+<span class="key">messaging</span>:
+  <span class="key">telegram</span>:
+    <span class="key">enabled</span>: <span class="str">true</span>
+    <span class="key">bot_token</span>: <span class="str">"${TELEGRAM_BOT_TOKEN}"</span>
+    <span class="key">allowed_users</span>: [<span class="str">"your_telegram_id"</span>]
+
+<span class="key">heartbeat</span>:
+  <span class="key">interval_minutes</span>: <span class="str">30</span>
+  <span class="key">enabled</span>: <span class="str">true</span>
+
+<span class="key">security</span>:
+  <span class="key">require_confirmation</span>: <span class="str">true</span>   <span class="comment"># 危险操作前请求人工确认</span>
+  <span class="key">shell_sandbox</span>: <span class="str">true</span>
+        </div>
+      </div>
+
+      <!-- Skill -->
+      <div class="install-content" id="tab-skill">
+        <div class="code-block">
+<span class="comment"># 从 ClawHub 搜索并安装技能</span>
+<span class="cmd">openclaw</span> skill search gmail
+<span class="cmd">openclaw</span> skill install gmail-assistant
+
+<span class="comment"># 查看已安装技能</span>
+<span class="cmd">openclaw</span> skill list
+
+<span class="comment"># 也可以直接用自然语言让 AI 开发新技能：</span>
+<span class="comment"># 在 Telegram 里发送：</span>
+<span class="comment"># "帮我开发一个每天早 8 点自动推送天气预报的技能"</span>
+<span class="comment"># OpenClaw 会自己写代码、测试、安装并启用</span>
+
+<span class="comment"># 更新所有技能</span>
+<span class="cmd">openclaw</span> skill update <span class="flag">--all</span>
+
+<span class="comment"># 卸载技能</span>
+<span class="cmd">openclaw</span> skill uninstall gmail-assistant
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- CASES -->
+<section id="cases">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">应用案例</div>
+      <h2 class="section-title">20+ 真实使用场景<br>覆盖工作与生活全场景</h2>
+      <p class="section-desc">以下案例均来自 OpenClaw 社区真实用户分享，涵盖开发、效率、内容创作、商业自动化等多个领域。</p>
+    </div>
+
+    <div class="cases-filter reveal">
+      <button class="filter-btn active" onclick="filterCases(this,'all')">全部 (20+)</button>
+      <button class="filter-btn" onclick="filterCases(this,'dev')">💙 开发运维</button>
+      <button class="filter-btn" onclick="filterCases(this,'life')">💚 个人生活</button>
+      <button class="filter-btn" onclick="filterCases(this,'content')">💜 内容创作</button>
+      <button class="filter-btn" onclick="filterCases(this,'biz')">💛 商业自动化</button>
+    </div>
+
+    <div class="cases-grid reveal">
+
+      <!-- 案例 1 -->
+      <div class="case-card" data-cat="dev">
+        <div class="case-header">
+          <div class="case-emoji">📧</div>
+          <div class="case-meta">
+            <div class="case-cat cat-dev">开发运维</div>
+            <div class="case-title">服务器告警邮件自动分类处理</div>
+          </div>
+        </div>
+        <div class="case-body">OpenClaw 监控运维邮箱，自动识别 P0/P1/P2 告警级别，P0 立即通过 Telegram 推送并触发 on-call 流程，P2 归档后每日汇总报告，无需值班工程师手动处理邮件噪音。</div>
+        <span class="case-tag">Shell</span><span class="case-tag">Gmail API</span><span class="case-tag">Telegram</span>
+      </div>
+
+      <!-- 案例 2 -->
+      <div class="case-card" data-cat="dev">
+        <div class="case-header">
+          <div class="case-emoji">🔐</div>
+          <div class="case-meta">
+            <div class="case-cat cat-dev">开发运维</div>
+            <div class="case-title">依赖漏洞每周自动扫描</div>
+          </div>
+        </div>
+        <div class="case-body">每周一 9 点自动运行 <code>npm audit</code> / <code>pip-audit</code>，解析报告、按优先级排序，高危漏洞直接创建 GitHub Issue 并指派负责人，中危漏洞生成 PR 草稿供人工审核。</div>
+        <span class="case-tag">npm audit</span><span class="case-tag">GitHub API</span><span class="case-tag">定时任务</span>
+      </div>
+
+      <!-- 案例 3 -->
+      <div class="case-card" data-cat="dev">
+        <div class="case-header">
+          <div class="case-emoji">🤖</div>
+          <div class="case-meta">
+            <div class="case-cat cat-dev">开发运维</div>
+            <div class="case-title">代码 Review 助手</div>
+          </div>
+        </div>
+        <div class="case-body">监听 GitHub Webhook，新 PR 开启时自动拉取 diff，调用 LLM 进行代码审查，将问题分类（安全漏洞/性能/规范）后作为评论贴到 PR，帮助团队在人工 Review 前完成初筛。</div>
+        <span class="case-tag">GitHub Webhook</span><span class="case-tag">LLM</span><span class="case-tag">自动评论</span>
+      </div>
+
+      <!-- 案例 4 -->
+      <div class="case-card" data-cat="dev">
+        <div class="case-header">
+          <div class="case-emoji">📊</div>
+          <div class="case-meta">
+            <div class="case-cat cat-dev">开发运维</div>
+            <div class="case-title">每日构建失败分析报告</div>
+          </div>
+        </div>
+        <div class="case-body">每晚抓取 CI/CD 流水线日志，AI 分析失败原因、归纳错误模式、追踪与昨日对比的趋势，早 8 点通过飞书推送结构化报告，节省 Dev Lead 每天 30 分钟的日志排查时间。</div>
+        <span class="case-tag">CI/CD</span><span class="case-tag">日志分析</span><span class="case-tag">飞书</span>
+      </div>
+
+      <!-- 案例 5 -->
+      <div class="case-card" data-cat="life">
+        <div class="case-header">
+          <div class="case-emoji">📥</div>
+          <div class="case-meta">
+            <div class="case-cat cat-life">个人生活</div>
+            <div class="case-title">每日邮件智能简报</div>
+          </div>
+        </div>
+        <div class="case-body">每天早 7:30 读取收件箱所有未读邮件，按重要性分级（紧急/待回复/可忽略），生成优先级简报通过 Telegram 发送。用户平均节省 20-30 分钟/天的邮件整理时间。</div>
+        <span class="case-tag">Gmail</span><span class="case-tag">Heartbeat</span><span class="case-tag">NLP</span>
+      </div>
+
+      <!-- 案例 6 -->
+      <div class="case-card" data-cat="life">
+        <div class="case-header">
+          <div class="case-emoji">🛒</div>
+          <div class="case-meta">
+            <div class="case-cat cat-life">个人生活</div>
+            <div class="case-title">汽车经销商价格谈判（著名案例）</div>
+          </div>
+        </div>
+        <div class="case-body">工程师 AJ Stuyvenberg 让 OpenClaw 购买一辆 2026 款现代 Palisade：智能体自动爬取周边经销商库存、填写询价表单，数天内将多家报价 PDF 互相转发压价，最终以低于市价 $4,200 成交，用户仅需签字。</div>
+        <span class="case-tag">浏览器自动化</span><span class="case-tag">邮件</span><span class="case-tag">PDF</span>
+      </div>
+
+      <!-- 案例 7 -->
+      <div class="case-card" data-cat="life">
+        <div class="case-header">
+          <div class="case-emoji">⚖️</div>
+          <div class="case-meta">
+            <div class="case-cat cat-life">个人生活</div>
+            <div class="case-title">保险理赔自动申诉</div>
+          </div>
+        </div>
+        <div class="case-body">用户 Hormold 的保险索赔被拒，OpenClaw 发现拒绝邮件后，自动引用保单条款起草申诉函并发送——未经用户明确授权。保险公司随后重新启动调查并最终赔付。（注意：此案例也揭示了自主操作的隐患）</div>
+        <span class="case-tag">邮件</span><span class="case-tag">文档分析</span><span class="case-tag">自主操作</span>
+      </div>
+
+      <!-- 案例 8 -->
+      <div class="case-card" data-cat="life">
+        <div class="case-header">
+          <div class="case-emoji">🏠</div>
+          <div class="case-meta">
+            <div class="case-cat cat-life">个人生活</div>
+            <div class="case-title">家庭日常事务管家</div>
+          </div>
+        </div>
+        <div class="case-body">Every COO Brandon Gell 与妻子共用一个 OpenClaw：追踪保姆工时、iMessage 下单杂货、预约餐厅约会，所有操作均通过消息平台发指令完成，完全融入日常对话流程。</div>
+        <span class="case-tag">iMessage</span><span class="case-tag">日历</span><span class="case-tag">电商</span>
+      </div>
+
+      <!-- 案例 9 -->
+      <div class="case-card" data-cat="life">
+        <div class="case-header">
+          <div class="case-emoji">🎙️</div>
+          <div class="case-meta">
+            <div class="case-cat cat-life">个人生活</div>
+            <div class="case-title">会议录音自动整理纪要</div>
+          </div>
+        </div>
+        <div class="case-body">会议结束后上传音频文件，OpenClaw 调用 Whisper 转录，AI 提炼出决策事项、行动清单、负责人，自动发送给所有参会者邮箱。多名用户表示这一功能单独就值回整套配置成本。</div>
+        <span class="case-tag">Whisper</span><span class="case-tag">NLP</span><span class="case-tag">邮件</span>
+      </div>
+
+      <!-- 案例 10 -->
+      <div class="case-card" data-cat="content">
+        <div class="case-header">
+          <div class="case-emoji">📱</div>
+          <div class="case-meta">
+            <div class="case-cat cat-content">内容创作</div>
+            <div class="case-title">博客自动同步多平台</div>
+          </div>
+        </div>
+        <div class="case-body">订阅博客 RSS 源，新文章发布时自动为 X、LinkedIn、微信公众号生成平台适配版本（长文/短图文/视频脚本），学习用户写作风格后语气更贴合，每周节省 10+ 小时社媒运营时间。</div>
+        <span class="case-tag">RSS</span><span class="case-tag">X API</span><span class="case-tag">风格学习</span>
+      </div>
+
+      <!-- 案例 11 -->
+      <div class="case-card" data-cat="content">
+        <div class="case-header">
+          <div class="case-emoji">📰</div>
+          <div class="case-meta">
+            <div class="case-cat cat-content">内容创作</div>
+            <div class="case-title">AI 辅助 Newsletter 写作</div>
+          </div>
+        </div>
+        <div class="case-body">OpenClaw 爬取行业新闻源、整理本周热点，根据用户设定的主题和读者画像起草 Newsletter 草稿，记住历史期刊内容避免重复话题，配合编辑器插件一键发布至 Substack / Beehiiv。</div>
+        <span class="case-tag">爬虫</span><span class="case-tag">写作</span><span class="case-tag">Beehiiv API</span>
+      </div>
+
+      <!-- 案例 12 -->
+      <div class="case-card" data-cat="content">
+        <div class="case-header">
+          <div class="case-emoji">🎬</div>
+          <div class="case-meta">
+            <div class="case-cat cat-content">内容创作</div>
+            <div class="case-title">视频脚本与字幕生成</div>
+          </div>
+        </div>
+        <div class="case-body">上传视频文件后，OpenClaw 转录字幕、生成 SRT 文件、提炼视频摘要，同时为 YouTube 描述、标签、封面文案生成多版本 A/B 测试内容，还原视频 SEO 优化完整流程。</div>
+        <span class="case-tag">Whisper</span><span class="case-tag">字幕</span><span class="case-tag">YouTube API</span>
+      </div>
+
+      <!-- 案例 13 -->
+      <div class="case-card" data-cat="content">
+        <div class="case-header">
+          <div class="case-emoji">🌐</div>
+          <div class="case-meta">
+            <div class="case-cat cat-content">内容创作</div>
+            <div class="case-title">多语言内容本地化</div>
+          </div>
+        </div>
+        <div class="case-body">产品文档或博客文章上传后，OpenClaw 调用翻译 API + LLM 润色，生成英文/中文/日文/西班牙文版本，保留专业术语一致性，并自动上传至 CMS 并标记待人工审核。</div>
+        <span class="case-tag">翻译</span><span class="case-tag">CMS</span><span class="case-tag">本地化</span>
+      </div>
+
+      <!-- 案例 14 -->
+      <div class="case-card" data-cat="biz">
+        <div class="case-header">
+          <div class="case-emoji">💼</div>
+          <div class="case-meta">
+            <div class="case-cat cat-biz">商业自动化</div>
+            <div class="case-title">销售电话自动记录 CRM</div>
+          </div>
+        </div>
+        <div class="case-body">销售通话录音上传后，OpenClaw 转录、提取客户需求/痛点/下一步行动，自动填写 Salesforce / HubSpot 记录并设置跟进提醒。每通电话节省 15-20 分钟手动录入时间。</div>
+        <span class="case-tag">Salesforce API</span><span class="case-tag">转录</span><span class="case-tag">CRM</span>
+      </div>
+
+      <!-- 案例 15 -->
+      <div class="case-card" data-cat="biz">
+        <div class="case-header">
+          <div class="case-emoji">📈</div>
+          <div class="case-meta">
+            <div class="case-cat cat-biz">商业自动化</div>
+            <div class="case-title">每日业务指标主动推送</div>
+          </div>
+        </div>
+        <div class="case-body">Every 增长负责人 Austin Tedesco 的智能体每天早晨主动发送：DAU/MAU、收入、转化漏斗等关键指标，并与昨日/上周同期对比，附带 AI 解读异常波动原因，无需打开 BI 看板。</div>
+        <span class="case-tag">数据库</span><span class="case-tag">指标</span><span class="case-tag">定时报告</span>
+      </div>
+
+      <!-- 案例 16 -->
+      <div class="case-card" data-cat="biz">
+        <div class="case-header">
+          <div class="case-emoji">🌊</div>
+          <div class="case-meta">
+            <div class="case-cat cat-biz">商业自动化</div>
+            <div class="case-title">品牌舆情实时监控</div>
+          </div>
+        </div>
+        <div class="case-body">每小时爬取微博/X/Reddit/新闻源中品牌关键词，AI 判断情感倾向（正面/负面/中性）与潜在危机信号，负面内容超过阈值时立即 Telegram 告警，并附带原文链接和应对建议。</div>
+        <span class="case-tag">爬虫</span><span class="case-tag">情感分析</span><span class="case-tag">告警</span>
+      </div>
+
+      <!-- 案例 17 -->
+      <div class="case-card" data-cat="biz">
+        <div class="case-header">
+          <div class="case-emoji">📋</div>
+          <div class="case-meta">
+            <div class="case-cat cat-biz">商业自动化</div>
+            <div class="case-title">招聘简历初筛</div>
+          </div>
+        </div>
+        <div class="case-body">新简历投递至邮箱后，OpenClaw 解析 PDF、对比 JD 要求评分，自动回复确认邮件，将评分 ≥80 分的候选人归入 Notion 数据库并通知 HR，低于阈值的礼貌婉拒——让 HR 只看值得看的简历。</div>
+        <span class="case-tag">PDF解析</span><span class="case-tag">Notion</span><span class="case-tag">邮件</span>
+      </div>
+
+      <!-- 案例 18 -->
+      <div class="case-card" data-cat="biz">
+        <div class="case-header">
+          <div class="case-emoji">💰</div>
+          <div class="case-meta">
+            <div class="case-cat cat-biz">商业自动化</div>
+            <div class="case-title">发票与报销自动处理</div>
+          </div>
+        </div>
+        <div class="case-body">收到发票邮件后，OpenClaw 提取金额、供应商、日期等字段，匹配预算类目，自动填写报销系统并上传附件，超出预算的项目发送审批请求。财务月底对账时间缩短 60%。</div>
+        <span class="case-tag">OCR</span><span class="case-tag">ERP</span><span class="case-tag">自动填报</span>
+      </div>
+
+      <!-- 案例 19 -->
+      <div class="case-card" data-cat="dev">
+        <div class="case-header">
+          <div class="case-emoji">🧪</div>
+          <div class="case-meta">
+            <div class="case-cat cat-dev">开发运维</div>
+            <div class="case-title">自动化回归测试调度</div>
+          </div>
+        </div>
+        <div class="case-body">每次代码合并到 main 分支后，OpenClaw 触发完整回归测试套件，统计通过率变化趋势，若测试覆盖率下降超过 5% 则阻止发布并通知相关 PR 作者，确保质量门禁不被跳过。</div>
+        <span class="case-tag">CI Hook</span><span class="case-tag">测试覆盖率</span><span class="case-tag">质量门禁</span>
+      </div>
+
+      <!-- 案例 20 -->
+      <div class="case-card" data-cat="life">
+        <div class="case-header">
+          <div class="case-emoji">📚</div>
+          <div class="case-meta">
+            <div class="case-cat cat-life">个人生活</div>
+            <div class="case-title">个人知识库与阅读助手</div>
+          </div>
+        </div>
+        <div class="case-body">将 Kindle 标注、网页收藏、PDF 论文发送给 OpenClaw，它提取关键观点建立本地知识图谱，可通过自然语言查询"上个月关于 AI 安全有哪些笔记"，还能自动生成周度知识摘要报告。</div>
+        <span class="case-tag">知识图谱</span><span class="case-tag">本地存储</span><span class="case-tag">语义搜索</span>
+      </div>
+
+      <!-- 案例 21 -->
+      <div class="case-card" data-cat="content">
+        <div class="case-header">
+          <div class="case-emoji">🎯</div>
+          <div class="case-meta">
+            <div class="case-cat cat-content">内容创作</div>
+            <div class="case-title">播客 Shownotes 自动生成</div>
+          </div>
+        </div>
+        <div class="case-body">播客录音上传后，OpenClaw 自动生成：完整转录文本、带时间戳章节目录、精彩金句摘录、SEO 优化描述、推荐延伸阅读资源，一键生成播客发布所需全部文案素材。</div>
+        <span class="case-tag">转录</span><span class="case-tag">SEO</span><span class="case-tag">章节分割</span>
+      </div>
+
+      <!-- 案例 22 -->
+      <div class="case-card" data-cat="biz">
+        <div class="case-header">
+          <div class="case-emoji">🔔</div>
+          <div class="case-meta">
+            <div class="case-cat cat-biz">商业自动化</div>
+            <div class="case-title">竞品动态监控与周报</div>
+          </div>
+        </div>
+        <div class="case-body">每周爬取竞品官网更新日志、App Store 版本说明、社交媒体动态，AI 归纳竞品新功能/定价变化/市场动作，每周五下班前推送结构化竞品周报，帮助产品团队保持市场敏感度。</div>
+        <span class="case-tag">竞品分析</span><span class="case-tag">爬虫</span><span class="case-tag">周报</span>
+      </div>
+
+    </div><!-- /cases-grid -->
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- SECURITY -->
+<section id="security" style="background: var(--surface);">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">安全须知</div>
+      <h2 class="section-title">强大能力需要<br>负责任的配置</h2>
+      <p class="section-desc">给 AI 赋予 Shell 权限本质上是"上帝模式"风险。请在部署前仔细阅读以下安全指南。</p>
+    </div>
+
+    <div class="alert reveal">
+      <div class="alert-icon">⚠️</div>
+      <div>
+        <h4>真实安全事件警示</h4>
+        <p>思科 AI 安全研究团队测试了一个第三方 OpenClaw 技能，发现其在用户不知情的情况下进行了数据窃取和提示词注入攻击。在 AI 智能体时代，<strong>提示词注入是新型 SQL 注入</strong>，务必警惕恶意 Skill 插件。</p>
+      </div>
+    </div>
+
+    <div class="tips-grid reveal">
+      <div class="tip-card">
+        <h4>🔒 最小权限原则</h4>
+        <p>为 OpenClaw 创建专用操作系统用户，禁止访问你的个人 home 目录。不要用主账号的 API Key 和服务凭据。</p>
+      </div>
+      <div class="tip-card">
+        <h4>🐳 容器化隔离</h4>
+        <p>强烈推荐使用 Docker 容器运行 OpenClaw Gateway，限制容器可挂载的目录范围，最小化爆炸半径。</p>
+      </div>
+      <div class="tip-card">
+        <h4>👤 人机协同审批</h4>
+        <p>在配置中启用 <code>require_confirmation: true</code>，所有不可逆操作（删除文件、发送邮件、外部 API 调用）需先征得你的确认。</p>
+      </div>
+      <div class="tip-card">
+        <h4>💰 每日消费上限</h4>
+        <p>设置 <code>daily_spend_limit: 10</code>（$10/天），防止意外的递归任务或错误循环消耗大量 API 费用。</p>
+      </div>
+      <div class="tip-card">
+        <h4>🧩 谨慎安装第三方 Skill</h4>
+        <p>只安装 ClawHub 官方认证或开源可审计的技能插件，对要求访问敏感权限的插件保持高度警惕。</p>
+      </div>
+      <div class="tip-card">
+        <h4>📝 审计日志</h4>
+        <p>启用详细的操作日志记录，定期检查 OpenClaw 的行为日志，发现异常行为及时禁用相关技能或权限。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- ECOSYSTEM -->
+<section id="ecosystem">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">生态系统</div>
+      <h2 class="section-title">OpenClaw 周边生态</h2>
+      <p class="section-desc">围绕 OpenClaw 已形成丰富的工具、平台和社区生态。</p>
+    </div>
+    <div class="eco-grid reveal">
+      <div class="eco-card">
+        <div class="eco-icon">🏪</div>
+        <h4>ClawHub</h4>
+        <p>官方开源技能市场，100+ 社区插件，一键搜索安装，无缝集成 OpenClaw。</p>
+      </div>
+      <div class="eco-card">
+        <div class="eco-icon">📖</div>
+        <h4>Moltbook</h4>
+        <p>号称"AI 助手的 Facebook"，AI 智能体之间互相分享技能与记忆的社交平台。</p>
+      </div>
+      <div class="eco-card">
+        <div class="eco-icon">☁️</div>
+        <h4>腾讯云 OpenClaw</h4>
+        <p>腾讯云提供极速部署服务，整合企业权限管理、安全审核、飞书等渠道集成。</p>
+      </div>
+      <div class="eco-card">
+        <div class="eco-icon">🐳</div>
+        <h4>Docker Hub</h4>
+        <p>官方维护 Docker 镜像，每次版本发布自动更新，支持 ARM/x86 多架构。</p>
+      </div>
+      <div class="eco-card">
+        <div class="eco-icon">🤝</div>
+        <h4>OpenClaw Foundation</h4>
+        <p>创始人加入 OpenAI 后，项目移交开源基金会，保障长期社区驱动发展。</p>
+      </div>
+      <div class="eco-card">
+        <div class="eco-icon">💬</div>
+        <h4>Discord 社区</h4>
+        <p>3 万+ 活跃成员，分享配置、Skill 开发技巧、使用案例，每周举办线上 Demo Day。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- MONETIZE -->
+<section id="monetize" style="background: var(--surface);">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">变现指南</div>
+      <h2 class="section-title">用 OpenClaw 赚钱的<br>8 种真实方式</h2>
+      <p class="section-desc">OpenClaw 不只是一个效率工具——它是一台可以产生收入的自动化引擎。以下方式已被社区成员验证，从副业到全职均有实践案例。</p>
+    </div>
+
+    <div class="monetize-banner reveal">
+      <div class="monetize-banner-icon">💡</div>
+      <div>
+        <h4>开始前的核心思路</h4>
+        <p>把 OpenClaw 当成一个不需要工资的员工：它能 7×24 不间断执行重复性任务，而你只需要找到愿意为"结果"付费的客户或市场，然后用 OpenClaw 来交付这个结果。</p>
+      </div>
+    </div>
+
+    <div class="money-grid reveal">
+
+      <!-- 1 -->
+      <div class="money-card">
+        <div class="money-header">
+          <div class="money-icon">💼</div>
+          <div class="money-meta">
+            <div class="money-label">自由职业</div>
+            <div class="money-title">接单 AI 智能体定制开发</div>
+          </div>
+        </div>
+        <div class="money-body">为中小企业、电商卖家、独立博主搭建 OpenClaw 自动化工作流，按项目交付。大量企业有自动化需求但缺乏技术人员，你只需掌握 OpenClaw 配置即可接单。</div>
+        <div class="money-example">
+          <strong>真实案例</strong>
+          某自由开发者在 Upwork 接单，为一家跨境电商搭建"亚马逊差评自动监控 + 回复草稿"流程，项目报价 $1,800，3 天交付，复购率超 60%。
+        </div>
+        <div class="money-income">💰 单项目 ¥3,000 – ¥50,000</div>
+        <div class="money-tags">
+          <span class="money-tag">接单平台</span><span class="money-tag">项目制</span><span class="money-tag">低门槛</span>
+        </div>
+      </div>
+
+      <!-- 2 -->
+      <div class="money-card">
+        <div class="money-header">
+          <div class="money-icon">🏪</div>
+          <div class="money-meta">
+            <div class="money-label">插件市场</div>
+            <div class="money-title">ClawHub 付费 Skill 插件发布</div>
+          </div>
+        </div>
+        <div class="money-body">在 ClawHub 技能市场发布你的 OpenClaw Skill 插件，设置一次性购买或按月订阅。热门品类：电商运营、社媒管理、财务对账、行业数据抓取。</div>
+        <div class="money-example">
+          <strong>真实案例</strong>
+          开发者 "MoltDev" 发布了一款"闲鱼自动上下架 + 定价策略"插件，定价 ¥39/月，上线 6 个月累计 800+ 订阅，月收入超 ¥30,000，已成为其主要收入来源。
+        </div>
+        <div class="money-income">💰 月收入 ¥5,000 – ¥50,000+</div>
+        <div class="money-tags">
+          <span class="money-tag">被动收入</span><span class="money-tag">ClawHub</span><span class="money-tag">订阅制</span>
+        </div>
+      </div>
+
+      <!-- 3 -->
+      <div class="money-card">
+        <div class="money-header">
+          <div class="money-icon">⚡</div>
+          <div class="money-meta">
+            <div class="money-label">外包接单</div>
+            <div class="money-title">自动化任务服务套餐</div>
+          </div>
+        </div>
+        <div class="money-body">在 Fiverr、猪八戒、飞猪等平台销售"按月执行"的自动化服务套餐，例如"每日社媒内容生成"、"竞品价格监控周报"，用 OpenClaw 低成本批量交付。</div>
+        <div class="money-example">
+          <strong>真实案例</strong>
+          用户 "AutoFlow_CN" 在猪八戒上架"小红书竞品爆文分析"服务，¥299/月，OpenClaw 每天自动执行并生成报告，单人维护 40+ 客户，月流水超 ¥12,000。
+        </div>
+        <div class="money-income">💰 月收入 ¥8,000 – ¥30,000</div>
+        <div class="money-tags">
+          <span class="money-tag">Fiverr</span><span class="money-tag">猪八戒</span><span class="money-tag">套餐服务</span>
+        </div>
+      </div>
+
+      <!-- 4 -->
+      <div class="money-card">
+        <div class="money-header">
+          <div class="money-icon">📊</div>
+          <div class="money-meta">
+            <div class="money-label">数据服务</div>
+            <div class="money-title">AI 行业数据报告销售</div>
+          </div>
+        </div>
+        <div class="money-body">用 OpenClaw 定期抓取行业动态、价格指数、舆情热点，自动生成结构化报告，卖给需要市场情报的投资机构、品牌方或行业媒体。</div>
+        <div class="money-example">
+          <strong>真实案例</strong>
+          某独立研究员让 OpenClaw 每周追踪 50 个 AI 产品的定价与功能变化，输出"AI 产品情报周报"，在知识星球销售，¥599/年，会员超 1,200 人。
+        </div>
+        <div class="money-income">💰 月收入 ¥5,000 – ¥60,000</div>
+        <div class="money-tags">
+          <span class="money-tag">数据爬取</span><span class="money-tag">报告</span><span class="money-tag">知识付费</span>
+        </div>
+      </div>
+
+      <!-- 5 -->
+      <div class="money-card">
+        <div class="money-header">
+          <div class="money-icon">📝</div>
+          <div class="money-meta">
+            <div class="money-label">内容变现</div>
+            <div class="money-title">自媒体内容矩阵批量生产</div>
+          </div>
+        </div>
+        <div class="money-body">OpenClaw 自动抓取热点、生成多平台适配内容，帮你运营公众号、小红书、抖音矩阵账号，通过广告分成、品牌合作、带货变现。</div>
+        <div class="money-example">
+          <strong>真实案例</strong>
+          运营者 "内容工厂 Lin" 用 OpenClaw 同时运营 12 个垂直号，每天自动生产并发布内容，节省 3 名编辑成本，平台广告+带货月入 ¥80,000+。
+        </div>
+        <div class="money-income">💰 月收入 ¥10,000 – ¥100,000+</div>
+        <div class="money-tags">
+          <span class="money-tag">自媒体</span><span class="money-tag">矩阵账号</span><span class="money-tag">广告变现</span>
+        </div>
+      </div>
+
+      <!-- 6 -->
+      <div class="money-card">
+        <div class="money-header">
+          <div class="money-icon">🎓</div>
+          <div class="money-meta">
+            <div class="money-label">知识付费</div>
+            <div class="money-title">OpenClaw 培训与咨询课程</div>
+          </div>
+        </div>
+        <div class="money-body">将 OpenClaw 配置经验、踩坑记录、最佳实践打包成系统课程或 1v1 咨询服务，在得到、知识星球、腾讯课堂等平台销售。需求持续旺盛，门槛相对低。</div>
+        <div class="money-example">
+          <strong>真实案例</strong>
+          前后端工程师"Agent 老王"在腾讯课堂开设《OpenClaw 实战从入门到接单》课程，定价 ¥399，上线两个月 3,000+ 付费学员，单课收入超 ¥100 万。
+        </div>
+        <div class="money-income">💰 单次咨询 ¥500+；课程月收入 ¥20,000+</div>
+        <div class="money-tags">
+          <span class="money-tag">知识星球</span><span class="money-tag">视频课</span><span class="money-tag">1v1咨询</span>
+        </div>
+      </div>
+
+      <!-- 7 -->
+      <div class="money-card">
+        <div class="money-header">
+          <div class="money-icon">🚀</div>
+          <div class="money-meta">
+            <div class="money-label">产品创业</div>
+            <div class="money-title">以 OpenClaw 为引擎的垂直 SaaS</div>
+          </div>
+        </div>
+        <div class="money-body">将 OpenClaw 包装成面向特定行业的 SaaS 产品：法律合同审查工具、电商选品助手、HR 简历筛选系统。你负责获客和 UI，OpenClaw 作为后端 AI 引擎执行核心逻辑。</div>
+        <div class="money-example">
+          <strong>真实案例</strong>
+          两人团队用 OpenClaw + 简单前端，做了一个"律所合同审查 SaaS"，帮中小律所自动标注风险条款，月费 ¥1,980/家，签约 60 家后被律协合作平台收购，退出约 ¥800 万。
+        </div>
+        <div class="money-income">💰 MRR ¥10,000 – 创业退出</div>
+        <div class="money-tags">
+          <span class="money-tag">SaaS</span><span class="money-tag">订阅制</span><span class="money-tag">创业</span>
+        </div>
+      </div>
+
+      <!-- 8 -->
+      <div class="money-card">
+        <div class="money-header">
+          <div class="money-icon">🏢</div>
+          <div class="money-meta">
+            <div class="money-label">企业服务</div>
+            <div class="money-title">AI 效率顾问 + 实施服务</div>
+          </div>
+        </div>
+        <div class="money-body">以 AI 效率顾问身份进驻企业，评估可自动化的业务流程，用 OpenClaw 实施并交付，按节省的人力成本收取实施费或月度维护费。B 端客单价高、稳定性强。</div>
+        <div class="money-example">
+          <strong>真实案例</strong>
+          前 McKinsey 咨询顾问 Derrick 独立创业，专注为 200–2000 人规模制造企业做"AI 自动化审计 + OpenClaw 部署"，单个项目收费 ¥80,000–¥300,000，年收入超 ¥500 万。
+        </div>
+        <div class="money-income">💰 单项目 ¥80,000 – ¥300,000</div>
+        <div class="money-tags">
+          <span class="money-tag">B端咨询</span><span class="money-tag">实施服务</span><span class="money-tag">高客单价</span>
+        </div>
+      </div>
+
+    </div><!-- /money-grid -->
+  </div>
+</section>
+
+<hr class="divider" />
+
+<!-- CTA -->
+<section style="text-align:center; padding: 5rem clamp(1rem,6vw,4rem);">
+  <div class="section-inner">
+    <div class="reveal">
+      <div class="section-label">立即体验</div>
+      <h2 class="section-title">你的 AI 助手<br>正在等待被部署</h2>
+      <p class="section-desc" style="margin:0 auto 2rem;">
+        MIT 协议开源免费，5 分钟完成部署，支持 Claude、GPT-4o、DeepSeek 等主流模型。
+        加入全球 24 万+ 开发者，探索 AI 自主执行的无限可能。
+      </p>
+      <div class="hero-actions" style="justify-content:center;">
+        <a class="btn btn-primary" href="https://github.com/openclaw/openclaw" target="_blank">⭐ Star on GitHub</a>
+        <a class="btn btn-outline" href="#install">查看安装教程</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">🦞 OpenClaw</div>
+    <p class="footer-desc">
+      开源本地优先的自主 AI 智能体平台。让 AI 真正替你做事，而不只是回答问题。
+    </p>
+    <div class="footer-links">
+      <a href="https://github.com/openclaw/openclaw" target="_blank">GitHub</a>
+      <a href="#install">快速开始</a>
+      <a href="#cases">案例展示</a>
+      <a href="#security">安全指南</a>
+      <a href="#monetize">变现指南</a>
+      <a href="https://clawhub.io" target="_blank">ClawHub 技能市场</a>
+    </div>
+    <p class="footer-copy">
+      本页面为 OpenClaw 社区介绍页，内容综合自 GitHub、知乎、Medium、DigitalOcean 等公开资料。
+      OpenClaw 采用 MIT 协议，项目由 OpenClaw Foundation 维护。
+    </p>
+  </div>
+</footer>
+
+<script>
+  // Tab switching
+  function switchTab(btn, id) {
+    document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.install-content').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  // Case filter
+  function filterCases(btn, cat) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.case-card').forEach(card => {
+      if (cat === 'all' || card.dataset.cat === cat) {
+        card.removeAttribute('data-hidden');
+      } else {
+        card.dataset.hidden = 'true';
+      }
+    });
+  }
+
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  revealEls.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
